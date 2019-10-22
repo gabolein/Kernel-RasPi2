@@ -24,6 +24,8 @@
 #define UART_TDR       (*(uint32_t *) UART_BASE_ADDR + 0x44)
 
 
+//kilian ist ein boot
+
 void initUART() {
   
 }
