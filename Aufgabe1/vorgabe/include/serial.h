@@ -1,5 +1,5 @@
 #include <stdint.h>
 
 void initUart();
-void printChar(char);
+void kputChar(char);
 uint8_t txFifoFull();
