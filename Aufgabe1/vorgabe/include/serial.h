@@ -1,3 +1,5 @@
+#include <stdint.h>
 
+void initUart();
 void printChar(char);
-int txFifoFull();
+uint8_t txFifoFull();
