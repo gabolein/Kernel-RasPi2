@@ -42,7 +42,8 @@ void kprintf(char* format, ...) {
                     kprintf(itoa(u_integer, 10));
                     break;
                 case 'p' : // what type is it, how much do i have to print out?
-
+                    size_t lulu = va_arg(arg, void);
+                    kprintf(itoa(lululu, 16))
                     break;
 
 
@@ -59,7 +60,7 @@ void kprintf(char* format, ...) {
 
 
 
-char* itoa(int val, int base){ // IST CPY PASTED
+char* itoa(unsigned int val, int base){ // IST CPY PASTED
     static char buf[32] = {0};
 
     int i = 30;

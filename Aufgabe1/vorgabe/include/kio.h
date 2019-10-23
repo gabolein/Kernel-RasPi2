@@ -6,7 +6,7 @@
 #define KIO_H
 
 void kprintf(char* format, ...);
-char* itoa(int val, int base);
+char* itoa(unsigned int val, int base);
 
 
 #endif
