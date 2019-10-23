@@ -5,7 +5,8 @@
 #ifndef KIO_H
 #define KIO_H
 
-void kprintf(char*, ...);
+void kprintf(char* format, ...);
+char* itoa(int val, int base);
 
 
 #endif
