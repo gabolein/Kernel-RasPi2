@@ -14,26 +14,30 @@ void kprintf(char* format, ...) {
         if (*traverse == '%') {
             traverse++; // move to next character
             switch(*traverse) {
-                case '%' : ;// should be neato
+                case '%' : ; // not so pretty, do we wanna keep it?
                     kputchar('%');
                     break;
-                case 'c' : ;// ask whether it is ascii value we are receiving
+                case 'c' : ;
                     char character = va_arg(arg, int);
                     kputchar(character);
                     break;
-                case 's' : ;// if kprintf works, this does too
+                case 's' : ;
                     char* string = va_arg(arg, char*);
                     kprintf(string);
                     break;
-                case 'x' :  ;// itoa should work, but everything will have a plus, not ideal
+                case 'x' : ;
                     unsigned int u_integer = va_arg(arg, unsigned int);
                     kprintf(itoa(u_integer, 16));
                     break;
-                case 'i' : ;// vorzeichen solution in itoa might not be ideal, doesnt work for negatives
+                case 'i' : ;
                     int integer = va_arg(arg, int);
+                    if(integer < 0) {
+                        kputchar('-');
+                        integer *= -1;
+                    }
                     kprintf(itoa(integer, 10));
                     break;
-                case 'u' : // same as for case 'x'
+                case 'u' :
                     u_integer = va_arg(arg, unsigned int)
                     kprintf(itoa(u_integer, 10));
                     break;
@@ -56,18 +60,9 @@ void kprintf(char* format, ...) {
 
 
 char* itoa(int val, int base){ // IST CPY PASTED
-    static char buf[33] = {0};
+    static char buf[32] = {0};
 
     int i = 30;
-
-    // solution doesnt even work
-    if (val < 0) { // problems: not sure if it works. Every positive integer will have a +. 0 will have a plus. to be reviewed
-        buf[0] = '-';
-    } else {
-        buf[0] = '+';
-    }
-
-
 
     for(; val && i ; --i, val /= base)
 
