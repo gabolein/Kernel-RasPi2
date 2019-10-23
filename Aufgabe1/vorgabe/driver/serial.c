@@ -31,10 +31,8 @@ void initUART() {
 }
 
 void kputChar(char c) {
-  do {
-    //Put the char in the tx buffer
-    UART_DR_DATA = c;
-  } while(uartTxReady());
+  while(!uartTxReady());
+  UART_DR_DATA = c;
 }
 
 /* 
