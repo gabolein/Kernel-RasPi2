@@ -41,15 +41,10 @@ void kprintf(char* format, ...) {
                     u_integer = va_arg(arg, unsigned int)
                     kprintf(itoa(u_integer, 10));
                     break;
-                case 'p' : // what type is it, how much do i have to print out?
+                case 'p' :
                     unsigned int address = va_arg(arg, unsigned int);
                     kprintf(itoa(address, 16));
                     break;
-
-
-
-
-
             }
         } else {
             kputchar(*traverse);
