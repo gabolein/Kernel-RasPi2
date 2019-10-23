@@ -26,3 +26,7 @@ void yellow_on(void)
     /* Anschalten */
     gpio_port->set[0] = 1 << YELLOW_LED;
 }
+
+void yellow_off(void) {
+    gpio_port->set[0] = 0 << YELLOW_LED;
+}
