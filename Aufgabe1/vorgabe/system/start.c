@@ -4,7 +4,9 @@
 void start_kernel(void)
 { 
   //yellow_on();
+  kputChar('G');
   while(1){
-        printChar('G');
+    //kputChar('G');
+    
   }
 }
