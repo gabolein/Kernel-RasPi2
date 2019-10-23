@@ -9,28 +9,28 @@
 void kprintf(char* format, ...) {
     va_list arg;
     va_start(arg, format);
-    arg_cnt = 0 // so we know which argument we are inserting
+
     for(char* traverse = format; *traverse != '\0'; traverse++) {
         if (*traverse == '%') {
             traverse++; // move to next character
             switch(*traverse) {
-                case '%' : // should be neato
+                case '%' : ;// should be neato
                     kputchar('%');
                     break;
-                case 'c' : // ask whether it is ascii value we are receiving
-                    character = va_arg(arg, int);
+                case 'c' : ;// ask whether it is ascii value we are receiving
+                    char character = va_arg(arg, int);
                     kputchar(character);
                     break;
-                case 's' : // if kprintf works, this does too
-                    string = va_arg(arg, char*);
+                case 's' : ;// if kprintf works, this does too
+                    char* string = va_arg(arg, char*);
                     kprintf(string);
                     break;
-                case 'x' :  // itoa should work, but everything will have a plus, not ideal
-                    u_integer = va_arg(arg, unsigned int);
-                    kputchar(itoa(u_integer, 16));
+                case 'x' :  ;// itoa should work, but everything will have a plus, not ideal
+                    unsigned int u_integer = va_arg(arg, unsigned int);
+                    kprintf(itoa(u_integer, 16));
                     break;
-                case 'i' : // vorzeichen solution in itoa might not be ideal
-                    integer = va_arg(arg, int);
+                case 'i' : ;// vorzeichen solution in itoa might not be ideal, doesnt work for negatives
+                    int integer = va_arg(arg, int);
                     kprintf(itoa(integer, 10));
                     break;
                 case 'u' : // same as for case 'x'
@@ -50,7 +50,7 @@ void kprintf(char* format, ...) {
             kputchar(*traverse);
         }
     }
-    var_end(arg);
+    va_end(arg);
 }
 
 
@@ -60,6 +60,7 @@ char* itoa(int val, int base){ // IST CPY PASTED
 
     int i = 30;
 
+    // solution doesnt even work
     if (val < 0) { // problems: not sure if it works. Every positive integer will have a +. 0 will have a plus. to be reviewed
         buf[0] = '-';
     } else {
