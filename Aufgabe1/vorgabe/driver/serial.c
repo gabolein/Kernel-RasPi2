@@ -23,18 +23,56 @@
 #define UART_ITOP      (*(uint32_t *) UART_BASE_ADDR + 0x40)
 #define UART_TDR       (*(uint32_t *) UART_BASE_ADDR + 0x44)
 
+#define UART_DR_DATA   (*(uint32_t *) UART_DR + 0x3)
+
 
 void initUART() {
   
 }
 
-void printChar(char c) {
-  //yellow_on(); //Debug
-  //*UART_TX_RX_REG = c;
-  UART_REG 
-  while()
+void kputChar(char c) {
+  do {
+    //Put the char in the tx buffer
+    UART_DR_DATA = c;
+  } while(uartTxReady());
 }
 
-uint8_t txFifoFull() {
-  
+/* 
+   Returns 1 if uart clear to send is set 
+*/
+uint8_t uartTxReady(){
+  if(uartClearToSend() && !uartTxFifoFull()){
+    return 1;
+  }
+  return 0;
+}
+
+/* 
+   Returns 1 if uart clear to send is set 
+*/
+uint8_t uartClearToSend() {
+  if(UART_FR & 0x1){
+    return 1;
+  }
+  return 0;
+}
+
+/* 
+   Returns 1 if txFIFO is full 
+*/
+uint8_t uartTxFifoFull() {
+  if(UART_FR & 0x20){
+    return 1;
+  }
+  return 0;
+}
+
+/* 
+   Returns 1 if uart is currently transmitting a byte 
+*/
+uint8_t uartBusy(){
+  if(UART_FR & 0x4){
+    return 1;
+  }
+  return 0;
 }
