@@ -13,6 +13,7 @@ void kprintf(char* format, ...) {
     for(char* traverse = format; *traverse != '\0'; traverse++) {
         if (*traverse == '%') {
             traverse++; // move to next character
+
             switch(*traverse) {
                 case '%' : ; // not so pretty, do we wanna keep it?
                     kputchar('%');
@@ -27,19 +28,31 @@ void kprintf(char* format, ...) {
                     break;
                 case 'x' : ;
                     unsigned int u_integer = va_arg(arg, unsigned int);
-                    kprintf(itoa(u_integer, 16));
+                    if(u_integer == 0) {
+                        kputchar('0');
+                    } else {
+                        kprintf(itoa(u_integer, 16));
+                    }
                     break;
                 case 'i' : ;
                     int integer = va_arg(arg, int);
-                    if(integer < 0) {
-                        kputchar('-');
-                        integer *= -1;
+                    if(integer == 0) {
+                        kputchar('0');
+                    } else {
+                        if(integer < 0) {
+                            kputchar('-');
+                            integer *= -1;
+                        }
+                        kprintf(itoa(integer, 10));
                     }
-                    kprintf(itoa(integer, 10));
                     break;
                 case 'u' :
-                    u_integer = va_arg(arg, unsigned int)
-                    kprintf(itoa(u_integer, 10));
+                    u_integer = va_arg(arg, unsigned int);
+                    if(u_integer == 0) {
+                        kputchar('0');
+                    } else {
+                        kprintf(itoa(u_integer, 10));
+                    }
                     break;
                 case 'p' :
                     unsigned int address = va_arg(arg, unsigned int);
