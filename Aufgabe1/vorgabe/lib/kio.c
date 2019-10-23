@@ -42,8 +42,8 @@ void kprintf(char* format, ...) {
                     kprintf(itoa(u_integer, 10));
                     break;
                 case 'p' : // what type is it, how much do i have to print out?
-                    size_t lulu = va_arg(arg, void);
-                    kprintf(itoa(lululu, 16))
+                    unsigned int address = va_arg(arg, unsigned int);
+                    kprintf(itoa(address, 16));
                     break;
 
 
