@@ -28,37 +28,26 @@ void kprintf(char* format, ...) {
                     break;
                 case 'x' : ;
                     unsigned int u_integer = va_arg(arg, unsigned int);
-                    if(u_integer == 0) {
-                        kputchar('0');
-                    } else {
-                        kprintf(itoa(u_integer, 16));
-                    }
+                    kprintf(itoa(u_integer, 16));
                     break;
                 case 'i' : ;
                     int integer = va_arg(arg, int);
-                    if(integer == 0) {
-                        kputchar('0');
-                    } else {
-                        if(integer < 0) {
-                            kputchar('-');
-                            integer *= -1;
-                        }
-                        kprintf(itoa(integer, 10));
+                    if(integer < 0) {
+                        kputchar('-');
+                        integer *= -1;
                     }
+                    kprintf(itoa(integer, 10));
                     break;
                 case 'u' :
                     u_integer = va_arg(arg, unsigned int);
-                    if(u_integer == 0) {
-                        kputchar('0');
-                    } else {
-                        kprintf(itoa(u_integer, 10));
-                    }
+                    kprintf(itoa(u_integer, 10));
                     break;
                 case 'p' :
                     unsigned int address = va_arg(arg, unsigned int);
                     kprintf(itoa(address, 16));
                     break;
             }
+
         } else {
             kputchar(*traverse);
         }
@@ -68,16 +57,16 @@ void kprintf(char* format, ...) {
 
 
 
-char* itoa(unsigned int val, int base){ // IST CPY PASTED
-    static char buf[32] = {0};
-
+char* itoa(unsigned int value, int base){
+    static char c_buffer[32] = "";
+    static char presentation[] = "0123456789abcdef";
     int i = 30;
-
-    for(; val && i ; --i, val /= base)
-
-        buf[i] = "0123456789abcdef"[val % base];
-
-    return &buf[i+1];
+    do {
+        c_buffer[i] = presentation[value % base];
+        --i;
+        value /= base;
+    } while(value&&i);
+    return &c_buffer[i+1];
 
 }
 
