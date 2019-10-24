@@ -32,11 +32,15 @@ void kprintf(char* format, ...) {
                     break;
                 case 'i' : ;
                     int integer = va_arg(arg, int);
-                    if(integer < 0) {
-                        kputchar('-');
-                        integer *= -1;
+                    if(integer == -2147483647) { // edge case
+                        kprintf("-2147483647");
+                    } else {
+                        if(integer < 0) {
+                            kputchar('-');
+                            integer *= -1;
+                        }
+                        kprintf(itoa(integer, 10));
                     }
-                    kprintf(itoa(integer, 10));
                     break;
                 case 'u' :
                     u_integer = va_arg(arg, unsigned int);
@@ -45,6 +49,10 @@ void kprintf(char* format, ...) {
                 case 'p' :
                     unsigned int address = va_arg(arg, unsigned int);
                     kprintf(itoa(address, 16));
+                    break;
+                default: // if unknown definer, behave like printf
+                    kputchar('%');
+                    kputchar(*traverse);
                     break;
             }
 
