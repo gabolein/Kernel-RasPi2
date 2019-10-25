@@ -1,16 +1,17 @@
-//#include "led.h"
+#include "led.h"
 #include "serial.h"
 #include "kio.h"
 
 void start_kernel(void)
 { 
-<<<<<<< HEAD
   //kputChar('G');
   //kputChar('\n');
   //kprintf("123456789123456789123456789");
   //kprintf("Ich bin ein Brot\n");
 
   initUart();
+
+  yellow_on();
   
   kputChar('a');
   kputChar('b');
@@ -19,6 +20,7 @@ void start_kernel(void)
   kputChar('e');
   kputChar('f');
   kputChar('g');
+  yellow_off();
   kputChar('h');
   kputChar('i');
   kputChar('j');
