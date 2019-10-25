@@ -26,23 +26,39 @@
 #define UART_DR_DATA   ((char *) (UART_DR + 0x3))
 
 
-void initUART() {
+void initUart() {
   //Enable UART
   //*UART_CR |= (uint32_t) 1 << 0;
+
+  //Enable FIFO
+  *UART_LCRH |= 1 << 4;
+  if(*UART_LCRH & 1 << 4) {
+    //yellow_on();
+  }
+  
 }
 
 void kputChar(char c) {
-  while(!uartTxReady());
+  if(*UART_IMSC & 1 << 5){
+    //Transmit Interrupt is set
+    yellow_on();
+  }
+    
+  while(uartTxFifoFull());
+  //yellow_on();
   *UART_DR |= c;
 }
 
+
+
+
 /* 
-   Returns 1 if uart clear to send is set 
+   Returns 1 if tx is ready
 */
 uint8_t uartTxReady(){
   //if(uartClearToSend() && !uartTxFifoFull()){
-  if(uartClearToSend() && !uartTxFifoFull()){
-    
+  //if(uartClearToSend() && !uartTxFifoFull()){
+  if(!uartTxFifoFull()){
     return 1;
   }
   return 0;
@@ -52,10 +68,10 @@ uint8_t uartTxReady(){
    Returns 1 if uart clear to send is set 
 */
 uint8_t uartClearToSend() {
-  if(*UART_FR & 0x1){
-    
+  if(*UART_FR & 1){
     return 1;
   }
+  //yellow_on();
   return 0;
 }
 
@@ -63,7 +79,8 @@ uint8_t uartClearToSend() {
    Returns 1 if txFIFO is full 
 */
 uint8_t uartTxFifoFull() {
-  if(*UART_FR & 0x20){
+  if(*UART_FR & 1 << 5){
+    //yellow_on();
     return 1;
   }
   return 0;
@@ -73,8 +90,11 @@ uint8_t uartTxFifoFull() {
    Returns 1 if uart is currently transmitting a byte 
 */
 uint8_t uartBusy(){
+
   if(*UART_FR & 0x4){
     return 1;
   }
+  
   return 0;
+
 }

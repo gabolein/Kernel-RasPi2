@@ -15,8 +15,7 @@ struct gpio {
     unsigned int clr[2];
 };
 
-static volatile
-struct gpio * const gpio_port = (struct gpio *)GPIO_BASE;
+static volatile struct gpio * const gpio_port = (struct gpio *)GPIO_BASE;
 
 void yellow_on(void)
 {
@@ -28,5 +27,5 @@ void yellow_on(void)
 }
 
 void yellow_off(void) {
-    gpio_port->set[0] = 0 << YELLOW_LED;
+    gpio_port->clr[0] = 1 << YELLOW_LED;
 }
