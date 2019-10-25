@@ -33,7 +33,6 @@ void initUART() {
 
 void kputChar(char c) {
   while(!uartTxReady());
-  yellow_on();
   *UART_DR |= c;
 }
 
@@ -42,7 +41,7 @@ void kputChar(char c) {
 */
 uint8_t uartTxReady(){
   //if(uartClearToSend() && !uartTxFifoFull()){
-  if(!uartTxFifoFull()){
+  if(uartClearToSend() && !uartTxFifoFull()){
     
     return 1;
   }
