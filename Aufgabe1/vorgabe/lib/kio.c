@@ -16,11 +16,11 @@ void kprintf(char* format, ...) {
 
             switch(*traverse) {
                 case '%' : ; // not so pretty, do we wanna keep it?
-                    kputchar('%');
+                    kputChar('%');
                     break;
                 case 'c' : ;
                     char character = va_arg(arg, int);
-                    kputchar(character);
+                    kputChar(character);
                     break;
                 case 's' : ;
                     char* string = va_arg(arg, char*);
@@ -36,7 +36,7 @@ void kprintf(char* format, ...) {
                         kprintf("-2147483647");
                     } else {
                         if(integer < 0) {
-                            kputchar('-');
+                            kputChar('-');
                             integer *= -1;
                         }
                         kprintf(itoa(integer, 10));
@@ -51,13 +51,13 @@ void kprintf(char* format, ...) {
                     kprintf(itoa(address, 16));
                     break;
                 default: // if unknown definer, behave like printf
-                    kputchar('%');
-                    kputchar(*traverse);
+                    kputChar('%');
+                    kputChar(*traverse);
                     break;
             }
 
         } else {
-            kputchar(*traverse);
+            kputChar(*traverse);
         }
     }
     va_end(arg);
