@@ -5,9 +5,13 @@
 #include "kio.h"
 #include "serial.h"
 #include <stdarg.h>
+#include <stdint.h>
 
 #define MIN_INT -2147483647
 
+/*
+ * Prints a string in the given format to screen. Returns the amount of printed characters.
+ */
 __attribute__((format(printf, 1, 2)))
 int kprintf(char* format, ...) {
 
@@ -16,8 +20,8 @@ int kprintf(char* format, ...) {
     va_list arg;
     va_start(arg, format);
 
-    char char_rep;
-    char* str;
+    unsigned char char_rep;
+    const char* str;
     unsigned int u_int_num;
     int int_num;
     unsigned int address;
@@ -39,38 +43,34 @@ int kprintf(char* format, ...) {
                     printed_chars++;
                     break;
                 case 's' :
-                    str = va_arg(arg, char*);
+                    str = va_arg(arg, const char*);
                     kprintf(str);
-                    printed_chars++;
                     break;
                 case 'x' :
                     u_int_num = va_arg(arg, unsigned int);
                     kprintf(itoa(u_int_num, 16));
-                    printed_chars++;
                     break;
                 case 'i' :
                     int_num = va_arg(arg, int);
                     if(int_num == MIN_INT) { // edge case (zweier komplement who?)
                         kprintf("-2147483647");
-                        printed_chars++;
                     } else {
-                        if(int_num < 0) {
+                        if(int_num < 0) { // if negative, print '-' and treat like unsigned int
                             kputChar('-');
+                            printed_chars++;
                             int_num *= -1;
                         }
                         kprintf(itoa(int_num, 10));
-                        printed_chars++;
                     }
                     break;
                 case 'u' :
                     u_int_num = va_arg(arg, unsigned int);
                     kprintf(itoa(u_int_num, 10));
-                    printed_chars++;
                     break;
 	            case 'p' :
-                    address = va_arg(arg, unsigned int);
+	                kprintf("0x");
+                    address = va_arg(arg, uint32_t); // pointer -> 32Bit address
                     kprintf(itoa(address, 16));
-                    printed_chars++;
                     break;
                 default: // if unknown definer, behave like printf
                     kputChar('%');
