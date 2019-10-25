@@ -27,7 +27,7 @@ int kprintf(const char* format, ...) {
     unsigned int address;
 
 
-    for (char* traverse = format; *traverse != '\0'; traverse++) {
+    for (const char* traverse = format; *traverse != '\0'; traverse++) {
         if (*traverse == '%') {
             traverse++; // move to next character, we dont wanna print the '%'
 
