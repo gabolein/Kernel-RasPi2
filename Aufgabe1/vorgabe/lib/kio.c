@@ -9,7 +9,9 @@
 #define MIN_INT -2147483647
 
 __attribute__((format(printf, 1, 2)))
-void kprintf(char* format, ...) {
+int kprintf(char* format, ...) {
+
+    int printed_chars = 0;
 
     va_list arg;
     va_start(arg, format);
@@ -29,50 +31,62 @@ void kprintf(char* format, ...) {
 
                 case '%' :
                     kputChar('%');
+                    printed_chars++;
                     break;
                 case 'c' :
                     char_rep = va_arg(arg, int);
-                    kputChar(character);
+                    kputChar(char_rep);
+                    printed_chars++;
                     break;
                 case 's' :
                     str = va_arg(arg, char*);
                     kprintf(str);
+                    printed_chars++;
                     break;
                 case 'x' :
                     u_int_num = va_arg(arg, unsigned int);
                     kprintf(itoa(u_int_num, 16));
+                    printed_chars++;
                     break;
                 case 'i' :
                     int_num = va_arg(arg, int);
                     if(int_num == MIN_INT) { // edge case (zweier komplement who?)
                         kprintf("-2147483647");
+                        printed_chars++;
                     } else {
                         if(int_num < 0) {
                             kputChar('-');
                             int_num *= -1;
                         }
                         kprintf(itoa(int_num, 10));
+                        printed_chars++;
                     }
                     break;
                 case 'u' :
                     u_int_num = va_arg(arg, unsigned int);
                     kprintf(itoa(u_int_num, 10));
+                    printed_chars++;
                     break;
 	            case 'p' :
                     address = va_arg(arg, unsigned int);
                     kprintf(itoa(address, 16));
+                    printed_chars++;
                     break;
                 default: // if unknown definer, behave like printf
                     kputChar('%');
+                    printed_chars++;
                     kputChar(*traverse);
+                    printed_chars++;
                     break;
             }
 
         } else {
             kputChar(*traverse);
+            printed_chars++;
         }
     }
     va_end(arg);
+    return printed_chars;
 }
 
 
