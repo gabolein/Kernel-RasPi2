@@ -41,13 +41,27 @@ void initUart() {
 void kputChar(char c) {
   if(*UART_IMSC & 1 << 5){
     //Transmit Interrupt is set
-    yellow_on();
+    //yellow_on();
   }
     
-  while(uartTxFifoFull());
+  while(uartTxFifoFull()){
+    yellow_on();
+  }
+  yellow_off();
   //yellow_on();
   *UART_DR |= c;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -11,7 +11,9 @@ void start_kernel(void)
 
   initUart();
 
-  yellow_on();
+  //yellow_on();
+  //yellow_off();
+  
   
   kputChar('a');
   kputChar('b');
@@ -20,7 +22,6 @@ void start_kernel(void)
   kputChar('e');
   kputChar('f');
   kputChar('g');
-  yellow_off();
   kputChar('h');
   kputChar('i');
   kputChar('j');
