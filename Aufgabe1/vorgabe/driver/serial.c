@@ -32,15 +32,9 @@ void initUART() {
 }
 
 void kputChar(char c) {
-  
   while(!uartTxReady());
   yellow_on();
-  //volatile char* byteToSend = UART_DR_DATA;
-  volatile char* byteToSend = UART_DR;
-  *byteToSend = c;
-
-  
-  //UART_DR |= c;
+  *UART_DR |= c;
 }
 
 /* 
