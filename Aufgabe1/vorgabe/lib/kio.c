@@ -6,15 +6,19 @@
 #include "serial.h"
 #include <stdarg.h>
 
+#define MIN_INT -2147483647
+
+__attribute__((format(printf, 1, 2)))
 void kprintf(char* format, ...) {
+
     va_list arg;
     va_start(arg, format);
 
-    for(char* traverse = format; *traverse != '\0'; traverse++) {
+    for (char* traverse = format; *traverse != '\0'; traverse++) {
         if (*traverse == '%') {
-            traverse++; // move to next character
+            traverse++; // move to next character, we dont wanna print the '%'
 
-            switch(*traverse) {
+            switch (*traverse) {
                 case '%' : ; // not so pretty, do we wanna keep it?
                     kputchar('%');
                     break;
@@ -32,7 +36,7 @@ void kprintf(char* format, ...) {
                     break;
                 case 'i' : ;
                     int integer = va_arg(arg, int);
-                    if(integer == -2147483647) { // edge case
+                    if(integer == MIN_INT) { // edge case (zweier komplement who?)
                         kprintf("-2147483647");
                     } else {
                         if(integer < 0) {
@@ -66,6 +70,7 @@ void kprintf(char* format, ...) {
 
 
 char* itoa(unsigned int value, int base){
+
     static char c_buffer[32] = "";
     static char presentation[] = "0123456789abcdef";
     int i = 30;
@@ -73,8 +78,7 @@ char* itoa(unsigned int value, int base){
         c_buffer[i] = presentation[value % base];
         --i;
         value /= base;
-    } while(value&&i);
+    } while (value&&i);
     return &c_buffer[i+1];
-
 }
 
