@@ -42,6 +42,9 @@ OBJ += system/start.o
 OBJ += driver/led.o
 OBJ += driver/serial.o
 
+# Libs
+OBJ += lib/kio.o
+
 # Falls die binäre Musterlösung benutzt wird bitte auskommentieren
 # und gegebenenfalls Ordner anpassen:
 # OBJ_LSG = obj/$(BIN_LSG).o
