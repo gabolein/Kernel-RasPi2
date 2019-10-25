@@ -14,6 +14,8 @@ void kprintf(char* format, ...) {
         if (*traverse == '%') {
             traverse++; // move to next character
 
+
+	    
             switch(*traverse) {
                 case '%' : ; // not so pretty, do we wanna keep it?
                     kputChar('%');
@@ -46,7 +48,7 @@ void kprintf(char* format, ...) {
                     u_integer = va_arg(arg, unsigned int);
                     kprintf(itoa(u_integer, 10));
                     break;
-                case 'p' :
+	        case 'p' : ;
                     unsigned int address = va_arg(arg, unsigned int);
                     kprintf(itoa(address, 16));
                     break;
