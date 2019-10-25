@@ -14,45 +14,52 @@ void kprintf(char* format, ...) {
     va_list arg;
     va_start(arg, format);
 
+    char char_rep;
+    char* str;
+    unsigned int u_int_num;
+    int int_num;
+    unsigned int address;
+
+
     for (char* traverse = format; *traverse != '\0'; traverse++) {
         if (*traverse == '%') {
             traverse++; // move to next character, we dont wanna print the '%'
 
             switch(*traverse) {
 
-                case '%' : ; // not so pretty, do we wanna keep it?
+                case '%' :
                     kputChar('%');
                     break;
-                case 'c' : ;
-                    char character = va_arg(arg, int);
+                case 'c' :
+                    char_rep = va_arg(arg, int);
                     kputChar(character);
                     break;
-                case 's' : ;
-                    char* string = va_arg(arg, char*);
-                    kprintf(string);
+                case 's' :
+                    str = va_arg(arg, char*);
+                    kprintf(str);
                     break;
-                case 'x' : ;
-                    unsigned int u_integer = va_arg(arg, unsigned int);
-                    kprintf(itoa(u_integer, 16));
+                case 'x' :
+                    u_int_num = va_arg(arg, unsigned int);
+                    kprintf(itoa(u_int_num, 16));
                     break;
-                case 'i' : ;
-                    int integer = va_arg(arg, int);
-                    if(integer == MIN_INT) { // edge case (zweier komplement who?)
+                case 'i' :
+                    int_num = va_arg(arg, int);
+                    if(int_num == MIN_INT) { // edge case (zweier komplement who?)
                         kprintf("-2147483647");
                     } else {
-                        if(integer < 0) {
+                        if(int_num < 0) {
                             kputChar('-');
-                            integer *= -1;
+                            int_num *= -1;
                         }
-                        kprintf(itoa(integer, 10));
+                        kprintf(itoa(int_num, 10));
                     }
                     break;
                 case 'u' :
-                    u_integer = va_arg(arg, unsigned int);
-                    kprintf(itoa(u_integer, 10));
+                    u_int_num = va_arg(arg, unsigned int);
+                    kprintf(itoa(u_int_num, 10));
                     break;
-	        case 'p' : ;
-                    unsigned int address = va_arg(arg, unsigned int);
+	            case 'p' :
+                    address = va_arg(arg, unsigned int);
                     kprintf(itoa(address, 16));
                     break;
                 default: // if unknown definer, behave like printf
