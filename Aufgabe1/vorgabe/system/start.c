@@ -4,6 +4,7 @@
 
 void start_kernel(void)
 { 
+<<<<<<< HEAD
   //kputChar('G');
   //kputChar('\n');
   //kprintf("123456789123456789123456789");
@@ -31,7 +32,6 @@ void start_kernel(void)
   kputChar('r');
   kputChar('s');
   kputChar('t');
-
   
   while(1){
   }
