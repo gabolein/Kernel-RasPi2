@@ -3,3 +3,5 @@
 kernel.img
 kernel.lds
 kernel_dump.s
+kernel
+kernel.bin
