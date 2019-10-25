@@ -13,7 +13,7 @@
  * Prints a string in the given format to screen. Returns the amount of printed characters.
  */
 __attribute__((format(printf, 1, 2)))
-int kprintf(char* format, ...) {
+int kprintf(const char* format, ...) {
 
     int printed_chars = 0;
 
