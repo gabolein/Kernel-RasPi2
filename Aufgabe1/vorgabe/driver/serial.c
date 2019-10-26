@@ -33,8 +33,8 @@ static volatile uint32_t* uart_lcrh = UART_LCRH;
 
 void initUart() {
   
-  uart_cr |= 1 << 9; //Enable Receive
-  uart_cr |= 1 << 8; //Enable Transmit
+  *uart_cr |= 1 << 9; //Enable Receive
+  *uart_cr |= 1 << 8; //Enable Transmit
   
 }
 
@@ -74,7 +74,7 @@ uint8_t uartBusy(){
 /**********************************************/
 uint8_t uartReceiveChar(char* c){
   //Check for new data in receive buffer
-  if(uart_ris & 1 << 4) {
+  if(*uart_ris & 1 << 4) {
     //Receive interrupt ist gesetzt
     *c = *(char*)uart_dr;
     return 1;
