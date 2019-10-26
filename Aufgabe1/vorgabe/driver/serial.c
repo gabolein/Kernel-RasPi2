@@ -23,6 +23,7 @@
 #define UART_ITOP      ((uint32_t *) (UART_BASE_ADDR + 0x88))
 #define UART_TDR       ((uint32_t *) (UART_BASE_ADDR + 0x8c))
 
+
 static volatile uint32_t* uart_fr = UART_FR;
 static volatile uint32_t* uart_dr = UART_DR;
 static volatile uint32_t* uart_cr = UART_CR;
@@ -73,6 +74,11 @@ uint8_t uartBusy(){
 /**********************************************/
 uint8_t uartReceiveChar(char* c){
   //Check for new data in receive buffer
-  
+  if(uart_ris & 1 << 4) {
+    //Receive interrupt ist gesetzt
+    *c = *(char*)uart_dr;
+    return 1;
+  }
+  return 0;
 }
 
