@@ -51,9 +51,10 @@ uint8_t uartTxFifoFull() {
   return 0;
 }
 
-/*
-   Returns 1 if uart is currently transmitting a byte 
-*/
+
+/*******************************************************/
+/* Returns 1 if uart is currently transmitting a byte  */
+/*******************************************************/
 uint8_t uartBusy(){
 
   if(*uart_fr & 0x4){
@@ -62,5 +63,14 @@ uint8_t uartBusy(){
   }
   return 0;
 
+}
+
+
+/**********************************************/
+/* Returns 1 in case a char has been received */
+/**********************************************/
+uint8_t uartReceiveChar(char* c){
+  //Check for new data in receive buffer
+  
 }
 
