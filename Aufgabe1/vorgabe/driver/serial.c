@@ -23,12 +23,14 @@
 #define UART_ITOP      ((uint32_t *) (UART_BASE_ADDR + 0x88))
 #define UART_TDR       ((uint32_t *) (UART_BASE_ADDR + 0x8c))
 
-#define UART_DR_DATA   ((char *) (UART_DR + 0x3))
+static volatile uint32_t* uart_fr = UART_FR;
+static volatile uint32_t* uart_dr = UART_DR;
+static volatile uint32_t* uart_lcrh = UART_LCRH;
 
 
 void initUart() {
-  *UART_LCRH |= 1 << 4;
-  if(*UART_LCRH & 1 << 4) {
+  *uart_lcrh |= 1 << 4;
+  if(*uart_lcrh & 1 << 4) {
     //yellow_on();
   }
 }
@@ -36,16 +38,14 @@ void initUart() {
 void kputChar(char c) {
   while(uartTxFifoFull()){
   }
-
-  *UART_DR |= c; //Write dat shit
+  *uart_dr |= c; //Write dat shit
 }
 
 /* 
    Returns 1 if txFIFO is full 
 */
 uint8_t uartTxFifoFull() {
-  yellow_off(); //Doesn't work without this call
-  if(*UART_FR & 1 << 5){
+  if(*uart_fr & 1 << 5){
     return 1;
   }
   return 0;
@@ -56,7 +56,7 @@ uint8_t uartTxFifoFull() {
 */
 uint8_t uartBusy(){
 
-  if(*UART_FR & 0x4){
+  if(*uart_fr & 0x4){
     yellow_on();
     return 1;
   }
