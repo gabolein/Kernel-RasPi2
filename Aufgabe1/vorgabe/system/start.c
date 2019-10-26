@@ -8,7 +8,9 @@ void start_kernel(void)
   while(1){
     if(uartReceiveChar(&receivedChar)){
       /* print received char in every possible way of interpretation */
-      kprintf("gUt3N m0Rg3n <3 <3 UWU \n\n\n\n\n");
+      kprintf("****************************************\n");
+      kprintf("gUt3N m0Rg3n <3 <3 UWU \n");
+      kprintf("****************************************\n\n\n\n");
       kprintf("%c\n\n", receivedChar);
       kprintf("%i\n\n", receivedChar);
       //kprintf("%s\n\n", receivedChar);
