@@ -6,8 +6,9 @@ void start_kernel(void)
 {
   char receivedChar;
   while(1){
-    kputChar('G');
-    kputChar('\n');
-      
+    if(uartReceiveChar(&receivedChar)){
+      /* print received char in every possible way of interpretation */
+      kprintf()
+    }
   }
 }
