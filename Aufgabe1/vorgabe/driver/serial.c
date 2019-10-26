@@ -25,14 +25,16 @@
 
 static volatile uint32_t* uart_fr = UART_FR;
 static volatile uint32_t* uart_dr = UART_DR;
+static volatile uint32_t* uart_cr = UART_CR;
+static volatile uint32_t* uart_ris = UART_RIS;
 static volatile uint32_t* uart_lcrh = UART_LCRH;
 
 
 void initUart() {
-  *uart_lcrh |= 1 << 4;
-  if(*uart_lcrh & 1 << 4) {
-    //yellow_on();
-  }
+  
+  uart_cr |= 1 << 9; //Enable Receive
+  uart_cr |= 1 << 8; //Enable Transmit
+  
 }
 
 void kputChar(char c) {

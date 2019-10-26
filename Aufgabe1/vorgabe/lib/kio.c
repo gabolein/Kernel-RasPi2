@@ -13,9 +13,7 @@
  * Prints a string in the given format to screen. Returns the amount of printed characters.
  */
 __attribute__((format(printf, 1, 2)))
-int kprintf(const char* format, ...) {
-
-    int printed_chars = 0;
+void kprintf(const char* format, ...) {
 
     va_list arg;
     va_start(arg, format);
@@ -35,12 +33,10 @@ int kprintf(const char* format, ...) {
 
                 case '%' :
                     kputChar('%');
-                    printed_chars++;
                     break;
                 case 'c' :
                     char_rep = va_arg(arg, int);
                     kputChar(char_rep);
-                    printed_chars++;
                     break;
                 case 's' :
                     str = va_arg(arg, const char*);
@@ -57,7 +53,6 @@ int kprintf(const char* format, ...) {
                     } else {
                         if(int_num < 0) { // if negative, print '-' and treat like unsigned int
                             kputChar('-');
-                            printed_chars++;
                             int_num *= -1;
                         }
                         kprintf(itoa(int_num, 10));
@@ -74,19 +69,15 @@ int kprintf(const char* format, ...) {
                     break;
                 default: // if unknown definer, behave like printf
                     kputChar('%');
-                    printed_chars++;
                     kputChar(*traverse);
-                    printed_chars++;
                     break;
             }
 
         } else {
             kputChar(*traverse);
-            printed_chars++;
         }
     }
     va_end(arg);
-    return printed_chars;
 }
 
 
