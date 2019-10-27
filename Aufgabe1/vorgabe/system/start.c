@@ -4,14 +4,15 @@
 
 void start_kernel(void)
 {
-  asm("mcr %p15, $0, %r0, %c12, %c0, $0");
+
   initUart();
   
   //kprintf("Hello World!\n");
   kprintf("****************************************\n");		     
   kprintf("gUt3N m0Rg3n <3 <3 UWU \n");				     
   kprintf("****************************************\n\n\n\n");
-  
+
+  /*
   const char receivedChar;
   while(1){
     if(uartReceiveChar(&receivedChar)){
@@ -35,5 +36,6 @@ void start_kernel(void)
       kputChar(receivedChar);
     }
   }
+  */
 }
 

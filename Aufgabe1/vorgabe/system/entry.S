@@ -3,34 +3,45 @@
 _ivt:     
 	        /*IVT*/
 	        b       _start
-	        ldr     pc, _undefined_instruction
-	        ldr     pc, _software_interrupt
-	        ldr     pc, _prefetch_abort
-	        ldr     pc, _data_abort
-	        ldr     pc, _not_used
-	        ldr     pc, _irq
-	        ldr     pc, _fiq
+	        ldr     pc, __undefined_instruction
+	        ldr     pc, __software_interrupt
+	        ldr     pc, __prefetch_abort
+	        ldr     pc, __data_abort
+	        ldr     pc, __not_used
+	        ldr     pc, __irq
+	        ldr     pc, __fiq
 
-	        _undefined_instruction:         .word undefined_instruction
-	_software_interrupt:            .word software_interrupt
-	_prefetch_abort:                .word prefetch_abort
-	_data_abort:                    .word data_abort
-	_not_used:                      .word not_used
-	_irq:                           .word irq
-	_fiq:                           .word fiq
+__undefined_instruction:         .word _undefined_instruction
+__software_interrupt:            .word _software_interrupt
+__prefetch_abort:                .word _prefetch_abort
+__data_abort:                    .word _data_abort
+__not_used:                      .word _not_used
+__irq:                           .word _irq
+__fiq:                           .word _fiq
 
 	
+/* Hoffentlich funktioniert das so*/
 
-
-
+        .section .trampoline
+_undefined_instruction:
+        ldr     r13,      =0x24000
+_software_interrupt:
+        /* Software Interrupt nutzt normalen Registersatz */
+        ldr     r13,        =0x23000
+_prefetch_abort:
+        ldr     r13,        =0x25000
+_data_abort:    
+	ldr     r13,        =0x25000
+_not_used:
+        nop
+_irq:
+	ldr     r13,        =0x22000        
+_fiq:
+	ldr     r13,        =0x21000
 
 
         .section .init
         .global _start
-
-
-/* Hoffentlich funktioniert das so*/
-
 _start:
         /* Erkennen ob Hypervisor Mode aktiv */
 	mrs r0, cpsr
@@ -57,11 +68,22 @@ _bsprak:
 	/* Wir brauchen einen validen Stack für Qemu.
 	 * Auf dem Pi wurde dieser zwar bereits durch U-Boot
 	 * gesetzt, schadet aber auch nicht
-	 */
+	*/
+        
+        /* Usermode Stackpointer */
 	ldr	sp,=0x20000
+        
+        /*Stackpointer für Interrupt modes*/
+	
+        
+        
+        
+        
+        
 	/* Zu c Code springen */
         /* Adresse der IVT in r0 laden */
         ldr     r0,=_ivt
+        mcr p15, 0, r0, c12, c0, 0
    	bl      start_kernel
         
 .Lend:  
