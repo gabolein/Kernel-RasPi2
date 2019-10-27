@@ -28,7 +28,7 @@ _ivt:
         .section .init
         .global _start
 
-;; Hoffentlich funktioniert das so
+/*Hoffentlich funktioniert das so*/
 reset:  
 _start:
         /* Erkennen ob Hypervisor Mode aktiv */
