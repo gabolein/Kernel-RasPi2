@@ -6,7 +6,7 @@ SECTIONS
         .trampoline     : { *(.trampoline)  }
 	.init           : { *(.init)        }
 	.text           : { *(.text)        }
-        .bss            : { *(.bss)         }
+        
 }
 
  
