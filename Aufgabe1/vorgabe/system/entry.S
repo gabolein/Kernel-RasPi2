@@ -16,7 +16,7 @@ _ivt:
 	_prefetch_abort:                .word prefetch_abort
 	_data_abort:                    .word data_abort
 	_not_used:                      .word not_used
-	_irq:                           .word ird
+	_irq:                           .word irq
 	_fiq:                           .word fiq
 
 	
