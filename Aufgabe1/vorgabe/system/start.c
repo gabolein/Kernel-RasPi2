@@ -4,7 +4,6 @@
 
 void start_kernel(void)
 {
-
   asm("mcr %p15, $0, %r0, %c12, %c0, $0");
   initUart();
   
