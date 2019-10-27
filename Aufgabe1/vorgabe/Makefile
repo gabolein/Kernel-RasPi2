@@ -37,6 +37,7 @@ KERNEL_USER_SPLIT = false
 # System
 OBJ = system/entry.o
 OBJ += system/start.o
+OBJ += system/handler.o
 
 # Driver
 OBJ += driver/led.o
