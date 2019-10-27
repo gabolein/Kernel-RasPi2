@@ -2,7 +2,7 @@
 	.global _ivt
 _ivt:     
 	        /*IVT*/
-	        b       reset
+	        b       _start
 	        ldr     pc, _undefined_instruction
 	        ldr     pc, _software_interrupt
 	        ldr     pc, _prefetch_abort
@@ -28,8 +28,7 @@ _ivt:
         .section .init
         .global _start
 
-;; Hoffentlich funktioniert das so
-reset:  
+/* Hoffentlich funktioniert das so*/
 _start:
         /* Erkennen ob Hypervisor Mode aktiv */
 	mrs r0, cpsr
