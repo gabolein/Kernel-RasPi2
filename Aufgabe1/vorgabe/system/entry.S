@@ -28,7 +28,9 @@ _ivt:
         .section .init
         .global _start
 
+
 /* Hoffentlich funktioniert das so*/
+
 _start:
         /* Erkennen ob Hypervisor Mode aktiv */
 	mrs r0, cpsr
