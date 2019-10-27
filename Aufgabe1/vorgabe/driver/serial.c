@@ -72,7 +72,7 @@ uint8_t uartBusy(){
 /**********************************************/
 /* Returns 1 in case a char has been received */
 /**********************************************/
-uint8_t uartReceiveChar(const char* c){
+uint8_t uartReceiveChar(char* c){
   //Check for new data in receive buffer
   if(*uart_ris & 1 << 4) {
     //Receive interrupt ist gesetzt
