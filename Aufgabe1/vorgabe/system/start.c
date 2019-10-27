@@ -4,33 +4,37 @@
 
 void start_kernel(void)
 {
+
+  asm("mcr %p15, $0, %r0, %c12, %c0, $0");
+  initUart();
+  
   //kprintf("Hello World!\n");
-    kprintf("****************************************\n");		     */
-    kprintf("gUt3N m0Rg3n <3 <3 UWU \n");				     */
-    kprintf("****************************************\n\n\n\n");
-    initUart();
-    const char receivedChar;
-    while(1){
-        if(uartReceiveChar(&receivedChar)){
-        yellow_on();
-        char char_as_string[2] = "";
-        char_as_string[0] = receivedChar;
-        kprintf("\nI see you typed a character. Nice character, you are a man of culture.\n"
-                "That character is so nice, let's see it once more: %c.\n"
-                "Impressive right?\n"
-                "Well, what if you wanted to see the ascii value of it? Surely that can't be poss...\n"
-                "%u\n"
-                "%x\n"
-                "BAAM\n"
-                "That's the Ascii value in decimal and hex for you.\n"
-                "What if we casted %s as String? We just did.\n"
-                "Otherwise, it could also very useful to know which address we saved that character in.\n"
-                "Well, here it is: %p.\n"
-                "Here's a %% for you too.\n"
-                "Have a good day, plz gib max points <33\n\n",
-                receivedChar, receivedChar, receivedChar, char_as_string, &receivedChar);
-        kputChar(receivedChar);
-        }
+  kprintf("****************************************\n");		     
+  kprintf("gUt3N m0Rg3n <3 <3 UWU \n");				     
+  kprintf("****************************************\n\n\n\n");
+  
+  const char receivedChar;
+  while(1){
+    if(uartReceiveChar(&receivedChar)){
+      yellow_on();
+      char char_as_string[2] = "";
+      char_as_string[0] = receivedChar;
+      kprintf("\nI see you typed a character. Nice character, you are a man of culture.\n"
+              "That character is so nice, let's see it once more: %c.\n"
+              "Impressive right?\n"
+              "Well, what if you wanted to see the ascii value of it? Surely that can't be poss...\n"
+              "%u\n"
+              "%x\n"
+              "BAAM\n"
+              "That's the Ascii value in decimal and hex for you.\n"
+              "What if we casted %s as String? We just did.\n"
+              "Otherwise, it could also very useful to know which address we saved that character in.\n"
+              "Well, here it is: %p.\n"
+              "Here's a %% for you too.\n"
+              "Have a good day, plz gib max points <33\n\n",
+              receivedChar, receivedChar, receivedChar, char_as_string, &receivedChar);
+      kputChar(receivedChar);
     }
+  }
 }
 

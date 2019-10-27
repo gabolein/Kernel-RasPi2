@@ -1,8 +1,7 @@
-.section .init
-
-.global _start
+        .section .init
+        .global _start
 _start:
-	/* Erkennen ob Hypervisor Mode aktiv */
+        /* Erkennen ob Hypervisor Mode aktiv */
 	mrs r0, cpsr
 	and r0, r0, #0x1F
 	mov r1, #0x1A	//Modebits = 0x1A = Hypervisor Mode
@@ -30,7 +29,10 @@ _bsprak:
 	 */
 	ldr	sp,=0x20000
 	/* Zu c Code springen */
+        ;; Adresse der IVT in r0 laden
+        ldr     r0,=_ivt
    	bl      start_kernel
+        
 .Lend:  
 	WFI
 	b       .Lend
@@ -55,3 +57,26 @@ _exitHyper:
 	orr r0, r0, #0x13	//Supervisormode
 	msr spsr_hyp, r0
 	eret
+
+        .section .ivt
+        .global _ivt
+_ivt:     
+	        ;; IVT
+	        b       reset
+	        ldr     pc, _undefined_instruction
+	        ldr     pc, _software_interrupt
+	        ldr     pc, _prefetch_abort
+	        ldr     pc, _data_abort
+	        ldr     pc, _not_used
+	        ldr     pc, _irq
+	        ldr     pc, _fiq
+
+	_undefined_instruction:         .word undefined_instruction
+	_software_interrupt:            .word software_interrupt
+	_prefetch_abort:                .word prefetch_abort
+	_data_abort:                    .word data_abort
+	_not_used:                      .word not_used
+	_irq:                           .word ird
+	_fiq:                           .word fiq
+
+	        
