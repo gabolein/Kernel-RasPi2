@@ -41,7 +41,7 @@ void initUart() {
 void kputChar(char c) {
   while(uartTxFifoFull()){
   }
-  *uart_dr |= c; //Write dat shit
+  *uart_dr = c; //Write dat shit
 }
 
 /* 
@@ -123,3 +123,7 @@ uint8_t uartRXFifoEmpty(){
 
 
 
+char waitForReceive() {
+  while(*uart_fr & (1 << 4));
+  return (char)*uart_dr;
+}
