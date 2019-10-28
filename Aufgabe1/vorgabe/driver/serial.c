@@ -69,6 +69,7 @@ uint8_t uartBusy(){
 }
 
 
+
 /**********************************************/
 /* Returns 1 in case a char has been received */
 /**********************************************/
@@ -76,11 +77,37 @@ uint8_t uartReceiveChar(char* c){
   //TODO Check for UART busy
   //Check for new data in receive buffer
   //if(*uart_ris & 1 << 4) {
-  if(!(~*uart_dr & 0b11111111)){ //Wenn Data Register nur Nullen enthält
+  if(!(~*uart_dr & 0xFF)){ //Wenn Data Register nur Nullen enthält
     //Receive interrupt ist gesetzt
     *c = *(const char*)uart_dr;
     return 1;
   }
   return 0;
+}
+
+
+/***************************/
+/* state = 1 -> TX enable  */
+/* state = 0 -> TX disable */
+/***************************/
+void uartToggleTX(uint8_t state){
+  if(state){
+    *uart_cr |= 1 << 8; //Enable Transmit
+    return;
+  }
+  *uart_cr |= 0 << 8; //Disable Transmit
+  return;
+}
+
+/***************************/
+/* state = 1 -> RX enable  */
+/* state = 0 -> RX disable */
+/***************************/
+void uartToggleRX(uint8_t state){
+  if(state){
+    *uart_cr |= 1 << 9; //Enable Receive
+    return;
+  }
+  *uart_cr |= 0 << 9; //Disable Receive
 }
 
