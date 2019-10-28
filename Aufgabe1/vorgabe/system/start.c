@@ -17,9 +17,9 @@ void start_kernel(void)
   char receivedChar;
   while(1){
     int hasReceived = uartReceiveChar(&receivedChar);
-    
+    kputChar(receivedChar);
     if(hasReceived){
-      kputChar(receivedChar);
+      //kputChar(receivedChar);
       yellow_on();
     }
   }
