@@ -12,8 +12,20 @@ void start_kernel(void)
   kprintf("gUt3N m0Rg3n <3 <3 UWU \n");				     
   kprintf("****************************************\n\n\n\n");
 
-  /*
-  const char receivedChar;
+  
+  
+  char receivedChar;
+  while(1){
+    int hasReceived = uartReceiveChar(&receivedChar);
+    
+    if(hasReceived){
+      kputChar(receivedChar);
+      yellow_on();
+    }
+  }
+  
+  
+/*
   while(1){
     if(uartReceiveChar(&receivedChar)){
       yellow_on();
