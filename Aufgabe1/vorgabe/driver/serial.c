@@ -111,3 +111,17 @@ void uartToggleRX(uint8_t state){
   *uart_cr |= 0 << 9; //Disable Receive
 }
 
+/***************************/
+/* Returns 1 if Fifo empty */
+/***************************/
+
+uint8_t uartRXFifoEmpty(){
+  if(*uart_fr & 1 << 4){
+    //Fifo is empty
+    return 1;
+  }
+  return 0;
+}
+
+
+

@@ -9,3 +9,5 @@ uint8_t uartBusy();
 uint8_t uartReceiveChar(char*);
 void uartToggleTX(uint8_t);
 void uartToggleRX(uint8_t);
+uint8_t uartRXFifoEmpty();
+
