@@ -76,9 +76,7 @@ uint8_t uartBusy(){
 uint8_t uartReceiveChar(char* c){
   //TODO Check for UART busy
   //Check for new data in receive buffer
-  //if(*uart_ris & 1 << 4) {
-  if(!(~*uart_dr & 0xFF)){ //Wenn Data Register nur Nullen enthält
-    //Receive interrupt ist gesetzt
+  if(!uartRXFifoEmpty()){ 
     *c = *(const char*)uart_dr;
     return 1;
   }
