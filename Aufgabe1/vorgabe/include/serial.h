@@ -11,5 +11,6 @@ void uartToggleTX(uint8_t);
 void uartToggleRX(uint8_t);
 uint8_t uartRXFifoEmpty();
 char waitForReceive();
+void enableUartInterrupt();
 
 

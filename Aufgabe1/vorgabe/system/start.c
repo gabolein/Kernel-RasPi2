@@ -20,7 +20,6 @@ void start_kernel(void)
     //kputChar(receivedChar);
     if(hasReceived){
       kputChar(receivedChar);
-      yellow_on();
     }
   }
   

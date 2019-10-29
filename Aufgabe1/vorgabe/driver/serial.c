@@ -1,41 +1,15 @@
 #include "serial.h"
 #include "led.h"
+#include "hwDefines.h"
 
 #include <stdint.h>
-
-//UART Register Declarations
-#define UART_BASE_ADDR (0x7E201000 - 0x3F000000)
-#define UART_DR        ((uint32_t *) UART_BASE_ADDR)
-#define UART_RSRECR    ((uint32_t *) (UART_BASE_ADDR + 0x4)) 
-#define UART_FR        ((uint32_t *) (UART_BASE_ADDR + 0x18))
-#define UART_IBRD      ((uint32_t *) (UART_BASE_ADDR + 0x24))
-#define UART_FBRD      ((uint32_t *) (UART_BASE_ADDR + 0x28))
-#define UART_LCRH      ((uint32_t *) (UART_BASE_ADDR + 0x2c))
-#define UART_CR        ((uint32_t *) (UART_BASE_ADDR + 0x30))
-#define UART_IFLS      ((uint32_t *) (UART_BASE_ADDR + 0x34))
-#define UART_IMSC      ((uint32_t *) (UART_BASE_ADDR + 0x38))
-#define UART_RIS       ((uint32_t *) (UART_BASE_ADDR + 0x3c))
-#define UART_MIS       ((uint32_t *) (UART_BASE_ADDR + 0x40))
-#define UART_ICR       ((uint32_t *) (UART_BASE_ADDR + 0x44))
-#define UART_DMACR     ((uint32_t *) (UART_BASE_ADDR + 0x48))
-#define UART_ITCR      ((uint32_t *) (UART_BASE_ADDR + 0x80))
-#define UART_ITIP      ((uint32_t *) (UART_BASE_ADDR + 0x84))
-#define UART_ITOP      ((uint32_t *) (UART_BASE_ADDR + 0x88))
-#define UART_TDR       ((uint32_t *) (UART_BASE_ADDR + 0x8c))
-
-
-static volatile uint32_t* uart_fr = UART_FR;
-static volatile uint32_t* uart_dr = UART_DR;
-static volatile uint32_t* uart_cr = UART_CR;
-static volatile uint32_t* uart_ris = UART_RIS;
-static volatile uint32_t* uart_lcrh = UART_LCRH;
 
 
 void initUart() {
   
   *uart_cr |= 1 << 9; //Enable Receive
   *uart_cr |= 1 << 8; //Enable Transmit
-  
+
 }
 
 void kputChar(char c) {
@@ -126,4 +100,9 @@ uint8_t uartRXFifoEmpty(){
 char waitForReceive() {
   while(*uart_fr & (1 << 4));
   return (char)*uart_dr;
+}
+
+
+void enableUartInterrupt() {
+  
 }

@@ -1,8 +1,14 @@
+
+.global _reset
+_reset:
+	b	0x0
+
+
 	.section .ivt
 	.global _ivt
 _ivt:     
 	        /*IVT*/
-	        b       _start
+	        b       _reset
 	        ldr     pc, __undefined_instruction
 	        ldr     pc, __software_interrupt
 	        ldr     pc, __prefetch_abort
@@ -24,20 +30,20 @@ __fiq:                           .word _fiq
 
         .section .trampoline
 _undefined_instruction:
-        ldr     r13,      =0x24000
+	b	undefined_instruction
 _software_interrupt:
         /* Software Interrupt nutzt normalen Registersatz */
-        ldr     r13,        =0x23000
+	b	software_interrupt
 _prefetch_abort:
-        ldr     r13,        =0x25000
+	b	prefetch_abort
 _data_abort:    
-	ldr     r13,        =0x25000
+	b	data_abort
 _not_used:
         nop
 _irq:
-	ldr     r13,        =0x22000        
+	b	irq
 _fiq:
-	ldr     r13,        =0x21000
+	b	fiq
 
 
         .section .init
@@ -74,11 +80,17 @@ _bsprak:
 	ldr	sp,=0x20000
         
         /*Stackpointer für Interrupt modes*/
-	
-        
-        
-        
-        
+
+	ldr	r0, =0x21000
+	msr	sp_svc, r0
+	ldr	r0, =0x22000
+	msr	sp_und, r0
+	ldr	r0, =0x23000
+	msr	sp_abt, r0
+	ldr	r0, =0x24000
+	msr	sp_irq, r0
+	ldr	r0, =0x25000
+	msr	sp_fiq, r0
         
 	/* Zu c Code springen */
         /* Adresse der IVT in r0 laden */
