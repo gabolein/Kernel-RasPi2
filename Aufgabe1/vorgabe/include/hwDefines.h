@@ -32,7 +32,7 @@ static volatile uint32_t* uart_ris = UART_RIS;
 static volatile uint32_t* uart_lcrh = UART_LCRH;
 static volatile uint32_t* uart_imsc = UART_IMSC;
 static volatile uint32_t* uart_icr  = UART_ICR;
-
+static volatile uint32_t* uart_mis = UART_MIS;
 
 
 

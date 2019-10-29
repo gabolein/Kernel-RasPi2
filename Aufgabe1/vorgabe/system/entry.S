@@ -7,7 +7,7 @@ _reset:
 	.section .ivt
 	/*AREA	|.ivt|,  ,ALIGN=5*/
 	.global _ivt
- _ivt:     
+_ivt:     
 	        /*IVT*/
 	        b       _reset
 	        ldr     pc, __undefined_instruction
@@ -43,7 +43,7 @@ _data_abort:
 _not_used:
         nop
 _irq:
-	b	irq
+	b	yellow_on
 _fiq:
 	b	fiq
 
@@ -96,11 +96,13 @@ _bsprak:
         
 	
         /* Adresse der IVT in r0 laden */
-        ldr     r0,=_ivt
+        ldr     r0, =0x8000
         mcr p15, 0, r0, c12, c0, 0
+
 	/* Zu c Code springen */
    	bl      start_kernel
-        
+
+
 .Lend:  
 	WFI
 	b       .Lend

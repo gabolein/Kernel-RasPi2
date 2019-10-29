@@ -1,25 +1,28 @@
 #include "serial.h"
 #include "led.h"
 #include "hwDefines.h"
+#include "kio.h"
 
 #include <stdint.h>
 
 
 void initUart() {
-	uartToggleTX(0);
-	uartToggleRX(0);
+	//uartToggleTX(0);
+	//uartToggleRX(0);
 
   /* disable uart */
-  *uart_cr ^= 1;
-  
+  *uart_cr &= ~1;
+  while(*uart_fr & 0x4);
   /* disable fifo */
-  *uart_lcrh ^= 1 << 4;
-
+  *uart_lcrh &= ~(1 << 4);
+	*uart_cr = 0;
+	*uart_cr |= 1 << 9;
+	*uart_cr |= 1 << 8;
   /* enable uart */
   *uart_cr |= 1;
 
-	uartToggleTX(1);
-	uartToggleRX(1);
+	//uartToggleTX(1);
+	//uartToggleRX(1);
   
 }
 
@@ -115,11 +118,24 @@ char waitForReceive() {
 
 
 void enableUartInterrupt() {
-  
-  *enable_irq_2= 1 << (57 - 32);
+	kprintf("uart_imsc: %x\n", *uart_imsc);
+  *uart_cr &= ~1;
+	while(*uart_fr & 0x4);
+	*uart_lcrh &= ~(1 << 4);
+  *enable_irq_2= 1 << 25;
+	*uart_cr |= 1;
   /* mask every bit except Receive interrupt */
   //*uart_imsc = 0;
-	//*uart_imsc = 0xFFFFFFFF;
-  *uart_imsc |= 1 << 4;
-  
+	
+	*uart_cr &= ~1;
+	while(*uart_fr & 0x4);
+	*uart_lcrh &= ~(1 << 4);
+	*uart_imsc = 0xFFFFFFFF;
+  *uart_imsc &= ~(1 << 4);
+	*uart_cr = 0;
+	*uart_cr |= 1 << 9;
+	*uart_cr |= 1 << 8;
+	*uart_cr |= 1;
+	kprintf("uart_imsc: %x\n", *uart_imsc);
+	kprintf("enable: %x\n", *enable_irq_2);
 }

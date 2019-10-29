@@ -1,10 +1,10 @@
 #include "led.h"
 #include "serial.h"
 #include "kio.h"
+#include "hwDefines.h"
 
 void start_kernel(void)
 {
-
   initUart();
 
   enableUartInterrupt();
@@ -13,14 +13,19 @@ void start_kernel(void)
   kprintf("****************************************\n");		     
   kprintf("gUt3N m0Rg3n <3 <3 UWU \n");				     
   kprintf("****************************************\n\n\n\n");
-
+	kprintf("pending: %x", *irq_pending_2);
+	uint32_t bumms = 0xD0909090;
+	kprintf("testbyte:%x", bumms); 
   
   //while(1){}
   char receivedChar;
   while(1){
     int hasReceived = uartReceiveChar(&receivedChar);
     //kputChar(receivedChar);
+		
     if(hasReceived){
+			kprintf("mis interrupt status: %u\n", *uart_mis);
+			kprintf("ris interrupt status: %u\n", *uart_ris);
       kputChar(receivedChar);
     }
   }
