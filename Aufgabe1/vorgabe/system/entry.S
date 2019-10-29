@@ -1,15 +1,14 @@
 
-.global _reset
+.globl _reset
 _reset:
 	b	0x0
 
 
 	.section .ivt
 	/*AREA	|.ivt|,  ,ALIGN=5*/
-	.global _ivt
-_ivt:     
-	        /*IVT*/
-	        b       _reset
+	.globl _ivt
+
+_ivt:	        b       _reset
 	        ldr     pc, __undefined_instruction
 	        ldr     pc, __software_interrupt
 	        ldr     pc, __prefetch_abort
@@ -96,7 +95,7 @@ _bsprak:
         
 	
         /* Adresse der IVT in r0 laden */
-        ldr     r0, =0x8000
+        ldr     r0, =_ivt
         mcr p15, 0, r0, c12, c0, 0
 
 	/* Zu c Code springen */

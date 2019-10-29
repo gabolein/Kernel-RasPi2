@@ -18,15 +18,20 @@ void start_kernel(void)
 	kprintf("testbyte:%x", bumms); 
   
   //while(1){}
+	
   char receivedChar;
   while(1){
+		//kprintf("pending1: %x", *irq_pending_2);
     int hasReceived = uartReceiveChar(&receivedChar);
     //kputChar(receivedChar);
 		
     if(hasReceived){
-			kprintf("mis interrupt status: %u\n", *uart_mis);
-			kprintf("ris interrupt status: %u\n", *uart_ris);
+			kprintf("mis interrupt status: %x\n", *uart_mis);
+			kprintf("ris interrupt status: %x\n", *uart_ris);
+			//kprintf("pending2: %x", *irq_pending_2);
       kputChar(receivedChar);
+			kputChar('\n');
+			//kprintf("pending3: %x", *irq_pending_2);
     }
   }
   
