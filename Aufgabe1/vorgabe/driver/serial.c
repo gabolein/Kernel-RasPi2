@@ -10,6 +10,15 @@ void initUart() {
   *uart_cr |= 1 << 9; //Enable Receive
   *uart_cr |= 1 << 8; //Enable Transmit
 
+  /* disable uart */
+  *uart_cr ^= 1;
+  
+  /* disable fifo */
+  *uart_lcrh ^= 1 << 4;
+
+  /* enable uart */
+  *uart_cr |= 1;
+  
 }
 
 void kputChar(char c) {
@@ -104,5 +113,10 @@ char waitForReceive() {
 
 
 void enableUartInterrupt() {
+  /* mask every bit except Receive interrupt */
+  *enable_irq_2 = 1 << 6;
+  
+  *uart_imsc = 0xFFFFFFFF;
+  *uart_imsc ^= 1 << 4;
   
 }

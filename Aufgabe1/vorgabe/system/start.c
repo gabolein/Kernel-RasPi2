@@ -6,6 +6,8 @@ void start_kernel(void)
 {
 
   initUart();
+
+  enableUartInterrupt();
   
   //kprintf("Hello World!\n");
   kprintf("****************************************\n");		     

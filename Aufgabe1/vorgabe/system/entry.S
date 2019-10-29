@@ -14,7 +14,7 @@ _ivt:
 	        ldr     pc, __prefetch_abort
 	        ldr     pc, __data_abort
 	        ldr     pc, __not_used
-	        ldr     pc, __irq
+		ldr     pc, __irq
 	        ldr     pc, __fiq
 
 __undefined_instruction:         .word _undefined_instruction
@@ -34,6 +34,7 @@ _undefined_instruction:
 _software_interrupt:
         /* Software Interrupt nutzt normalen Registersatz */
 	b	software_interrupt
+
 _prefetch_abort:
 	b	prefetch_abort
 _data_abort:    
@@ -41,7 +42,7 @@ _data_abort:
 _not_used:
         nop
 _irq:
-	b	irq
+	b	yellow_on
 _fiq:
 	b	fiq
 
