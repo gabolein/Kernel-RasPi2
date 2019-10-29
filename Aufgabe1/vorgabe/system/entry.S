@@ -5,8 +5,9 @@ _reset:
 
 
 	.section .ivt
+	/*AREA	|.ivt|,  ,ALIGN=5*/
 	.global _ivt
-_ivt:     
+ _ivt:     
 	        /*IVT*/
 	        b       _reset
 	        ldr     pc, __undefined_instruction
@@ -27,7 +28,7 @@ __fiq:                           .word _fiq
 
 	
 /* Hoffentlich funktioniert das so*/
-
+	
         .section .trampoline
 _undefined_instruction:
 	b	undefined_instruction
@@ -42,7 +43,7 @@ _data_abort:
 _not_used:
         nop
 _irq:
-	b	yellow_on
+	b	irq
 _fiq:
 	b	fiq
 
@@ -93,10 +94,11 @@ _bsprak:
 	ldr	r0, =0x25000
 	msr	sp_fiq, r0
         
-	/* Zu c Code springen */
+	
         /* Adresse der IVT in r0 laden */
         ldr     r0,=_ivt
         mcr p15, 0, r0, c12, c0, 0
+	/* Zu c Code springen */
    	bl      start_kernel
         
 .Lend:  

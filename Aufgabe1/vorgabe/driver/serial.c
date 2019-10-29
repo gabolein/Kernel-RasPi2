@@ -6,9 +6,8 @@
 
 
 void initUart() {
-  
-  *uart_cr |= 1 << 9; //Enable Receive
-  *uart_cr |= 1 << 8; //Enable Transmit
+	uartToggleTX(0);
+	uartToggleRX(0);
 
   /* disable uart */
   *uart_cr ^= 1;
@@ -18,6 +17,9 @@ void initUart() {
 
   /* enable uart */
   *uart_cr |= 1;
+
+	uartToggleTX(1);
+	uartToggleRX(1);
   
 }
 
@@ -76,7 +78,7 @@ void uartToggleTX(uint8_t state){
     *uart_cr |= 1 << 8; //Enable Transmit
     return;
   }
-  *uart_cr |= 0 << 8; //Disable Transmit
+  *uart_cr ^= 1 << 8; //Disable Transmit
   return;
 }
 
@@ -89,7 +91,7 @@ void uartToggleRX(uint8_t state){
     *uart_cr |= 1 << 9; //Enable Receive
     return;
   }
-  *uart_cr |= 0 << 9; //Disable Receive
+  *uart_cr ^= 1 << 9; //Disable Receive
 }
 
 /***************************/
@@ -113,10 +115,11 @@ char waitForReceive() {
 
 
 void enableUartInterrupt() {
-  /* mask every bit except Receive interrupt */
-  *enable_irq_2 = 1 << 6;
   
-  *uart_imsc = 0xFFFFFFFF;
-  *uart_imsc ^= 1 << 4;
+  *enable_irq_2= 1 << (57 - 32);
+  /* mask every bit except Receive interrupt */
+  //*uart_imsc = 0;
+	//*uart_imsc = 0xFFFFFFFF;
+  *uart_imsc |= 1 << 4;
   
 }

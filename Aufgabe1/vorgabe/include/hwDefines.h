@@ -51,6 +51,7 @@ static volatile uint32_t* uart_icr  = UART_ICR;
 
 static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
 static volatile uint32_t* enable_irq_2  = ENABLE_IRQ_2;
+static volatile uint32_t* enable_irq_1	= ENABLE_IRQ_1;
 static volatile uint32_t* disable_irq_2 = DISABLE_IRQ_2;
 
 

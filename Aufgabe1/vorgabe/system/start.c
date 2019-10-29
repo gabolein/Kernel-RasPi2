@@ -15,7 +15,7 @@ void start_kernel(void)
   kprintf("****************************************\n\n\n\n");
 
   
-  
+  //while(1){}
   char receivedChar;
   while(1){
     int hasReceived = uartReceiveChar(&receivedChar);
