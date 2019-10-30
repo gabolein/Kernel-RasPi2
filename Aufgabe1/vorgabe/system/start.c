@@ -5,19 +5,10 @@
 
 void start_kernel(void)
 {
-  	//initUart();
-
-  	//enableUartInterrupt();
   
-  	//kprintf("Hello World!\n");
-	kprintf("****************************************\n");		     
-	kprintf("gUt3N m0Rg3n <3 <3 UWU \n");				     
-	kprintf("****************************************\n\n\n\n");
-	//kprintf("pending: %x", *irq_pending_2);
-	//	uint32_t bumms = 0xD0909090;
-	//	kprintf("testbyte:%x", bumms); 
-	  
-	//while(1){}
+	kprintf("************************\n");		     
+	kprintf("*gUt3N m0Rg3n <3 <3 UWU*\n");				     
+	kprintf("************************\n\n\n\n");
 
   	char receivedChar;
  	while(1){
@@ -26,8 +17,9 @@ void start_kernel(void)
 			enableUartInterrupt();
 		}
 	    	if(hasReceived && receivedChar != 'i'){
-				
-			kprintf("Char received. Character: %c\n", receivedChar);
+			char charAsString[2] = "";
+      			charAsString[0] = receivedChar;
+			kprintf("Char received. Character: %c | Integer: %i | Unsigned Integer: %u | Hex: %u | String: %s | Address: %p\n\n", receivedChar, receivedChar, receivedChar, receivedChar, charAsString, &receivedChar);
 		}
  	}
 }

@@ -21,22 +21,18 @@ void not_used(){
   
 }
 void irq(){ 
-  yellow_on();
+ 	yellow_on();
 	char receivedChar;
-  /* Check what kind of interrupt is pending */
-  if(*irq_pending_2 & (uint32_t)(1 << 25)){ /* Check for UART Interrupt pending */
-    /* UART interrupt going on! */
-	uartReceiveChar(&receivedChar);
-    kprintf("This character caused an interrupt: %c\n\n\n", receivedChar);
-  }
+  	/* Check what kind of interrupt is pending */
+  	if(*irq_pending_2 & (uint32_t)(1 << 25)){ /* Check for UART Interrupt pending */
+    		/* UART interrupt going on! */
+		uartReceiveChar(&receivedChar);
+    		kprintf("This character caused an interrupt: %c\n\n\n", receivedChar);
+  	}
   
-  /* shit going on here */
-
-
-  *uart_icr = 0; //Clear all Interrupt state bits
-  
-  asm("b _reset");
-  asm("mov %PC, %r14");
+	*uart_icr = 0; //Clear all Interrupt state bits
+	kprintf("I am useless now :D. Plz end me\n");
+	while(1); // abschmieren
 	
 }
 void fiq(){
