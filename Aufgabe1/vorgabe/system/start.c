@@ -4,8 +4,8 @@
 void start_kernel(void)
 {
 	specialMessage("Kernel loaded! (UWU)");
-  	char receivedChar;
- 	while(1){
+        while(1){
+                char receivedChar;
                 int hasReceived = uartReceiveChar(&receivedChar);
                 if (hasReceived && receivedChar == 'i') {
                         enableUartInterrupt(); // see serial.c

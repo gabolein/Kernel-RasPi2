@@ -1,17 +1,11 @@
 
-.globl _reset
+        .globl _reset
 _reset:
 	b	0x0
-
-
-
-	/*AREA	|.ivt|,  ,ALIGN=5*/
+	
 	.global _ivt	
 	.balign	32
-	
-	
-
-_ivt:	        b       yellow_on
+_ivt:	        b       _reset
 	        ldr     pc, __undefined_instruction
 	        ldr     pc, __software_interrupt
 	        ldr     pc, __prefetch_abort
@@ -28,15 +22,13 @@ __not_used:                      .word _not_used
 __irq:                           .word _irq
 __fiq:                           .word _fiq
 
-	
-/* Hoffentlich funktioniert das so*/
-	
+        /* Branch Vorbereiten */
+        /* TODO Register sichern */
 _undefined_instruction:
 	b	undefined_instruction
 _software_interrupt:
         /* Software Interrupt nutzt normalen Registersatz */
 	b	software_interrupt
-
 _prefetch_abort:
 	b	prefetch_abort
 _data_abort:    
@@ -47,11 +39,10 @@ _irq:
 	b	irq
 _fiq:
 	b	fiq
-
-
+        
         .section .init
         .global _start
-_start:
+_start: 
         /* Erkennen ob Hypervisor Mode aktiv */
 	mrs r0, cpsr
 	and r0, r0, #0x1F
