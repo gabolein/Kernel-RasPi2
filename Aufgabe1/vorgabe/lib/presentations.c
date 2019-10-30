@@ -24,5 +24,5 @@ void inputPresentation(char receivedChar) {
 void printInterruptMode(){
     kprintf("\n\n---------------------------\n");
     kprintf("Entering interrupt mode ...\n");
-    kprintf("---------------------------\n\n");
+    kprintf("---------------------------\n\n\n");
 }
