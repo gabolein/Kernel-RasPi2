@@ -25,9 +25,9 @@ void irq(){
 	char receivedChar;
   	/* Check what kind of interrupt is pending */
   	if(*irq_pending_2 & (uint32_t)(1 << 25)){ /* Check for UART Interrupt pending */
-    		/* UART interrupt going on! */
+  	    /* UART interrupt going on! */
 		uartReceiveChar(&receivedChar);
-    		kprintf("This character caused an interrupt: %c\n\n\n", receivedChar);
+		kprintf("This character caused an interrupt: %c\n\n\n", receivedChar);
   	}
   
 	*uart_icr = 0; //Clear all Interrupt state bits

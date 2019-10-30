@@ -7,10 +7,10 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-#define MIN_INT -2147483647
+#define MIN_INT -2147483648
 
 /*
- * Prints a string in the given format to screen. Returns the amount of printed characters.
+ * Prints a string in the given format to screen
  */
 __attribute__((format(printf, 1, 2)))
 void kprintf(const char* format, ...) {
@@ -44,28 +44,28 @@ void kprintf(const char* format, ...) {
                     break;
                 case 'x' :
                     u_int_num = va_arg(arg, unsigned int);
-                    kprintf(itoa(u_int_num, 16));
+                    kprintf(itoa16(u_int_num));
                     break;
                 case 'i' :
                     int_num = va_arg(arg, int);
                     if(int_num == MIN_INT) { // edge case (zweier komplement who?)
-                        kprintf("-2147483647");
+                        kprintf("-21474836478");
                     } else {
                         if(int_num < 0) { // if negative, print '-' and treat like unsigned int
                             kputChar('-');
                             int_num *= -1;
                         }
-                        kprintf(itoa(int_num, 10));
+                        kprintf(itoa10(int_num));
                     }
                     break;
                 case 'u' :
                     u_int_num = va_arg(arg, unsigned int);
-                    kprintf(itoa(u_int_num, 10));
+                    kprintf(itoa10(u_int_num));
                     break;
 	            case 'p' :
 	                kprintf("0x");
                     address = va_arg(arg, uint32_t); // pointer -> 32Bit address
-                    kprintf(itoa(address, 16));
+                    kprintf(itoa16(address));
                     break;
                 default: // if unknown definer, behave like printf
                     kputChar('%');
@@ -82,16 +82,29 @@ void kprintf(const char* format, ...) {
 
 
 
-char* itoa(unsigned int value, int base){
+char* itoa10(unsigned int value){
 
-    static char c_buffer[32] = "";
-    static char presentation[] = "0123456789abcdef";
-    int i = 30;
-    do {
-        c_buffer[i] = presentation[value % base];
+    static char c_buffer[10] = ""; // 10 -> maximal amount of characters needed to present 32 bits in decimal
+    static char presentation[] = "0123456789";
+    int i = 8; // start from the back
+    do { // need do while in case value = 0
+        c_buffer[i] = presentation[value % 10];
         --i;
-        value /= base;
-    } while (value&&i);
+        value /= 10;
+    } while (value > 0);
+    return &c_buffer[i+1];
+}
+
+char* itoa16(unsigned int value){
+
+    static char c_buffer[8] = ""; // 8 -> maximal amount of characters needed to present 32 bits in hex
+    static char presentation[] = "0123456789abcdef";
+    int i = 6; // start from the back
+    do { // need do while in case value = 0
+        c_buffer[i] = presentation[value % 16];
+        --i;
+        value /= 16;
+    } while (value > 0);
     return &c_buffer[i+1];
 }
 

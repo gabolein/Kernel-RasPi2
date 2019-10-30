@@ -2,6 +2,7 @@
 #include "led.h"
 #include "hwDefines.h"
 #include "kio.h"
+#include "presentations.h"
 
 #include <stdint.h>
 
@@ -111,17 +112,15 @@ char waitForReceive() {
 
 
 void enableUartInterrupt() {
-  	*uart_cr &= ~1;
+    *uart_cr &= ~1;
 	while(*uart_fr & 0x4);
 	*uart_lcrh &= ~(1 << 4);
   	*enable_irq_2= 1 << 25;
 	
-  /* mask every bit except Receive interrupt */
+    /* mask every bit except Receive interrupt */
 	*uart_imsc = 0;
 	*uart_imsc |= 1 << 4;
 	*uart_cr |= 1;
 
-	kprintf("\n\n---------------------------\n");
-	kprintf("Entering interrupt mode ...\n");
-	kprintf("---------------------------\n\n");
+    printInterruptMode(); // see presentations.c
 }
