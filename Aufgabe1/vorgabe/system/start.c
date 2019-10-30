@@ -3,18 +3,15 @@
 
 void start_kernel(void)
 {
-	printGreeting(); // see presentations.c
-
+	specialMessage("Kernel loaded!");
   	char receivedChar;
  	while(1){
-        int hasReceived = uartReceiveChar(&receivedChar);
-        if (hasReceived && receivedChar == 'i') {
-            enableUartInterrupt(); // see serial.c
-        }
-        if (hasReceived && receivedChar != 'i'){
-   		    inputPresentation(receivedChar); // see presentations.c
+                int hasReceived = uartReceiveChar(&receivedChar);
+                if (hasReceived && receivedChar == 'i') {
+                        enableUartInterrupt(); // see serial.c
+                }
+                if (hasReceived && receivedChar != 'i'){
+                        inputPresentation(receivedChar); // see presentations.c
 		}
  	}
 }
-
-

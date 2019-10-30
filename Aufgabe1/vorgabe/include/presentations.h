@@ -5,8 +5,7 @@
 #ifndef _PRESENTATIONS_H
 #define _PRESENTATIONS_H
 
-void printGreeting();
 void inputPresentation(char receivedChar);
-void printInterruptMode();
+void specialMessage(const char*);
 
 #endif
