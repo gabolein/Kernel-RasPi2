@@ -1,9 +1,27 @@
 #include "serial.h"
+#include "serialStatic.h"
 #include "hwDefines.h"
 #include "kio.h"
 #include "presentations.h"
 
 #include <stdint.h>
+
+/* Register Defs */
+static volatile uint32_t* uart_fr = UART_FR;
+static volatile uint32_t* uart_dr = UART_DR;
+static volatile uint32_t* uart_cr = UART_CR;
+//static volatile uint32_t* uart_ris = UART_RIS;
+static volatile uint32_t* uart_lcrh = UART_LCRH;
+static volatile uint32_t* uart_imsc = UART_IMSC;
+//static volatile uint32_t* uart_icr  = UART_ICR;
+//static volatile uint32_t* uart_mis = UART_MIS;
+
+//static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
+static volatile uint32_t* enable_irq_2  = ENABLE_IRQ_2;
+//static volatile uint32_t* enable_irq_1	= ENABLE_IRQ_1;
+//static volatile uint32_t* disable_irq_2 = DISABLE_IRQ_2;
+
+/* Register Defs End */
 
 void initUart() {
         disableUart();

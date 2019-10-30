@@ -4,6 +4,11 @@
 #include "kio.h"
 #include "serial.h"
 
+/* Register Defs */
+static volatile uint32_t* uart_icr  = UART_ICR;
+
+static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
+/* Register Defs End */
 
 void undefined_instruction(){
   
