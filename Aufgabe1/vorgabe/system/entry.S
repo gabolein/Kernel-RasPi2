@@ -4,11 +4,14 @@ _reset:
 	b	0x0
 
 
-	.section .ivt
-	/*AREA	|.ivt|,  ,ALIGN=5*/
-	.globl _ivt
 
-_ivt:	        b       _reset
+	/*AREA	|.ivt|,  ,ALIGN=5*/
+	.global _ivt	
+	.balign	32
+	
+	
+
+_ivt:	        b       yellow_on
 	        ldr     pc, __undefined_instruction
 	        ldr     pc, __software_interrupt
 	        ldr     pc, __prefetch_abort
@@ -28,7 +31,6 @@ __fiq:                           .word _fiq
 	
 /* Hoffentlich funktioniert das so*/
 	
-        .section .trampoline
 _undefined_instruction:
 	b	undefined_instruction
 _software_interrupt:
@@ -42,7 +44,7 @@ _data_abort:
 _not_used:
         nop
 _irq:
-	b	yellow_on
+	b	irq
 _fiq:
 	b	fiq
 
@@ -93,12 +95,21 @@ _bsprak:
 	ldr	r0, =0x25000
 	msr	sp_fiq, r0
         
-	
+	/* interrupts disablen */	
+	/*cpsid	i*/
         /* Adresse der IVT in r0 laden */
         ldr     r0, =_ivt
-        mcr p15, 0, r0, c12, c0, 0
-
+        mcr 	p15, 0, r0, c12, c0, 0
+	
+	/* CPSR shit */
+	/*mrs	r0, cpsr /*Read cpsr*/
+	/*bic	r0, r0, #0x80*/
+	/*msr	cpsr_c, r0*/
+	
+	cpsie	i
 	/* Zu c Code springen */
+/*	ldr	r0, =_ivt*/
+/*	ldr	pc, =_ivt*/
    	bl      start_kernel
 
 

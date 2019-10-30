@@ -24,7 +24,7 @@ void irq(){
   /* asm("mov %CPSR, %SPSR"); */
 
   /* Check what kind of interrupt is pending */
-  if(*irq_pending_2 & (uint32_t)(1 << 6)){ /* Check for UART Interrupt pending */
+  if(*irq_pending_2 & (uint32_t)(1 << 25)){ /* Check for UART Interrupt pending */
     /* UART interrupt going on! */
     kprintf("UART Interrupt received!\n");
   }
@@ -36,6 +36,7 @@ void irq(){
   
   asm("b _reset");
   asm("mov %PC, %r14");
+	
 }
 void fiq(){
   

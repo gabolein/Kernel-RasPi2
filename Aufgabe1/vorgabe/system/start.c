@@ -5,37 +5,38 @@
 
 void start_kernel(void)
 {
-  initUart();
+  	initUart();
 
-  enableUartInterrupt();
+  	enableUartInterrupt();
   
-  //kprintf("Hello World!\n");
-  kprintf("****************************************\n");		     
-  kprintf("gUt3N m0Rg3n <3 <3 UWU \n");				     
-  kprintf("****************************************\n\n\n\n");
-	kprintf("pending: %x", *irq_pending_2);
-	uint32_t bumms = 0xD0909090;
-	kprintf("testbyte:%x", bumms); 
-  
-  //while(1){}
-	
-  char receivedChar;
-  while(1){
+  	//kprintf("Hello World!\n");
+	kprintf("****************************************\n");		     
+	kprintf("gUt3N m0Rg3n <3 <3 UWU \n");				     
+	kprintf("****************************************\n\n\n\n");
+	//kprintf("pending: %x", *irq_pending_2);
+	//	uint32_t bumms = 0xD0909090;
+	//	kprintf("testbyte:%x", bumms); 
+	  
+	//while(1){}
+
+  	char receivedChar;
+ 	while(1){
 		//kprintf("pending1: %x", *irq_pending_2);
-    int hasReceived = uartReceiveChar(&receivedChar);
-    //kputChar(receivedChar);
-		
-    if(hasReceived){
-			kprintf("mis interrupt status: %x\n", *uart_mis);
-			kprintf("ris interrupt status: %x\n", *uart_ris);
-			//kprintf("pending2: %x", *irq_pending_2);
-      kputChar(receivedChar);
+		kprintf("fkoekefkw\n");
+   		int hasReceived = uartReceiveChar(&receivedChar);
+    		//kputChar(receivedChar);
+		kprintf("mis interrupt status: %x\n", *uart_mis);
+		kprintf("ris interrupt status: %x\n", *uart_ris);
+		kprintf("pending2: %x\n", *irq_pending_2);
+	    	if(hasReceived){
+				
+			if(*irq_pending_2 & (1 << 25)) kprintf("ich bin an \n");
+	      		kputChar(receivedChar);
 			kputChar('\n');
 			//kprintf("pending3: %x", *irq_pending_2);
-    }
-  }
-  
-  
+		}
+ 	}
+}
 /*
   while(1){
     if(uartReceiveChar(&receivedChar)){
@@ -60,5 +61,5 @@ void start_kernel(void)
     }
   }
   */
-}
+
 
