@@ -36,6 +36,7 @@ KERNEL_USER_SPLIT = false
 # Hier eure Dateien hinzufügen
 # System
 OBJ = system/entry.o
+OBJ += system/ivt.o
 OBJ += system/start.o
 OBJ += system/handler.o
 
