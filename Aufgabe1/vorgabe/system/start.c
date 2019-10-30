@@ -5,9 +5,9 @@
 
 void start_kernel(void)
 {
-  	initUart();
+  	//initUart();
 
-  	enableUartInterrupt();
+  	//enableUartInterrupt();
   
   	//kprintf("Hello World!\n");
 	kprintf("****************************************\n");		     
@@ -21,19 +21,13 @@ void start_kernel(void)
 
   	char receivedChar;
  	while(1){
-		//kprintf("pending1: %x", *irq_pending_2);
-		kprintf("fkoekefkw\n");
    		int hasReceived = uartReceiveChar(&receivedChar);
-    		//kputChar(receivedChar);
-		kprintf("mis interrupt status: %x\n", *uart_mis);
-		kprintf("ris interrupt status: %x\n", *uart_ris);
-		kprintf("pending2: %x\n", *irq_pending_2);
-	    	if(hasReceived){
+		if(hasReceived && receivedChar == 'i'){
+			enableUartInterrupt();
+		}
+	    	if(hasReceived && receivedChar != 'i'){
 				
-			if(*irq_pending_2 & (1 << 25)) kprintf("ich bin an \n");
-	      		kputChar(receivedChar);
-			kputChar('\n');
-			//kprintf("pending3: %x", *irq_pending_2);
+			kprintf("Char received. Character: %c\n", receivedChar);
 		}
  	}
 }

@@ -101,15 +101,8 @@ _bsprak:
         ldr     r0, =_ivt
         mcr 	p15, 0, r0, c12, c0, 0
 	
-	/* CPSR shit */
-	/*mrs	r0, cpsr /*Read cpsr*/
-	/*bic	r0, r0, #0x80*/
-	/*msr	cpsr_c, r0*/
-	
 	cpsie	i
 	/* Zu c Code springen */
-/*	ldr	r0, =_ivt*/
-/*	ldr	pc, =_ivt*/
    	bl      start_kernel
 
 

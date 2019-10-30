@@ -121,7 +121,6 @@ char waitForReceive() {
 
 
 void enableUartInterrupt() {
-	kprintf("uart_imsc: %x\n", *uart_imsc);
   	*uart_cr &= ~1;
 	while(*uart_fr & 0x4);
 	*uart_lcrh &= ~(1 << 4);
@@ -144,6 +143,5 @@ void enableUartInterrupt() {
 	//*uart_cr |= 1;
 	*uart_cr |= 1;
 
-	kprintf("uart_imsc: %x\n", *uart_imsc);
-	kprintf("enable: %x\n", *enable_irq_2);
+	kprintf("\nEntering interrupt mode ...\n");
 }

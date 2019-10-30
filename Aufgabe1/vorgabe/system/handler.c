@@ -2,6 +2,7 @@
 #include "led.h"
 #include "hwDefines.h"
 #include "kio.h"
+#include "serial.h"
 
 
 void undefined_instruction(){
@@ -21,12 +22,12 @@ void not_used(){
 }
 void irq(){ 
   yellow_on();
-  /* asm("mov %CPSR, %SPSR"); */
-
+	char receivedChar;
   /* Check what kind of interrupt is pending */
   if(*irq_pending_2 & (uint32_t)(1 << 25)){ /* Check for UART Interrupt pending */
     /* UART interrupt going on! */
-    kprintf("UART Interrupt received!\n");
+	uartReceiveChar(&receivedChar);
+    kprintf("This character caused an interrupt: %c\n\n\n", receivedChar);
   }
   
   /* shit going on here */
