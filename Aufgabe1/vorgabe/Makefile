@@ -45,6 +45,7 @@ OBJ += driver/serial.o
 
 # Libs
 OBJ += lib/kio.o
+OBJ += lib/presentations.o
 
 # Falls die binäre Musterlösung benutzt wird bitte auskommentieren
 # und gegebenenfalls Ordner anpassen:
