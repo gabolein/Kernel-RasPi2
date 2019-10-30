@@ -16,7 +16,7 @@ void inputPresentation(char receivedChar) {
         char charAsString[2] = "";
         charAsString[0] = receivedChar;
         kprintf("Char received. Character: %c | Integer: %i | Unsigned Integer: %u "
-                "| Hex: %u | String: %s | Address: %p\n\n",
+                "| Hex: %x | String: %s | Address: %p\n\n",
                 receivedChar, receivedChar, receivedChar,
                 receivedChar, charAsString, &receivedChar);
 }
