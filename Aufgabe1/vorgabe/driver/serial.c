@@ -90,7 +90,7 @@ static inline char waitForReceive() {
 
 void enableUartInterrupt() {
         disableUart();
-        //while(*uart_fr & 0x4); TODO Necessary?
+        //while(*uart_fr & 0x4); //TODO might not be necessary
         /* Disable FIFO */
         *uart_lcrh &= ~(1 << 4);
         *enable_irq_2= 1 << 25;
