@@ -25,16 +25,6 @@
 #define UART_TDR       ((uint32_t *) (UART_BASE_ADDR + 0x8c))
 
 
-static volatile uint32_t* uart_fr = UART_FR;
-static volatile uint32_t* uart_dr = UART_DR;
-static volatile uint32_t* uart_cr = UART_CR;
-static volatile uint32_t* uart_ris = UART_RIS;
-static volatile uint32_t* uart_lcrh = UART_LCRH;
-static volatile uint32_t* uart_imsc = UART_IMSC;
-static volatile uint32_t* uart_icr  = UART_ICR;
-static volatile uint32_t* uart_mis = UART_MIS;
-
-
 
 /* Interrupts */
 #define INTERRUPT_BASE                  (0x7E00B000 - 0x3F000000)
@@ -48,11 +38,6 @@ static volatile uint32_t* uart_mis = UART_MIS;
 #define DISABLE_IRQ_1     ((uint32_t *) (INTERRUPT_BASE + 0x21C))
 #define DISABLE_IRQ_2     ((uint32_t *) (INTERRUPT_BASE + 0x220))
 #define DISABLE_BASIC_IRQ ((uint32_t *) (INTERRUPT_BASE + 0x224))
-
-static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
-static volatile uint32_t* enable_irq_2  = ENABLE_IRQ_2;
-static volatile uint32_t* enable_irq_1	= ENABLE_IRQ_1;
-static volatile uint32_t* disable_irq_2 = DISABLE_IRQ_2;
 
 
 #endif
