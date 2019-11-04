@@ -47,7 +47,7 @@ OBJ += driver/serial.o
 # Libs
 OBJ += lib/kio.o
 OBJ += lib/presentations.o
-
+OBJ += lib/tests.o
 # Falls die binäre Musterlösung benutzt wird bitte auskommentieren
 # und gegebenenfalls Ordner anpassen:
 # OBJ_LSG = obj/$(BIN_LSG).o
