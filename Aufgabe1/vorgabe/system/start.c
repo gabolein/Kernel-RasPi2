@@ -14,7 +14,7 @@ void start_kernel(void)
                 if (hasReceived && receivedChar == 'i') {
                         enableUartInterrupt(); // see serial.c
                 }
-                if (hasReceived && receivedChar != 'i' && receivedChard != 'a'){
+                if (hasReceived && receivedChar != 'i' && receivedChar != 'a'){
                         inputPresentation(receivedChar); // see presentations.c
 		}
  	}
