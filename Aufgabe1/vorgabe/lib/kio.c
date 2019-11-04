@@ -108,37 +108,3 @@ char* itoa16(unsigned int value){
     return &c_buffer[i+1];
 }
 
-void kscanf(const char* format, ...) {
-
-    char c_buffer[100] = "";
-    char receivedChar;
-    for (int i; i < 100; i++) {
-        uartReceiveChar(&receivedChar);
-        if (receivedChar == '\n') break;
-        c_buffer[i] = receivedChar;
-    }
-
-    va_list arg;
-    va_start(arg, format);
-    for(format; format != '\0'; format++) {
-        if(*format == '%'){
-            format++;
-            x = (arg, &char);
-            uartReceiveChar(x);
-            switch(*format) {
-                case 'c' :
-                    charHolder = x;
-                    break;
-                case 'i' :
-                    *x = *x - '0';
-                    break;
-                case 'u' :
-                    *x = *x - '0';
-                case 'x':
-
-
-            }
-        }
-    }
-}
-
