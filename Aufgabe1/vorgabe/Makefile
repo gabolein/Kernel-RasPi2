@@ -36,6 +36,7 @@ KERNEL_USER_SPLIT = false
 # Hier eure Dateien hinzufügen
 # System
 OBJ = system/entry.o
+OBJ += system/ivt.o
 OBJ += system/start.o
 OBJ += system/handler.o
 
@@ -99,8 +100,8 @@ LD = arm-none-eabi-ld
 OBJCOPY = arm-none-eabi-objcopy
 OBJDUMP = arm-none-eabi-objdump
 
-#CFLAGS = -Wall -Wextra -ffreestanding -mcpu=cortex-a7 -O2
-CFLAGS = -ffreestanding -mcpu=cortex-a7 -O2
+CFLAGS = -Wall -Wextra -ffreestanding -mcpu=cortex-a7 -O2
+#CFLAGS = -ffreestanding -mcpu=cortex-a7 -O2
 CFLAGS_DEBUG = $(CFLAGS) -ggdb
 CPPFLAGS = -Iinclude
 

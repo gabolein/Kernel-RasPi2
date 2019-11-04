@@ -4,6 +4,11 @@
 #include "kio.h"
 #include "serial.h"
 
+/* Register Defs */
+static volatile uint32_t* uart_icr  = UART_ICR;
+
+static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
+/* Register Defs End */
 
 void undefined_instruction(){
   
@@ -22,18 +27,17 @@ void not_used(){
 }
 void irq(){ 
  	yellow_on();
-	char receivedChar;
-  	/* Check what kind of interrupt is pending */
-  	if(*irq_pending_2 & (uint32_t)(1 << 25)){ /* Check for UART Interrupt pending */
-  	    /* UART interrupt going on! */
-		uartReceiveChar(&receivedChar);
+        /* Check for pending UART Interrupt */
+  	if(*irq_pending_2 & (uint32_t)(1 << 25)){ 
+                char receivedChar;
+                uartReceiveChar(&receivedChar);
 		kprintf("This character caused an interrupt: %c\n\n\n", receivedChar);
   	}
-  
-	*uart_icr = 0; //Clear all Interrupt state bits
+        /* Clear all Interrupt state bits */
+  	*uart_icr = 0; 
 	kprintf("I am useless now :D. Plz end me\n");
-	while(1); // abschmieren
-	
+        /* Abschmieren */
+        while(1);
 }
 void fiq(){
   
