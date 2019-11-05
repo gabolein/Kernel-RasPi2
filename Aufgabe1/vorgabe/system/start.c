@@ -1,5 +1,6 @@
 #include "presentations.h"
 #include "serial.h"
+#include "tests.h"
 
 void start_kernel(void)
 {
@@ -7,10 +8,13 @@ void start_kernel(void)
         while(1){
                 char receivedChar;
                 int hasReceived = uartReceiveChar(&receivedChar);
+                if (hasReceived && receivedChar == 'a') {
+                        causeDataAbort();
+                }
                 if (hasReceived && receivedChar == 'i') {
                         enableUartInterrupt(); // see serial.c
                 }
-                if (hasReceived && receivedChar != 'i'){
+                if (hasReceived && receivedChar != 'i' && receivedChar != 'a'){
                         inputPresentation(receivedChar); // see presentations.c
 		}
  	}

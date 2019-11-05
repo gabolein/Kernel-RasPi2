@@ -20,13 +20,13 @@ void prefetch_abort(){
   
 }
 void data_abort(){
-  
+        yellow_on();
 }
 void not_used(){
   
 }
 void irq(){ 
- 	yellow_on();
+ 	//yellow_on();
         /* Check for pending UART Interrupt */
   	if(*irq_pending_2 & (uint32_t)(1 << 25)){ 
                 char receivedChar;
