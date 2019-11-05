@@ -11,6 +11,6 @@ void causeDataAbort() {
 }
 
 void causePrefetchAbort() {
-        int* a (int*)0xaaaaaaaaa;
+        int* a = (int*)0xaaaaaaaaa;
         kprintf("%x\n", *a);
 }
