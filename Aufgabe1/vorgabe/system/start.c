@@ -8,14 +8,22 @@ void start_kernel(void)
         while(1){
                 char receivedChar;
                 int hasReceived = uartReceiveChar(&receivedChar);
-                if (hasReceived && receivedChar == 'a') {
-                        causeDataAbort();
+                if (hasReceived) { // TODO: build as switchcase
+                        if (receivedChar == 'a') {
+                                causeDataAbort();
+                        }
+                        else if (receivedChar == 'u') {
+                                causeUndefinedInstruction();
+                        }
+                        else if (receivedChar == 's') {
+                                causeSWI();
+                        }
+                        else if (receivedChar == 'i') {
+                                enableUartInterrupt(); // see serial.c
+                        }
+                        else {
+                                inputPresentation(receivedChar); // see presentations.c
+                        }
                 }
-                else if (hasReceived && receivedChar == 'i') {
-                        enableUartInterrupt(); // see serial.c
-                }
-                else if (hasReceived){
-                        inputPresentation(receivedChar); // see presentations.c
-		}
  	}
 }

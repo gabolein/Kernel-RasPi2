@@ -11,13 +11,13 @@ static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
 /* Register Defs End */
 
 void undefined_instruction(){
-  
+        green_on();
 }
 void software_interrupt(){
-  
+        red_on();
 }
 void prefetch_abort(){
-        red_on();
+
 }
 void data_abort(){
         yellow_on();

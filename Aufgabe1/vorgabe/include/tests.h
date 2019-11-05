@@ -6,4 +6,6 @@
 #define _TESTS_H
 void causeDataAbort(void);
 void causeDataAbort0(void);
+void causeUndefinedInstruction(void);
+void causeSWI(void);
 #endif //_TESTS_H
