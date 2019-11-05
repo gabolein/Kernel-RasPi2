@@ -6,4 +6,5 @@
 
 void causeDataAbort() {
 	int* a = (int*)0x1;
+        kprintf("%x\n", *a);
 }
