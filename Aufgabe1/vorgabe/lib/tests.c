@@ -5,6 +5,5 @@
 #include "tests.h"
 
 void causeDataAbort() {
-	int a;
-        asm volatile ("mov %0, #0x11":"=r"(a)); // write non aligned address
+	int* a = (int*)0x1;
 }
