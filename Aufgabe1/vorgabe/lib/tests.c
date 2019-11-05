@@ -20,5 +20,5 @@ void causeUndefinedInstruction() {
 }
 
 void causeSWI(){
-        asm volatile ("SWI 0x42");
+        asm volatile ("SWI 0x42"); // works :)
 }
