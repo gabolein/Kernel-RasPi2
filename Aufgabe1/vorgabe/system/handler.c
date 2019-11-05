@@ -17,7 +17,7 @@ void software_interrupt(){
   
 }
 void prefetch_abort(){
-  
+        red_on();
 }
 void data_abort(){
         yellow_on();

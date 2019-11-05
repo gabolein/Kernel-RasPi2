@@ -11,10 +11,13 @@ void start_kernel(void)
                 if (hasReceived && receivedChar == 'a') {
                         causeDataAbort();
                 }
-                if (hasReceived && receivedChar == 'i') {
+                else if (hasReceived && receivedChar == 'i') {
                         enableUartInterrupt(); // see serial.c
                 }
-                if (hasReceived && receivedChar != 'i' && receivedChar != 'a'){
+                else if (hasReceived && receivedChar == 'p') {
+                        causePrefetchAbort();
+                }
+                else if (hasReceived){
                         inputPresentation(receivedChar); // see presentations.c
 		}
  	}

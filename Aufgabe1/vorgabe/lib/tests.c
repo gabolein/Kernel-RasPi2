@@ -10,7 +10,7 @@ void causeDataAbort() {
         kprintf("%x\n", *a);
 }
 
-void causePrefetchDataAbort() {
+void causePrefetchAbort() {
         int* a (int*)0xaaaaaaaaa;
         kprintf("%x\n", *a);
 }
