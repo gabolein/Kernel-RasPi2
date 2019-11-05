@@ -14,9 +14,6 @@ void start_kernel(void)
                 else if (hasReceived && receivedChar == 'i') {
                         enableUartInterrupt(); // see serial.c
                 }
-                else if (hasReceived && receivedChar == 'p') {
-                        causePrefetchAbort();
-                }
                 else if (hasReceived){
                         inputPresentation(receivedChar); // see presentations.c
 		}

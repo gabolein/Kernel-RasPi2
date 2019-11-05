@@ -5,5 +5,5 @@
 #ifndef _TESTS_H
 #define _TESTS_H
 void causeDataAbort(void);
-void causePrefetchAbort(void);
+void causeDataAbort0(void);
 #endif //_TESTS_H
