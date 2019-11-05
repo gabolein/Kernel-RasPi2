@@ -5,3 +5,7 @@ kernel.lds
 kernel_dump.s
 kernel
 kernel.bin
+
+GPATH
+GRTAGS
+GTAGS
