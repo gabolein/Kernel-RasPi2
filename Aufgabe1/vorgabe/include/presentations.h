@@ -9,6 +9,18 @@ enum AccessStyle {
         NONE
 };
 
+enum Modes {
+        USER_MODE = 0x10,
+        FAST_INTERRUPT_MODE = 0x11,
+        IRQ_MODE = 0x12,
+        SUPERVISOR_MODE = 0x13,
+        MONITOR_MODE = 0x16,
+        ABORT_MODE = 0x17,
+        HYPERVISOR_MODE = 0x1A,
+        UNDEFINED_MODE = 0x1B,
+        SYSTEM_MODE = 0x1F
+};
+
 enum ExceptionType {
         SOFTWARE_INTERRUPT,
         DATA_ABORT,
@@ -66,4 +78,10 @@ void specialMessage(const char*);
 
 void printRegisterDump(struct regDump*);
 
+/* Gets a char[11] and a PSR Register and fills the string 
+   with a representation of the psr  */
+char* getPSRStrings(uint32_t, char*);
+
+
 #endif
+

@@ -21,6 +21,36 @@ void specialMessage(const char* msg){
         kprintf("---------------------------\n\n\n");    
 }
 
+char* getPSRStrings(uint32_t psrReg, char* string){
+        string = "NZCV E IFT";
+
+        /* CPSRStatus */
+        for(int i = 0; i < 4; i++){
+                if(psrReg & (1 << (31 - i))){
+                        continue;
+                } else {
+                        string[i] = '_';
+                }
+        }
+        /* CPSRMask */
+        for(int i = 0; i < 3; i++){
+                if(psrReg & (1 << (7 - i))){
+                        continue;
+                } else {
+                        string[i+7] = '_';
+                }
+        }
+
+        /* E-Bit */
+        if(psrReg & (1 << 9)){
+                string[5] = 'E';
+        } else {
+                string[5] = '_';
+        }
+        
+        return string;
+}
+
 void registerDump(struct regDump* regDump){
         kprintf("#################################### \
 #######################################\n");
@@ -56,4 +86,46 @@ void registerDump(struct regDump* regDump){
         kprintf("R7: %x  PC:  %x\n", regDump->r7, regDump->pc);
 
         kprintf("\n\n>>> Aktuelle Statusregister (SPSR des aktuellen Modus) <<<\n");
+
+        {
+        char cpsrString[11];
+        getPSRStrings(regDump->cpsr, cpsrString);
+        kprintf("CPSR: %s ", cpsrString);
+        }
+        // TODO Funktion draus machen
+        switch((regDump->cpsr & 0x1F)){
+        case USER_MODE: kprintf("User"); break;
+        case FAST_INTERRUPT_MODE: kprintf("FIQ"); break;
+        case IRQ_MODE: kprintf("IRQ"); break;
+        case SUPERVISOR_MODE: kprintf("Supervisor"); break;
+        case MONITOR_MODE: kprintf("Monitor"); break;
+        case ABORT_MODE: kprintf("Abort"); break;
+        case HYPERVISOR_MODE: kprintf("Hypervisor"); break;
+        case UNDEFINED_MODE: kprintf("Undefined"); break;
+        case SYSTEM_MODE: kprintf("System"); break;
+        default: kprintf("Mode field invalid"); break;
+        }
+
+        kprintf("      (%x)\n", regDump->cpsr);
+
+        {
+        char spsrString[11];
+        getPSRStrings(regDump->cpsr, spsrString);
+        kprintf("SPSR: %s ", spsrString);
+        }
+        //TODO Same wie oben
+        switch((regDump->cpsr & 0x1F)){
+        case USER_MODE: kprintf("User"); break;
+        case FAST_INTERRUPT_MODE: kprintf("FIQ"); break;
+        case IRQ_MODE: kprintf("IRQ"); break;
+        case SUPERVISOR_MODE: kprintf("Supervisor"); break;
+        case MONITOR_MODE: kprintf("Monitor"); break;
+        case ABORT_MODE: kprintf("Abort"); break;
+        case HYPERVISOR_MODE: kprintf("Hypervisor"); break;
+        case UNDEFINED_MODE: kprintf("Undefined"); break;
+        case SYSTEM_MODE: kprintf("System"); break;
+        default: kprintf("Mode field invalid"); break;
+        }
+        kprintf("      (%x)\n\n", regDump->spsr);
 }
+
