@@ -16,9 +16,9 @@ void causeDataAbort0() { // causes Data abort
 }
 
 void causeUndefinedInstruction() {
-        asm volatile (".word 0xf7f0a000\n"); // off stack overflow
+        asm volatile (".word 0xf7f0a000\n"); // off stack overflow, works :)
 }
 
 void causeSWI(){
-
+        asm volatile ("SWI 0x42");
 }
