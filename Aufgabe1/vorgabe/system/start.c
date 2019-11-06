@@ -4,25 +4,17 @@
 
 void start_kernel(void)
 {
-	specialMessage("Kernel loaded! (UWU)");
+        specialMessage("Kernel loaded! (UWU)");
         while(1){
                 char receivedChar;
                 int hasReceived = uartReceiveChar(&receivedChar);
                 if (hasReceived) { // TODO: build as switchcase
-                        if (receivedChar == 'a') {
-                                causeDataAbort();
-                        }
-                        else if (receivedChar == 'u') {
-                                causeUndefinedInstruction();
-                        }
-                        else if (receivedChar == 's') {
-                                causeSWI();
-                        }
-                        else if (receivedChar == 'i') {
-                                enableUartInterrupt(); // see serial.c
-                        }
-                        else {
-                                inputPresentation(receivedChar); // see presentations.c
+                        switch(receivedChar){
+                        case 'a': causeDataAbort(); break;
+                        case 'u': causeUndefinedInstruction(); break;
+                        case 's': causeSWI(); break;
+                        case 'i': enableUartInterrupt(); break;
+                        default: inputPresentation(receivedChar); break;
                         }
                 }
  	}
