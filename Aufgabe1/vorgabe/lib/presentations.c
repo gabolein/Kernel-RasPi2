@@ -18,12 +18,11 @@ void inputPresentation(char receivedChar) {
 void specialMessage(const char* msg){
         kprintf("\n\n---------------------------\n");
         kprintf("%s\n", msg);
-        kprintf("---------------------------\n\n\n");    
+        kprintf("---------------------------\n\n\n");
 }
 
 char* getPSRStrings(uint32_t psrReg, char* string){
         string = "NZCV E IFT";
-
         /* CPSRStatus */
         for(int i = 0; i < 4; i++){
                 if(psrReg & (1 << (31 - i))){
@@ -47,8 +46,39 @@ char* getPSRStrings(uint32_t psrReg, char* string){
         } else {
                 string[5] = '_';
         }
-        
+
         return string;
+}
+
+
+void printMode(enum Modes mode){
+        switch(mode){
+        case USER_MODE: kprintf("User"); break;
+        case FAST_INTERRUPT_MODE: kprintf("FIQ"); break;
+        case IRQ_MODE: kprintf("IRQ"); break;
+        case SUPERVISOR_MODE: kprintf("Supervisor"); break;
+        case MONITOR_MODE: kprintf("Monitor"); break;
+        case ABORT_MODE: kprintf("Abort"); break;
+        case HYPERVISOR_MODE: kprintf("Hypervisor"); break;
+        case UNDEFINED_MODE: kprintf("Undefined"); break;
+        case SYSTEM_MODE: kprintf("System"); break;
+        default: kprintf("Mode field invalid"); break;
+        }
+}
+
+void printModeRegs(enum Modes mode, uint32_t lr, uint32_t sp, uint32_t spsr) {
+        if(mode == USER_MODE || mode == SYSTEM_MODE){
+                kprintf("User/System: %x %x\n", lr, sp);
+        } else {
+                printMode(mode);
+                {
+                char psrString[11];
+                getPSRStrings(spsr, psrString);
+                kprintf(":  %x %x %s ", lr, sp, psrString);
+                }
+                printMode(spsr & 0x1F); /* Print mode thats in SPSR of the current mode */
+                kprintf("    (%x)\n", spsr);
+        }
 }
 
 void registerDump(struct regDump* regDump){
@@ -66,7 +96,6 @@ void registerDump(struct regDump* regDump){
         }
 
         kprintf(" an Addresse %x\n", regDump->insAddress);
-        
         if(regDump->accessAddress != NONE){
                 if(regDump->accessStyle == READ){
                         kprintf("Zugriff: lesend auf Addresse %x\n", regDump->accessAddress);
@@ -74,6 +103,8 @@ void registerDump(struct regDump* regDump){
                         kprintf("Zugriff: schreibend auf Addresse %x\n", regDump->accessAddress);
                 }
         }
+
+        /* TODO Alles in einen Call packen */
         kprintf("Fehler: %s\n\n", regDump->faultName);
         kprintf(">>> Registerschnappschuss (aktueller Modus) <<<\n");
         kprintf("R0: %x  R8:  %x\n", regDump->r0, regDump->r8);
@@ -88,44 +119,49 @@ void registerDump(struct regDump* regDump){
         kprintf("\n\n>>> Aktuelle Statusregister (SPSR des aktuellen Modus) <<<\n");
 
         {
-        char cpsrString[11];
-        getPSRStrings(regDump->cpsr, cpsrString);
-        kprintf("CPSR: %s ", cpsrString);
-        }
-        // TODO Funktion draus machen
-        switch((regDump->cpsr & 0x1F)){
-        case USER_MODE: kprintf("User"); break;
-        case FAST_INTERRUPT_MODE: kprintf("FIQ"); break;
-        case IRQ_MODE: kprintf("IRQ"); break;
-        case SUPERVISOR_MODE: kprintf("Supervisor"); break;
-        case MONITOR_MODE: kprintf("Monitor"); break;
-        case ABORT_MODE: kprintf("Abort"); break;
-        case HYPERVISOR_MODE: kprintf("Hypervisor"); break;
-        case UNDEFINED_MODE: kprintf("Undefined"); break;
-        case SYSTEM_MODE: kprintf("System"); break;
-        default: kprintf("Mode field invalid"); break;
+                char cpsrString[11];
+                getPSRStrings(regDump->cpsr, cpsrString);
+                kprintf("CPSR: %s ", cpsrString);
         }
 
+        printMode(regDump->cpsr & 0x1F);
         kprintf("      (%x)\n", regDump->cpsr);
 
         {
-        char spsrString[11];
-        getPSRStrings(regDump->cpsr, spsrString);
-        kprintf("SPSR: %s ", spsrString);
+                char spsrString[11];
+                getPSRStrings(regDump->cpsr, spsrString);
+                kprintf("SPSR: %s ", spsrString);
         }
-        //TODO Same wie oben
-        switch((regDump->cpsr & 0x1F)){
-        case USER_MODE: kprintf("User"); break;
-        case FAST_INTERRUPT_MODE: kprintf("FIQ"); break;
-        case IRQ_MODE: kprintf("IRQ"); break;
-        case SUPERVISOR_MODE: kprintf("Supervisor"); break;
-        case MONITOR_MODE: kprintf("Monitor"); break;
-        case ABORT_MODE: kprintf("Abort"); break;
-        case HYPERVISOR_MODE: kprintf("Hypervisor"); break;
-        case UNDEFINED_MODE: kprintf("Undefined"); break;
-        case SYSTEM_MODE: kprintf("System"); break;
-        default: kprintf("Mode field invalid"); break;
-        }
-        kprintf("      (%x)\n\n", regDump->spsr);
-}
 
+        printMode(regDump->cpsr & 0x1F);
+        kprintf("      (%x)\n\n", regDump->spsr);
+
+        /* Aktuelle modusspezifische Register */
+        kprintf(">>> Aktuelle modusspezifische Register <<<\n             LR         SP        SPSR\n");
+        printModeRegs(USER_MODE,
+                      regDump->userLr,
+                      regDump->userSp,
+                      0);
+        printModeRegs(SUPERVISOR_MODE,
+                      regDump->supervisorLr,
+                      regDump->supervisorSp,
+                      regDump->supervisorSpsr);
+        printModeRegs(ABORT_MODE,
+                      regDump->abortLr,
+                      regDump->abortSp,
+                      regDump->abortSpsr);
+        printModeRegs(FAST_INTERRUPT_MODE,
+                      regDump->fiqLr,
+                      regDump->fiqSp,
+                      regDump->fiqSpsr);
+        printModeRegs(IRQ_MODE,
+                      regDump->irqLr,
+                      regDump->irqSp,
+                      regDump->irqSpsr);
+        printModeRegs(UNDEFINED_MODE,
+                      regDump->undefinedLr,
+                      regDump->undefinedSp,
+                      regDump->undefinedSpsr);
+
+        kprintf("\n\nSystem angehalten.\n");
+}
