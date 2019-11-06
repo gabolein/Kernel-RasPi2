@@ -33,7 +33,7 @@ enum ExceptionType {
 struct regDump {
         enum ExceptionType exType;
         uint32_t insAddress;
-        enum AccessStyle accessStyle; 
+        enum AccessStyle accessStyle;
         uint32_t accessAddress;
         char* faultName;
         uint32_t r0;
@@ -78,10 +78,13 @@ void specialMessage(const char*);
 
 void printRegisterDump(struct regDump*);
 
-/* Gets a char[11] and a PSR Register and fills the string 
+/* Gets a char[11] and a PSR Register and fills the string
    with a representation of the psr  */
 char* getPSRStrings(uint32_t, char*);
 
+/* ModeType, Mode LR, Mode SP, Mode SPSR (for User/System doesn't matter)  */
+void  printModeRegs(enum Modes, uint32_t, uint32_t, uint32_t);
+
+void printMode(enum Modes);
 
 #endif
-
