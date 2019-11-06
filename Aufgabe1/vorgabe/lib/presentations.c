@@ -165,3 +165,8 @@ void registerDump(struct regDump* regDump){
 
         kprintf("\n\nSystem angehalten.\n");
 }
+
+
+struct regDump* getRegDumpStruct(struct regDump* rd){
+
+}
