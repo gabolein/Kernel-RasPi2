@@ -18,7 +18,7 @@ static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
  */
 
 uint32_t getDFSRReg(){
-        uint32_t dfsr;
+        uint32_t dfsr = 0;
         asm volatile("mcr p15, 0, %0, c5, c0, 0" : "=r" (dfsr));
         return dfsr;
 }

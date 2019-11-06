@@ -14,6 +14,7 @@ void start_kernel(void)
                         case 'u': causeUndefinedInstruction(); break;
                         case 's': causeSWI(); break;
                         case 'i': enableUartInterrupt(); break;
+                        case 'p': printRegisterDump
                         default: inputPresentation(receivedChar); break;
                         }
                 }
