@@ -1,10 +1,28 @@
 #ifndef REGISTER_DUMP_UTIL_H
 #define REGISTER_DUMP_UTIL_H
 
+enum SFSRStatus {
+        ALIGNMENT_FAULT                      = 0x1,
+        DEBUG_EVENT                          = 0x2,
+        ACCESS_FLAG_FAULT_ON_SECTION         = 0x3,
+        CACHE_MAINTENANCE_FAULT              = 0x4,
+        TRANSLATION_FAULT_ON_SECTION         = 0x5,
+        ACCESS_FLAG_FAULT_ON_PAGE            = 0x6,
+        TRANSLATION_FAULT_ON_PAGE            = 0x7,
+        PRECISE_EXTERNAL_ABORT               = 0x8,
+        DOMAIN_FAULT_ON_SECTION              = 0x9,
+        DOMAIN_FAULT_ON_PAGE                 = 0xB,
+        EXTERNAL_ABORT_ON_TRANSLATION_FIRST  = 0xC,
+        PERMISSION_FAULT_ON_SECTION          = 0xD,
+        EXTERNAL_ABORT_ON_TRANSLATION_SECOND = 0xE,
+        PERMISSION_FAULT_ON_PAGE             = 0xF,
+        IMPRECISE_EXTERNAL_ABORT             = 0x16
+};
+
 enum AccessStyle {
-        READ,
-        WRITE,
-        NONE
+        READ = 0,
+        WRITE = 1,
+        NONE = 2
 };
 
 enum Modes {
@@ -30,10 +48,14 @@ enum ExceptionType {
 
 struct regDump {
         enum ExceptionType exType;
-        uint32_t insAddress; //Address of exception causing instruction
+        uint32_t insAddress; /* Address of exception causing instruction */
+
+        /* Data Abort stuff begin */
         enum AccessStyle accessStyle; //DFSR Register
         uint32_t accessAddress; //DFAR Register
-        char* faultName; //DFSR Register
+        enum SFSRStatus faultName;
+        /* Data Abort stuff end */
+
         uint32_t r0;
         uint32_t r1;
         uint32_t r2;
@@ -81,6 +103,9 @@ void printModeRegs(enum Modes, uint32_t, uint32_t, uint32_t);
 void printMode(enum Modes);
 
 /* Creates a regDump struct at pointer */
-struct regDump* getRegDumpStruct(struct regDump*);
+struct regDump* getRegDumpStruct(struct regDump*, enum ExceptionType);
+
+void getRegs(struct regDump*);
+
 
 #endif
