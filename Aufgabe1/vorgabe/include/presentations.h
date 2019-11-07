@@ -32,10 +32,10 @@ enum ExceptionType {
 
 struct regDump {
         enum ExceptionType exType;
-        uint32_t insAddress;
-        enum AccessStyle accessStyle;
-        uint32_t accessAddress;
-        char* faultName;
+        uint32_t insAddress; //Address of exception causing instruction
+        enum AccessStyle accessStyle; //DFSR Register
+        uint32_t accessAddress; //DFAR Register
+        char* faultName; //DFSR Register
         uint32_t r0;
         uint32_t r1;
         uint32_t r2;
@@ -86,5 +86,8 @@ char* getPSRStrings(uint32_t, char*);
 void  printModeRegs(enum Modes, uint32_t, uint32_t, uint32_t);
 
 void printMode(enum Modes);
+
+/* Creates a regDump struct at pointer */
+struct regDump* getRegDumpStruct(struct regDump*);
 
 #endif
