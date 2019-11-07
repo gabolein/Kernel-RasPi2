@@ -4,19 +4,17 @@
 #include "kio.h"
 #include "serial.h"
 #include <stdint.h>
+#include "handlerUtil.h"
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
-
 static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
-/* Register Defs End */
-
 
 /* General Procedure:
    Get Contents of DFSR in C variable using inline assembly.
+*/
 
- */
-
+/* Static inline functions */
 static inline uint32_t getDFSRReg(){
         uint32_t dfsr = 0;
         asm volatile("mrc p15, 0, %0, c5, c0, 0" : "=r" (dfsr));
@@ -30,6 +28,8 @@ static inline uint32_t getDFARReg(){
 }
 
 
+
+/* Handlers */
 void undefined_instruction(){
         green_on();
 }
@@ -44,7 +44,6 @@ void data_abort(){
 }
 
 void irq(){
-        //yellow_on();
         /* Check for pending UART Interrupt */
         if(*irq_pending_2 & (uint32_t)(1 << 25)){
                 char receivedChar;
@@ -58,5 +57,5 @@ void irq(){
         while(1);
 }
 void fiq(){
-  
+
 }
