@@ -3,11 +3,10 @@
 #ifndef _BAR_H_
 #define _BAR_H_
 
-extern void undefined_instruction();
-extern void software_interrupt();
-extern void prefetch_abort();
-extern void data_abort();
-extern void not_used();
+extern void undefined_instruction(void*);
+extern void software_interrupt(void*);
+extern void prefetch_abort(void*);
+extern void data_abort(void*);
 extern void irq();
 extern void fiq();
 

@@ -6,6 +6,7 @@
 #include "presentations.h"
 #include <stdint.h>
 #include "handlerUtil.h"
+#include "registerDumpUtil.h"
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -31,17 +32,23 @@ static inline uint32_t getDFARReg(){
 
 
 /* Handlers */
-void undefined_instruction(){
+void undefined_instruction(void* pc){
         green_on();
+        struct regDump rd;
+        getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc);
 }
-void software_interrupt(){
+void software_interrupt(void* pc){
         red_on();
+        struct regDump rd;
+        getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc);
 }
-void prefetch_abort(){
-
+void prefetch_abort(void* pc){
+        struct regDump rd;
+        getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc);
 }
-void data_abort(){
-        kprintf("%x\n", getDFSRReg());
+void data_abort(void* pc){
+        struct regDump rd;
+        getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc);
 }
 
 void irq(){

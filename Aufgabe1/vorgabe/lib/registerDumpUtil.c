@@ -20,12 +20,6 @@ static inline uint32_t getDFAR(){
         return dfar;
 }
 
-static inline uint32_t getLR() {
-        uint32_t lr = 0;
-        /* asm volatile("mov %0, lr" : "=r" (lr)); */
-        return lr;
-}
-
 char* getPSRStrings(uint32_t psrReg, char* string){
         string = "NZCV E IFT";
         /* CPSRStatus */
@@ -86,11 +80,15 @@ void printModeRegs(enum Modes mode, uint32_t lr, uint32_t sp, uint32_t spsr) {
         }
 }
 
-void getRegs(struct regDump* rd){
-
+void getRegs(struct regDump* rd, void* pcPointer){
+        struct commonRegs* regs = pcPointer;
+        *((struct commonRegs*)rd) = *regs;
+        return;
 }
 
-struct regDump* getRegDumpStruct(struct regDump* rd, enum ExceptionType exType ){
+struct regDump* getRegDumpStruct(struct regDump* rd, enum ExceptionType exType, void* pc){
+        getRegs(rd, pc);
+
         rd->exType = exType;
 
         if(exType == DATA_ABORT) {
@@ -99,15 +97,15 @@ struct regDump* getRegDumpStruct(struct regDump* rd, enum ExceptionType exType )
                 rd->faultName = ((dfsr & STATUS_LEADING) << 4) + (dfsr & 0xF);
                 rd->accessAddress = getDFAR();
 
-                rd->insAddress = getLR() - 8;
+                rd->insAddress = rd->lr - 8;
         } else if(exType == UNDEFINED_INSTRUCTION ||
                   exType == PREFETCH_ABORT ||
                   exType == SOFTWARE_INTERRUPT){
-                rd->insAddress = getLR() - 4;
+                rd->insAddress = rd->lr - 4;
         } else {
                 rd->insAddress = 0;
         }
 
-        /* TODO Register holen */
+        /* TODO Special Register holen */
 
 }
