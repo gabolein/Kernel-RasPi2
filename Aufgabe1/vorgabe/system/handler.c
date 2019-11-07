@@ -17,9 +17,9 @@ static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
 
  */
 
-uint32_t getDFSRReg(){
+static inline uint32_t getDFSRReg(){
         uint32_t dfsr = 0;
-        asm volatile("mcr p15, 0, %0, c5, c0, 0" : "=r" (dfsr));
+        asm volatile("mrc p15, 0, %0, c5, c0, 0" : "=r" (dfsr));
         return dfsr;
 }
 
@@ -34,14 +34,10 @@ void prefetch_abort(){
 
 }
 void data_abort(){
-        yellow_on();
-
         kprintf("%x\n", getDFSRReg());
 }
-void not_used(){
-  
-}
-void irq(){ 
+
+void irq(){
         //yellow_on();
         /* Check for pending UART Interrupt */
         if(*irq_pending_2 & (uint32_t)(1 << 25)){

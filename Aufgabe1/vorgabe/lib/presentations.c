@@ -53,16 +53,16 @@ char* getPSRStrings(uint32_t psrReg, char* string){
 
 void printMode(enum Modes mode){
         switch(mode){
-        case USER_MODE: kprintf("User"); break;
-        case FAST_INTERRUPT_MODE: kprintf("FIQ"); break;
-        case IRQ_MODE: kprintf("IRQ"); break;
-        case SUPERVISOR_MODE: kprintf("Supervisor"); break;
-        case MONITOR_MODE: kprintf("Monitor"); break;
-        case ABORT_MODE: kprintf("Abort"); break;
-        case HYPERVISOR_MODE: kprintf("Hypervisor"); break;
-        case UNDEFINED_MODE: kprintf("Undefined"); break;
-        case SYSTEM_MODE: kprintf("System"); break;
-        default: kprintf("Mode field invalid"); break;
+        case USER_MODE:           kprintf("User");               break;
+        case FAST_INTERRUPT_MODE: kprintf("FIQ");                break;
+        case IRQ_MODE:            kprintf("IRQ");                break;
+        case SUPERVISOR_MODE:     kprintf("Supervisor");         break;
+        case MONITOR_MODE:        kprintf("Monitor");            break;
+        case ABORT_MODE:          kprintf("Abort");              break;
+        case HYPERVISOR_MODE:     kprintf("Hypervisor");         break;
+        case UNDEFINED_MODE:      kprintf("Undefined");          break;
+        case SYSTEM_MODE:         kprintf("System");             break;
+        default:                  kprintf("Mode field invalid"); break;
         }
 }
 
@@ -167,6 +167,6 @@ void registerDump(struct regDump* regDump){
 }
 
 
-struct regDump* getRegDumpStruct(struct regDump* rd){
+struct regDump* getRegDumpStruct(struct regDump* rd, ){
 
 }
