@@ -23,33 +23,29 @@ __fiq:                           .word _fiq
     /* TODO Register sichern */
     /* TODO IRQ und FIQ abschalten */
 _undefined_instruction:
-    push {r0-r12}
-    str PC, [sp, #-4]!
-    b   undefined_instruction
+    push {r0-r15}
+    mov r0, sp
+    bl   undefined_instruction
 _software_interrupt:
     /* Software Interrupt nutzt normalen Registersatz */
-    push {r0-r12}
-    str PC, [sp, #-4]!
-	b	software_interrupt
+    push {r0-r15}
+    mov r0, sp
+	bl	software_interrupt
 _prefetch_abort:
-    push {r0-r12}
-	str SP, [sp, #-4]!
-    str LR, [sp, #-4]!
-    str PC, [sp, #-4]!
-
-
-	b	prefetch_abort
+    push {r0-r15}
+	mov r0, sp
+	bl	prefetch_abort
 _data_abort:
-    push {r0-r12}
-    str PC, [sp, #-4]!
-	b	data_abort
+    push {r0-r15}
+    mov r0, sp
+	bl	data_abort
 _not_used:
     nop
 _irq:
-    push {r0-r12}
-    str PC, [sp, #-4]!
-	b	irq
-_fiq    :
-    push {r0-r12}
-    str PC, [sp, #-4]!
-	b	fiq
+    push {r0-r15}
+    mov r0, sp
+	bl	irq
+_fiq:
+    push {r0-r15}
+    mov r0, sp
+	bl	fiq
