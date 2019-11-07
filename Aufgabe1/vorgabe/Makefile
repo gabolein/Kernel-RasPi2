@@ -52,7 +52,6 @@ OBJ += lib/utils.o
 OBJ += lib/registerDumpUtil.o
 OBJ += lib/handlerUtil.o
 
->>>>>>> a6e3e977398c0da05ce16d205ba50a6274e9e348
 # Falls die binäre Musterlösung benutzt wird bitte auskommentieren
 # und gegebenenfalls Ordner anpassen:
 # OBJ_LSG = obj/$(BIN_LSG).o
