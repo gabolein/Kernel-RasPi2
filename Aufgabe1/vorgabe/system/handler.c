@@ -23,6 +23,12 @@ static inline uint32_t getDFSRReg(){
         return dfsr;
 }
 
+static inline uint32_t getDFARReg(){
+        uint32_t dfar = 0;
+        asm volatile("mrc p15, 0, %0, c6, c0, 0" : "=r" (dfar));
+        return dfar;
+}
+
 
 void undefined_instruction(){
         green_on();

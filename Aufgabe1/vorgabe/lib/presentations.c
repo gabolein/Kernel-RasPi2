@@ -167,6 +167,8 @@ void registerDump(struct regDump* regDump){
 }
 
 
+/*
 struct regDump* getRegDumpStruct(struct regDump* rd, ){
 
 }
+*/
