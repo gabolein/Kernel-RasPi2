@@ -8,7 +8,7 @@ _ivt:	        b       _reset
 	        ldr     pc, __prefetch_abort
 	        ldr     pc, __data_abort
 	        ldr     pc, __not_used
-		ldr     pc, __irq
+		    ldr     pc, __irq
 	        ldr     pc, __fiq
 
 __undefined_instruction:         .word _undefined_instruction
@@ -21,8 +21,10 @@ __fiq:                           .word _fiq
 
         /* Branch Vorbereiten */
         /* TODO Register sichern */
+        /* TODO IRQ und FIQ abschalten */
 _undefined_instruction:
-	b	undefined_instruction
+        push {r0-r12}
+        b   undefined_instruction
 _software_interrupt:
         /* Software Interrupt nutzt normalen Registersatz */
 	b	software_interrupt
