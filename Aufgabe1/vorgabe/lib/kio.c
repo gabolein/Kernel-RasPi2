@@ -16,7 +16,7 @@
  * Prints a string in the given format to screen
  */
 __attribute__((format(printf, 1, 2)))
-void kprintf(const char* format, ...) {
+void kprintfbuffer(const char* format, ...) {
 
         va_list arg;
         va_start(arg, format);
@@ -47,7 +47,6 @@ void kprintf(const char* format, ...) {
                                         break;
                                 case 'x' :
                                         u_int_num = va_arg(arg, unsigned int);
-
                                         setEmptyString(c_buffer16, LEN_HEX);
                                         kprintf(itoa16(u_int_num, c_buffer16));
                                         break;
