@@ -203,8 +203,8 @@ void printModeRegs(enum Modes mode, uint32_t lr, uint32_t sp, uint32_t spsr) {
         }
 }
 
-void getRegs(struct regDump* rd, void* pcPointer){
-        struct commonRegs* regs = pcPointer;
+void getRegs(struct regDump* rd, void* sp){
+        struct commonRegs* regs = sp;
         *((struct commonRegs*)rd) = *regs;
         return;
 }
