@@ -124,7 +124,7 @@ void kprintfbuffer(const char* format, ...) {
                                 case 'x' :
                                         u_int_num = va_arg(arg, unsigned int);
                                         setEmptyString(c_buffer16, LEN_HEX);
-                                        kprintf(itoa16(u_int_num, c_buffer16));
+                                        kprintf(itoa16buffer(u_int_num, c_buffer16));
                                         break;
                                 case 'i' :
                                         int_num = va_arg(arg, int);
@@ -136,19 +136,19 @@ void kprintfbuffer(const char* format, ...) {
                                                         int_num *= -1;
                                                 }
                                                 setEmptyString(c_buffer10, LEN_DEC);
-                                                kprintf(itoa10(int_num, c_buffer10));
+                                                kprintf(itoa10buffer(int_num, c_buffer10));
                                         }
                                         break;
                                 case 'u' :
                                         u_int_num = va_arg(arg, unsigned int);
                                         setEmptyString(c_buffer10, LEN_DEC);
-                                        kprintf(itoa10(u_int_num, c_buffer10));
+                                        kprintf(itoa10buffer(u_int_num, c_buffer10));
                                         break;
                                 case 'p' :
                                         kprintf("0x");
                                         address = va_arg(arg, uint32_t); // pointer -> 32Bit address
                                         setEmptyString(c_buffer16, LEN_HEX);
-                                        kprintf(itoa16(address, c_buffer16));
+                                        kprintf(itoa16buffer(address, c_buffer16));
                                         break;
                                 default: // if unknown definer, behave like printf
                                         kputChar('%');

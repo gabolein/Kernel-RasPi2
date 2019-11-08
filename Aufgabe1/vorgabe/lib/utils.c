@@ -29,3 +29,28 @@ void setEmptyString(char c_buffer[], int buf_len){
         }
 }
 
+char* itoa10(unsigned int value){
+
+        static char c_buffer[10] = ""; // 10 -> maximal amount of characters needed to present 32 bits in decimal
+        static char presentation[] = "0123456789";
+        int i = 8; // start from the back
+        do { // need do while in case value = 0
+                c_buffer[i] = presentation[value % 10];
+                --i;
+                value /= 10;
+        } while (value > 0);
+        return &c_buffer[i+1];
+}
+
+char* itoa16(unsigned int value){
+
+        static char c_buffer[8] = ""; // 8 -> maximal amount of characters needed to present 32 bits in hex
+        static char presentation[] = "0123456789abcdef";
+        int i = 6; // start from the back
+        do { // need do while in case value = 0
+                c_buffer[i] = presentation[value % 16];
+                --i;
+                value /= 16;
+        } while (value > 0);
+        return &c_buffer[i+1];
+}
