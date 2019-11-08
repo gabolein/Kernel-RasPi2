@@ -55,7 +55,7 @@ void software_interrupt(void* sp){
         maskInterrupts();
         red_on();
         struct regDump rd;
-        getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
+        getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
         registerDump(&rd);
         unmaskInterrupts();
         //mov pc, lr
@@ -64,7 +64,7 @@ void prefetch_abort(void* sp){
         maskInterrupts();
         struct regDump rd;
 
-        getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
+        getRegDumpStruct(&rd, PREFETCH_ABORT, sp);
         registerDump(&rd);
         unmaskInterrupts();
         //mov pc, lr
@@ -72,7 +72,7 @@ void prefetch_abort(void* sp){
 void data_abort(void* sp){
         maskInterrupts();
         struct regDump rd;
-        getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
+        getRegDumpStruct(&rd, DATA_ABORT, sp);
         registerDump(&rd);
         unmaskInterrupts();
         //mov pc, lr
@@ -91,7 +91,7 @@ void irq(){
         kprintf("I am useless now :D. Plz end me\n");
         /* Abschmieren */
         while(1);
-        unmaskInterrupts();
+        //unmaskInterrupts();
         //mov pc, lr
 }
 void fiq(){
