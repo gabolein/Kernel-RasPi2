@@ -12,6 +12,82 @@
 #define LEN_DEC 10 // max chars needed to represent decimal
 #define LEN_HEX 8 // max chars needed to represent hex
 
+
+/*
+ * Prints a string in the given format to screen
+ */
+__attribute__((format(printf, 1, 2)))
+void kprintf(const char* format, ...) {
+
+        va_list arg;
+        va_start(arg, format);
+
+        unsigned char char_rep;
+        const char* str;
+        unsigned int u_int_num;
+        int int_num;
+        unsigned int address;
+
+
+        for (const char* traverse = format; *traverse != '\0'; traverse++) {
+                if (*traverse == '%') {
+                        traverse++; // move to next character, we dont wanna print the '%'
+
+                        switch(*traverse) {
+
+                                case '%' :
+                                        kputChar('%');
+                                        break;
+                                case 'c' :
+                                        char_rep = va_arg(arg, int);
+                                        kputChar(char_rep);
+                                        break;
+                                case 's' :
+                                        str = va_arg(arg, const char*);
+                                        kprintf(str);
+                                        break;
+                                case 'x' :
+                                        u_int_num = va_arg(arg, unsigned int);
+                                        kprintf(itoa16(u_int_num));
+                                        break;
+                                case 'i' :
+                                        int_num = va_arg(arg, int);
+                                        if(int_num == MIN_INT) { // edge case (zweier komplement who?)
+                                                kprintf("-21474836478");
+                                        } else {
+                                                if(int_num < 0) { // if negative, print '-' and treat like unsigned int
+                                                        kputChar('-');
+                                                        int_num *= -1;
+                                                }
+                                                kprintf(itoa10(int_num));
+                                        }
+                                        break;
+                                case 'u' :
+                                        u_int_num = va_arg(arg, unsigned int);
+                                        kprintf(itoa10(u_int_num));
+                                        break;
+                                case 'p' :
+                                        kprintf("0x");
+                                        address = va_arg(arg, uint32_t); // pointer -> 32Bit address
+                                        kprintf(itoa16(address));
+                                        break;
+                                default: // if unknown definer, behave like printf
+                                        kputChar('%');
+                                        kputChar(*traverse);
+                                        break;
+                        }
+
+                } else {
+                        kputChar(*traverse);
+                }
+        }
+        va_end(arg);
+}
+
+
+
+
+
 /*
  * Prints a string in the given format to screen
  */
