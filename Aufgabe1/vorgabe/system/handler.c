@@ -35,20 +35,24 @@ static inline uint32_t getDFARReg(){
 void undefined_instruction(void* pc){
         green_on();
         struct regDump rd;
-        getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc);
+        registerDump(getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc));
+        while(1);
 }
 void software_interrupt(void* pc){
         red_on();
         struct regDump rd;
-        getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc);
+        registerDump(getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc));
+        while(1);
 }
 void prefetch_abort(void* pc){
         struct regDump rd;
-        getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc);
+        registerDump(getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc));
+        while(1);
 }
 void data_abort(void* pc){
         struct regDump rd;
-        getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc);
+        registerDump(getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, pc));
+        while(1);
 }
 
 void irq(){
