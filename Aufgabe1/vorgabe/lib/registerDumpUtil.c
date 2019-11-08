@@ -200,7 +200,7 @@ void printModeRegs(enum Modes mode, uint32_t lr, uint32_t sp, uint32_t spsr) {
                 kprintf(":  %x %x %s ", lr, sp, psrString);
                 }
                 printMode(spsr & 0x1F); /* Print mode thats in SPSR of the current mode */
-                kprintf("    (%x)\n", spsr); /* TODO: Problem, brauchen getPSR String
+                kprintf("    (%x)\n", spsr); /* TODO: Problem, brauchen getPSR String */
         }
 }
 
