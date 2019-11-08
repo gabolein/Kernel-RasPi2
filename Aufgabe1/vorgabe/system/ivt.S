@@ -23,9 +23,9 @@ __fiq:                           .word _fiq
     /* TODO Register sichern */
     /* TODO IRQ und FIQ abschalten */
 _undefined_instruction:
-    ldr     r0, =#255
-    stmdb   sp, {r0-r15}^ /* Speichere die überlagerten Register (wie sie im unprivilegierten Modus vorliegen), auf dem Stack */
-    sub     sp, sp, #64   /* Dekrementiere den SP */
+    ldr     r1, =#255
+    stmdb   sp!, {r0-r15} /* Speichere die überlagerten Register (wie sie im unprivilegierten Modus vorliegen), auf dem Stack */
+    /*sub     sp, sp, #64    Dekrementiere den SP */
     mov     r0, sp
     bl      undefined_instruction
 _software_interrupt:
