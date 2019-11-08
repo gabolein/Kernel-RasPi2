@@ -251,6 +251,5 @@ struct regDump* getRegDumpStruct(struct regDump* rd, enum ExceptionType exType, 
         rd->undefinedSpsr = getSPSR_UND();
 
         return rd;
-        /* TODO Special Register holen */
 
 }
