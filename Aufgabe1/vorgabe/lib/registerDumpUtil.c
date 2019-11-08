@@ -80,14 +80,14 @@ void printModeRegs(enum Modes mode, uint32_t lr, uint32_t sp, uint32_t spsr) {
         }
 }
 
-void getRegs(struct regDump* rd, void* pcPointer){
-        struct commonRegs* regs = pcPointer;
+void getRegs(struct regDump* rd, void* sp){
+        struct commonRegs* regs = sp;
         *((struct commonRegs*)rd) = *regs;
         return;
 }
 
-struct regDump* getRegDumpStruct(struct regDump* rd, enum ExceptionType exType, void* pc){
-        getRegs(rd, pc);
+struct regDump* getRegDumpStruct(struct regDump* rd, enum ExceptionType exType, void* sp){
+        getRegs(rd, sp);
 
         rd->exType = exType;
 
