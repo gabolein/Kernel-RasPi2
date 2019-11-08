@@ -23,10 +23,10 @@ __fiq:                           .word _fiq
     /* TODO Register sichern */
     /* TODO IRQ und FIQ abschalten */
 _undefined_instruction:
-    push {r0-r12}
-    push {r13-r15}
-    mov r0, sp
-    bl   undefined_instruction
+    stmdb   sp, {r0-r15}^ /* Speichere die überlagerten Register (wie sie im unprivilegierten Modus vorliegen), auf dem Stack */
+    sub     sp, sp, #64   /* Dekrementiere den SP */
+    mov     r0, sp
+    bl      undefined_instruction
 _software_interrupt:
     /* Software Interrupt nutzt normalen Registersatz */
     push {r0-r12}
@@ -39,10 +39,10 @@ _prefetch_abort:
 	mov r0, sp
 	bl	prefetch_abort
 _data_abort:
-    push {r0-r12}
-	push {r13-r15}
-    mov r0, sp
-	bl	data_abort
+    stmdb   sp, {r0-r15}^ /* Speichere die überlagerten Register (wie sie im unprivilegierten Modus vorliegen), auf dem Stack */
+	sub     sp, sp, #64   /* Dekrementiere den SP */
+	mov     r0, sp
+	bl	    data_abort
 _not_used:
     nop
 _irq:
