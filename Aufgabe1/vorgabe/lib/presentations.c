@@ -44,6 +44,7 @@ void registerDump(struct regDump* regDump){
         }
 
         /* TODO Alles in einen Call packen */
+        kprintf("Fehler: ");
         switch(regDump->faultName) {
                 case ALIGNMENT_FAULT:                      kprintf("Alignment fault"); break;
                 case DEBUG_EVENT:                          kprintf("Debug event fault"); break;
@@ -61,8 +62,8 @@ void registerDump(struct regDump* regDump){
                 case PERMISSION_FAULT_ON_PAGE:             kprintf("Permission fault on Page"); break;
                 case IMPRECISE_EXTERNAL_ABORT:             kprintf("Imprecise External Abort"); break;
         }
-        kprintf("Fehler: %s\n\n", regDump->faultName);
-        kprintf(">>> Registerschnappschuss (aktueller Modus) <<<\n");
+
+        kprintf("\n\n>>> Registerschnappschuss (aktueller Modus) <<<\n");
         kprintf("R0: %x  R8:  %x\n", regDump->r0, regDump->r8);
         kprintf("R1: %x  R9:  %x\n", regDump->r1, regDump->r9);
         kprintf("R2: %x  R10: %x\n", regDump->r2, regDump->r10);
