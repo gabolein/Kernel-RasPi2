@@ -218,7 +218,7 @@ struct regDump* getRegDumpStruct(struct regDump* rd, enum ExceptionType exType, 
         if(exType == DATA_ABORT) {
                 uint32_t dfsr = getDFSR();
                 rd->accessStyle = dfsr & DFSR_RW;
-                rd->faultName = ((dfsr & STATUS_LEADING) << 4) + (dfsr & 0xF);
+                rd->faultName = (dfsr & STATUS_LEADING)*16 + (dfsr & 0xF);
                 rd->accessAddress = getDFAR();
 
                 rd->insAddress = rd->lr - 8;
