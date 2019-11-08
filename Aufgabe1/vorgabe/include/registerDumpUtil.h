@@ -47,6 +47,12 @@ enum ExceptionType {
 };
 
 struct commonRegs {
+        /* Die müssen hier oben sein, weil sie in ivt.S in
+           dieser Reihenfolge auf den Stack geschrieben werden */
+        uint32_t sp;
+        uint32_t lr;
+        uint32_t pc;
+
         uint32_t r0;
         uint32_t r1;
         uint32_t r2;
@@ -60,9 +66,6 @@ struct commonRegs {
         uint32_t r10;
         uint32_t r11;
         uint32_t r12;
-        uint32_t sp;
-        uint32_t lr;
-        uint32_t pc;
 };
 
 struct regDump {
