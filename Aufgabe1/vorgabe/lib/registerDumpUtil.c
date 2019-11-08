@@ -101,9 +101,31 @@ void getRegs(struct regDump* rd, void* sp){
         return;
 }
 
+void getSpecialRegs(struct regDump* rd) {
+    asm volatile ("mrs %0, lr_usr" : "=r" (rd->userLr));
+    asm volatile ("mrs %0, sp_usr" : "=r" (rd->userSp));
+    asm volatile ("mrs %0, lr_svc" : "=r" (rd->supervisorLr));
+    asm volatile ("mrs %0, sp_svc" : "=r" (rd->supervisorSp));
+    asm volatile ("mrs %0, spsr_svc" : "=r" (rd->supervisorSpsr));
+    asm volatile ("mrs %0, lr_abt" : "=r" (rd->abortLr));
+    asm volatile ("mrs %0, sp_abt" : "=r" (rd->abortSp));
+    asm volatile ("mrs %0, spsr_abt" : "=r" (rd->abortSpsr));
+    asm volatile ("mrs %0, lr_fiq" : "=r" (rd->fiqLr));
+    asm volatile ("mrs %0, sp_fiq" : "=r" (rd->fiqSp));
+    asm volatile ("mrs %0, spsr_fiq" : "=r" (rd->fiqSpsr));
+    asm volatile ("mrs %0, lr_irq" : "=r" (rd->irqLr));
+    asm volatile ("mrs %0, sp_irq" : "=r" (rd->irqSp));
+    asm volatile ("mrs %0, spsr_irq" : "=r" (rd->irqSpsr));
+    asm volatile ("mrs %0, lr_und" : "=r" (rd->undefinedLr));
+    asm volatile ("mrs %0, sp_und" : "=r" (rd->undefinedSp));
+    asm volatile ("mrs %0, spsr_und" : "=r" (rd->undefinedSpsr));
+    return;
+}
+
 
 struct regDump* getRegDumpStruct(struct regDump* rd, enum ExceptionType exType, void* sp){
         getRegs(rd, sp);
+        getSpecialRegs(rd);
 
         rd->exType = exType;
 
@@ -125,24 +147,8 @@ struct regDump* getRegDumpStruct(struct regDump* rd, enum ExceptionType exType, 
         rd->cpsr = getCPSR();
         rd->spsr = getSPSR();
 
-        /* Set special registers for every mode */
-        asm volatile ("mrs %0, lr_usr" : "=r" (rd->userLr));
-        asm volatile ("mrs %0, sp_usr" : "=r" (rd->userSp));
-        asm volatile ("mrs %0, lr_svc" : "=r" (rd->supervisorLr));
-        asm volatile ("mrs %0, sp_svc" : "=r" (rd->supervisorSp));
-        asm volatile ("mrs %0, spsr_svc" : "=r" (rd->supervisorSpsr));
-        asm volatile ("mrs %0, lr_abt" : "=r" (rd->abortLr));
-        asm volatile ("mrs %0, sp_abt" : "=r" (rd->abortSp));
-        asm volatile ("mrs %0, spsr_abt" : "=r" (rd->abortSpsr));
-        asm volatile ("mrs %0, lr_fiq" : "=r" (rd->fiqLr));
-        asm volatile ("mrs %0, sp_fiq" : "=r" (rd->fiqSp));
-        asm volatile ("mrs %0, spsr_fiq" : "=r" (rd->fiqSpsr));
-        asm volatile ("mrs %0, lr_irq" : "=r" (rd->irqLr));
-        asm volatile ("mrs %0, sp_irq" : "=r" (rd->irqSp));
-        asm volatile ("mrs %0, spsr_irq" : "=r" (rd->irqSpsr));
-        asm volatile ("mrs %0, lr_und" : "=r" (rd->undefinedLr));
-        asm volatile ("mrs %0, sp_und" : "=r" (rd->undefinedSp));
-        asm volatile ("mrs %0, spsr_und" : "=r" (rd->undefinedSpsr));
+
+
 
         return rd;
 
