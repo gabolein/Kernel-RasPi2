@@ -25,13 +25,13 @@ void registerDump(struct regDump* regDump){
                 "#######################################\n");
 
         switch(regDump->exType) {
-        case SOFTWARE_INTERRUPT:    kprintf("Software Interrupt"); break;
-        case DATA_ABORT:            kprintf("Data Abort"); break;
-        case UNDEFINED_INSTRUCTION: kprintf("Undefined Instruction"); break;
-        case PREFETCH_ABORT:        kprintf("Prefetch Abort"); break;
-        case IRQ:                   kprintf("Interrupt"); break;
-        case FIQ:                   kprintf("Fast Interrupt"); break;
-        default:                    kprintf("Undefined Interrupt"); break; /*Error*/
+                case SOFTWARE_INTERRUPT:    kprintf("Software Interrupt"); break;
+                case DATA_ABORT:            kprintf("Data Abort"); break;
+                case UNDEFINED_INSTRUCTION: kprintf("Undefined Instruction"); break;
+                case PREFETCH_ABORT:        kprintf("Prefetch Abort"); break;
+                case IRQ:                   kprintf("Interrupt"); break;
+                case FIQ:                   kprintf("Fast Interrupt"); break;
+                default:                    kprintf("Undefined Interrupt"); break; /*Error*/
         }
 
         kprintf(" an Addresse %x\n", regDump->insAddress);
@@ -44,6 +44,23 @@ void registerDump(struct regDump* regDump){
         }
 
         /* TODO Alles in einen Call packen */
+        switch(regDump->faultName) {
+                case ALIGNMENT_FAULT:                      kprintf("Alignment fault"); break;
+                case DEBUG_EVENT:                          kprintf("Debug event fault"); break;
+                case ACCESS_FLAG_FAULT_ON_SECTION:         kprintf("Access Flag fault on Section"); break;
+                case CACHE_MAINTENANCE_FAULT:              kprintf("Cache maintenance operation fault[b]"); break;
+                case TRANSLATION_FAULT_ON_SECTION:         kprintf("Translation fault on Section"); break;
+                case ACCESS_FLAG_FAULT_ON_PAGE:            kprintf("Access Flag fault on Page"); break;
+                case TRANSLATION_FAULT_ON_PAGE:            kprintf("Translation fault on Page"); break;
+                case PRECISE_EXTERNAL_ABORT:               kprintf("Precise External Abort"); break;
+                case DOMAIN_FAULT_ON_SECTION:              kprintf("Domain fault on Section"); break;
+                case DOMAIN_FAULT_ON_PAGE:                 kprintf("Domain fault on Page"); break;
+                case EXTERNAL_ABORT_ON_TRANSLATION_FIRST:  kprintf("External abort on translation, first level"); break;
+                case PERMISSION_FAULT_ON_SECTION:          kprintf("Permission fault on Section"); break;
+                case EXTERNAL_ABORT_ON_TRANSLATION_SECOND: kprintf("External abort on translation, second level"); break;
+                case PERMISSION_FAULT_ON_PAGE:             kprintf("Permission fault on Page"); break;
+                case IMPRECISE_EXTERNAL_ABORT:             kprintf("Imprecise External Abort"); break;
+        }
         kprintf("Fehler: %s\n\n", regDump->faultName);
         kprintf(">>> Registerschnappschuss (aktueller Modus) <<<\n");
         kprintf("R0: %x  R8:  %x\n", regDump->r0, regDump->r8);
