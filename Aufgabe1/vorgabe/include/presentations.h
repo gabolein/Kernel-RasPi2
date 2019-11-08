@@ -6,6 +6,6 @@
 
 void inputPresentation(char receivedChar);
 void specialMessage(const char*);
-void printRegisterDump(struct regDump*);
+void registerDump(struct regDump*);
 
 #endif
