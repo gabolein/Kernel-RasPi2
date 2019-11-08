@@ -21,8 +21,8 @@ void specialMessage(const char* msg){
 
 
 void registerDump(struct regDump* regDump){
-        kprintf("#################################### \
-#######################################\n");
+        kprintf("####################################"
+                "#######################################\n");
 
         switch(regDump->exType) {
         case SOFTWARE_INTERRUPT:    kprintf("Software Interrupt"); break;
