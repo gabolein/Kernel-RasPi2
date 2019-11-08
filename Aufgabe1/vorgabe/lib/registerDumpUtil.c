@@ -33,7 +33,19 @@ static inline uint32_t getSPSR() {
 }
 
 char* getPSRStrings(uint32_t psrReg, char* string){
-        string = "NZCV E IFT";
+        //string = "NZCV E IFT";
+        string[0] = 'N';
+        string[1] = 'Z';
+        string[2] = 'C';
+        string[3] = 'V';
+        string[4] = ' ';
+        string[5] = 'E';
+        string[6] = ' ';
+        string[7] = 'I';
+        string[8] = 'F';
+        string[9] = 'T';
+        string[10] = '\0';
+
         /* CPSRStatus */
         for(int i = 0; i < 4; i++){
                 if(psrReg & (1 << (31 - i))){
