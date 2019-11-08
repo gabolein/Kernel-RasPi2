@@ -97,6 +97,9 @@ void printModeRegs(enum Modes mode, uint32_t lr, uint32_t sp, uint32_t spsr) {
 
 void getRegs(struct regDump* rd, void* sp){
         struct commonRegs* regs = sp;
+        (uint32_t*) r2 = sp + 56;
+        kprintf("!!!!!R2: %x!!!!!", *r2);
+
         *((struct commonRegs*)rd) = *regs;
         return;
 }
