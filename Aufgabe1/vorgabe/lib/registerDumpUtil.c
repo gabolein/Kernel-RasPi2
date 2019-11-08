@@ -128,6 +128,7 @@ void getRegs(struct regDump* rd, void* sp){
 }
 
 void getSpecialRegs(struct regDump* rd) {
+        /* TODO */
     asm volatile ("mrs %0, lr_usr" : "=r" (rd->userLr));
     asm volatile ("mrs %0, sp_usr" : "=r" (rd->userSp));
     asm volatile ("mrs %0, lr_svc" : "=r" (rd->supervisorLr));
