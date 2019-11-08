@@ -40,12 +40,14 @@ static inline void unmaskInterrupts() {
 /* Handlers */
 /* TODO: Pending bit clearen (oder wie auch immer das heißt)
    Prüfen um was für einen Interrupt es sich jeweils handelt
+   Register vor dem Rücksprung wiederherstellen
 */
 void undefined_instruction(void* sp){
         maskInterrupts();
         green_on();
         struct regDump rd;
         getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
+        registerDump(&rd);
         unmaskInterrupts();
         //mov pc, lr
 }
@@ -54,6 +56,7 @@ void software_interrupt(void* sp){
         red_on();
         struct regDump rd;
         getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
+        registerDump(&rd);
         unmaskInterrupts();
         //mov pc, lr
 }
@@ -61,6 +64,7 @@ void prefetch_abort(void* sp){
         maskInterrupts();
         struct regDump rd;
         getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
+        registerDump(&rd);
         unmaskInterrupts();
         //mov pc, lr
 }
@@ -68,6 +72,7 @@ void data_abort(void* sp){
         maskInterrupts();
         struct regDump rd;
         getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
+        registerDump(&rd);
         unmaskInterrupts();
         //mov pc, lr
 }
