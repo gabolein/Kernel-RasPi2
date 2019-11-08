@@ -46,7 +46,7 @@ _data_abort:
 _not_used:
     nop
 _irq:
-    push {r0-r12}
+        push {r0-r12}
 	push {r13-r15}
     mov r0, sp
 	bl	irq
