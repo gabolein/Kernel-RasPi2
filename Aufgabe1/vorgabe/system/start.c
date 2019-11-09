@@ -1,9 +1,11 @@
 #include "presentations.h"
 #include "serial.h"
 #include "tests.h"
+#include "timer.h"
 
 void start_kernel(void)
 {
+        initTimer();
         specialMessage("Kernel loaded! (UwU)");
         while(1){
                 char receivedChar;

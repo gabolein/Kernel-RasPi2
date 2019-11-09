@@ -80,6 +80,12 @@ void data_abort(void* sp){
 
 void irq(){
         maskInterrupts();
+        if (clockHandler()){
+
+        }
+        if (uarthandler()){
+            return
+        }
         /* Check for pending UART Interrupt */
         if(*irq_pending_2 & (uint32_t)(1 << 25)){
                 char receivedChar;
