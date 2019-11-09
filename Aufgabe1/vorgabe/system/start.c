@@ -4,7 +4,7 @@
 
 void start_kernel(void)
 {
-        specialMessage("Kernel loaded! (UWU)");
+        specialMessage("Kernel loaded! (UwU)");
         while(1){
                 char receivedChar;
                 int hasReceived = uartReceiveChar(&receivedChar);
