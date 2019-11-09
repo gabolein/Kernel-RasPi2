@@ -43,6 +43,8 @@ OBJ += system/handler.o
 # Driver
 OBJ += driver/led.o
 OBJ += driver/serial.o
+OBJ += driver/timer.o
+
 
 # Libs
 OBJ += lib/kio.o
