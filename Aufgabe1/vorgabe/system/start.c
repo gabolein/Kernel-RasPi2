@@ -4,6 +4,7 @@
 #include "timer.h"
 #include "handler.h"
 #include "kio.h"
+volatile int debugMode;
 void start_kernel(void)
 {
         //initTimer();
@@ -13,7 +14,7 @@ void start_kernel(void)
                 int hasReceived = uartReceiveChar(&receivedChar);
                 if (hasReceived) {
                         switch(receivedChar){
-                                case 'd': *debugMode = 1; kprintf("debugMode: %i\n", *debugMode);break;
+                                case 'd': debugMode = 1; break;
                                 case 'a': causeDataAbort(); break;
                                 case 'u': causeUndefinedInstruction(); break;
                                 case 's': causeSWI(); break;

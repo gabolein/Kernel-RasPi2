@@ -11,7 +11,7 @@ extern void irq(void*);
 extern void fiq();
 int clockHandler();
 int uartHandler();
-static volatile int* debugMode;
+extern volatile int debugMode;
 
 #endif
 
