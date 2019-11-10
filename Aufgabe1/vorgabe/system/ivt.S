@@ -67,7 +67,7 @@ _data_abort:
 
             ldmia sp!, {r0 - r12}
 	cpsie i
-	subs pc, lr, #8
+	subs pc, lr, #4
 _not_used:
     nop
 _irq:
