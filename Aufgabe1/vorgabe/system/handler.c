@@ -8,7 +8,7 @@
 #include "handlerUtil.h"
 #include "registerDumpUtil.h"
 #include "timer.h"
-#include "start.c"
+
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -102,13 +102,13 @@ void data_abort(void* sp){
         //mov pc, lr
 }
 
-void irq(){
+void irq(void* sp){
         maskInterrupts();
         if (clockHandler()){
                 if(debugMode) {
                         struct regDump rd;
                         getRegDumpStruct(&rd, DATA_ABORT, sp);
-                        registerDump(&r);
+                        registerDump(&rd);
                 }
                 while(1);
         }
@@ -116,7 +116,7 @@ void irq(){
                 if(debugMode) {
                         struct regDump rd;
                         getRegDumpStruct(&rd, DATA_ABORT, sp);
-                        registerDump(&r);
+                        registerDump(&rd);
                 }
                 while(1);
         }

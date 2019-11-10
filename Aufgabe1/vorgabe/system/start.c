@@ -2,7 +2,7 @@
 #include "serial.h"
 #include "tests.h"
 #include "timer.h"
-static volatile int debugMode = 0;
+#include "handler.h"
 void start_kernel(void)
 {
         initTimer();
