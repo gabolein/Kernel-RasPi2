@@ -32,14 +32,6 @@ static inline uint32_t getDFARReg(){
         return dfar;
 }
 
-static inline void maskInterrupts() {
-        asm volatile("cpsid if");
-}
-
-static inline void unmaskInterrupts() {
-        asm volatile("cpsie if");
-}
-
 void toggleDebugMode(){ /* TODO: DO WE KEEP IT HERE?? */
         debugMode = !debugMode;
         if (debugMode) {
@@ -75,66 +67,54 @@ int uartHandler() {
         return 0;
 }
 void undefined_instruction(void* sp){
-        maskInterrupts();
         green_on();
         struct regDump rd;
         getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
         registerDump(&rd);
-        unmaskInterrupts();
-        //mov pc, lr
+        return;
 }
 void software_interrupt(void* sp){
-        maskInterrupts();
         red_on();
         struct regDump rd;
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
         registerDump(&rd);
-        unmaskInterrupts();
-        //mov pc, lr
+        return;
 }
 void prefetch_abort(void* sp){
-        maskInterrupts();
         struct regDump rd;
 
         getRegDumpStruct(&rd, PREFETCH_ABORT, sp);
         registerDump(&rd);
-        unmaskInterrupts();
-        //mov pc, lr
+        return;
 }
 void data_abort(void* sp){
-        maskInterrupts();
         struct regDump rd;
         getRegDumpStruct(&rd, DATA_ABORT, sp);
         registerDump(&rd);
-        unmaskInterrupts();
-        //mov pc, lr
+        return;
 }
 
 void irq(void* sp){
-        maskInterrupts();
-	if(debugMode == 1) {
-		struct regDump rd;
+        if(debugMode == 1) {
+                struct regDump rd;
                 getRegDumpStruct(&rd, IRQ, sp);
                 registerDump(&rd);
         }
         if (clockHandler()){
-                while(1);
+                kprintf("\nClock Handler\n");
         }
         if (uartHandler()){
-                while(1);
+                kprintf("\nUart Handler\n");
         }
 
-        /* Clear all Interrupt state bits */
+        /* kprintf("\nSpurious Interrupt ¯\\_(ツ)_/¯ \n"); */
 
-        kprintf("\nSpurious Interrupt ¯\\_(ツ)_/¯ \n");
-        /* Abschmieren */
-        while(1);
-        //unmaskInterrupts();
-        //mov pc, lr
+        /* Clear all Interrupt state bits */
+        /* Restore regular register status */
+        /* restore modified lr */
+        return;
 }
 void fiq(){
-        maskInterrupts();
         //handle das business
-        unmaskInterrupts();
-        //mov pc, lr
+        return;
 }

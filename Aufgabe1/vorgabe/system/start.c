@@ -9,7 +9,7 @@
 volatile int debugMode;
 void start_kernel(void)
 {
-        initTimer();
+        /* initTimer(); */
         //enableUartInterrupt();
         specialMessage("Kernel loaded! (UwU)");
         while(1){
