@@ -52,5 +52,5 @@ char* itoa16(unsigned int value){
                 --i;
                 value /= 16;
         } while (value > 0);
-        return &c_buffer[i+1];
+        return &c_buffer[0];
 }
