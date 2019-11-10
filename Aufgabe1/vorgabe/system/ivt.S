@@ -57,8 +57,15 @@ _data_abort:
     stmdb   sp!, {r0 - r12}
     stmdb   sp!, {r13 - r15}
 	mov     r0, sp
-    cpsie i
+
 	bl	    data_abort
+	add sp, sp, #4 /* Addressiere das vorher auf dem stack gesicherte LR */
+            ldr lr, [sp]    /* Kopiere das gesicherte LR ins LR */
+            add sp, sp, #8 /* Addressiere die gesicherten unbanked Register */
+
+            ldmia sp!, {r0 - r12}
+	cpsie i
+	subs pc, lr, #8
 _not_used:
     nop
 _irq:
@@ -75,7 +82,7 @@ _irq:
     ldmia sp!, {r0 - r12}
 	/* Modusbits im SPSR anpassen */
     cpsie i
-
+subs pc, lr, #4
 	/* TODO: JUMP OUT OF HANDLER */
 _fiq:
     cpsid if
