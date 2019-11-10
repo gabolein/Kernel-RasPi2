@@ -12,6 +12,8 @@ void start_kernel(void)
         enableUartInterrupt();
         specialMessage("Kernel loaded! (UwU)");
         initTimer();
-        register_checker();
+        /* register_checker(); */
+        kprintf("Dezimal: %u   |   %x", 0x80000000, 0x80000000);
+
         while(1);
 }
