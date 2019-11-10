@@ -104,23 +104,20 @@ void data_abort(void* sp){
 
 void irq(void* sp){
         maskInterrupts();
+	kprintf("debugMode: %i\n", debugMode);
+	if(debugMode == 1) {
+		struct regDump rd;
+                getRegDumpStruct(&rd, IRQ, sp);
+                registerDump(&rd);
+        }
         if (clockHandler()){
-                if(debugMode) {
-                        struct regDump rd;
-                        getRegDumpStruct(&rd, DATA_ABORT, sp);
-                        registerDump(&rd);
-                }
+                
                 while(1);
         }
         if (uartHandler()){
-                if(debugMode) {
-                        struct regDump rd;
-                        getRegDumpStruct(&rd, DATA_ABORT, sp);
-                        registerDump(&rd);
-                }
+              
                 while(1);
         }
-        /* Check for pending UART Interrupt */
 
         /* Clear all Interrupt state bits */
 
