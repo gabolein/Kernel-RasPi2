@@ -53,7 +53,8 @@ OBJ += lib/tests.o
 OBJ += lib/utils.o
 OBJ += lib/registerDumpUtil.o
 OBJ += lib/handlerUtil.o
-
+OBJ += lib/regcheck.o
+OBJ += lib/regcheck_asm.o
 # Falls die binäre Musterlösung benutzt wird bitte auskommentieren
 # und gegebenenfalls Ordner anpassen:
 # OBJ_LSG = obj/$(BIN_LSG).o

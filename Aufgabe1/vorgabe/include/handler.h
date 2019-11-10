@@ -9,6 +9,7 @@ extern void prefetch_abort(void*);
 extern void data_abort(void*);
 extern void irq(void*);
 extern void fiq();
+void toggleDebugMode();
 int clockHandler();
 int uartHandler();
 extern volatile int debugMode;

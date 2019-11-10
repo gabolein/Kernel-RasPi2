@@ -40,6 +40,14 @@ static inline void unmaskInterrupts() {
         asm volatile("cpsie if");
 }
 
+void toggleDebugMode(){ /* TODO: DO WE KEEP IT HERE?? */
+        debugMode = !debugMode;
+        if (debugMode) {
+                specialMessage("Debug Mode activated");
+        } else {
+                specialMessage("Debug Mode deactivated");
+        }
+}
 /* Handlers */
 /* TODO: Pending bit clearen (oder wie auch immer das heißt)
    Prüfen um was für einen Interrupt es sich jeweils handelt
@@ -53,7 +61,7 @@ int clockHandler() {
                 timerIrqClr();
                 return 1;
         }
-        else return 0;
+        return 0;
 }
 
 int uartHandler() {
@@ -64,7 +72,7 @@ int uartHandler() {
                 *uart_icr = 0;
                 return 1;
         }
-        else return 0;
+        return 0;
 }
 void undefined_instruction(void* sp){
         maskInterrupts();
