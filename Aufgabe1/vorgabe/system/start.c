@@ -2,7 +2,7 @@
 #include "serial.h"
 #include "tests.h"
 #include "timer.h"
-
+static volatile int debugMode = 0;
 void start_kernel(void)
 {
         initTimer();
@@ -12,11 +12,12 @@ void start_kernel(void)
                 int hasReceived = uartReceiveChar(&receivedChar);
                 if (hasReceived) {
                         switch(receivedChar){
-                        case 'a': causeDataAbort(); break;
-                        case 'u': causeUndefinedInstruction(); break;
-                        case 's': causeSWI(); break;
-                        case 'i': enableUartInterrupt(); break;
-                        default: inputPresentation(receivedChar); break;
+                                case 'd': debugMode = !debugMode; break;
+                                case 'a': causeDataAbort(); break;
+                                case 'u': causeUndefinedInstruction(); break;
+                                case 's': causeSWI(); break;
+                                case 'i': enableUartInterrupt(); break;
+                                default: inputPresentation(receivedChar); break;
                         }
                 }
  	}

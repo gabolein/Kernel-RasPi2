@@ -8,6 +8,7 @@
 #include "handlerUtil.h"
 #include "registerDumpUtil.h"
 #include "timer.h"
+#include "start.c"
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -104,11 +105,19 @@ void data_abort(void* sp){
 void irq(){
         maskInterrupts();
         if (clockHandler()){
-                kprintf("I am useless now :D. Plz end me\n");
+                if(debugMode) {
+                        struct regDump rd;
+                        getRegDumpStruct(&rd, DATA_ABORT, sp);
+                        registerDump(&r);
+                }
                 while(1);
         }
         if (uartHandler()){
-                kprintf("I am useless now :D. Plz end me\n");
+                if(debugMode) {
+                        struct regDump rd;
+                        getRegDumpStruct(&rd, DATA_ABORT, sp);
+                        registerDump(&r);
+                }
                 while(1);
         }
         /* Check for pending UART Interrupt */
