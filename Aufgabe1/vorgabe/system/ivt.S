@@ -31,11 +31,10 @@ _undefined_instruction:
     add sp, sp, #4 /* Addressiere das vorher auf dem stack gesicherte LR */
     ldr lr, [sp]    /* Kopiere das gesicherte LR ins LR */
     add sp, sp, #8 /* Addressiere die gesicherten unbanked Register */
-
-        ldmia sp!, {r0 - r12}
-    	/* Modusbits im SPSR anpassen */
+    ldmia sp!, {r0 - r12}
+    push {lr}
     cpsie i
-    subs pc, lr, #4
+	ldm sp!, {pc}^
 _software_interrupt:
     /* Software Interrupt nutzt normalen Registersatz */
     cpsid i
@@ -47,8 +46,9 @@ _software_interrupt:
     ldr lr, [sp]
     add sp, sp, #8
     ldmia sp!, {r0 - r12}
+    b .Lend /* Springe in Endlosschleife */
     cpsie i
-    subs pc, lr, #4
+    movs pc, lr
 _prefetch_abort:
     cpsid i
 	stmdb   sp!, {r0 - r12}
@@ -62,10 +62,10 @@ _data_abort:
 	mov     r0, sp
 	bl	    data_abort
 	add sp, sp, #4 /* Addressiere das vorher auf dem stack gesicherte LR */
-            ldr lr, [sp]    /* Kopiere das gesicherte LR ins LR */
-            add sp, sp, #8 /* Addressiere die gesicherten unbanked Register */
-
-            ldmia sp!, {r0 - r12}
+    ldr lr, [sp]    /* Kopiere das gesicherte LR ins LR */
+    add sp, sp, #8 /* Addressiere die gesicherten unbanked Register */
+    ldmia sp!, {r0 - r12}
+    /*b .Lend */
 	cpsie i
 	subs pc, lr, #4
 _not_used:
@@ -83,12 +83,20 @@ _irq:
 
     ldmia sp!, {r0 - r12}
 	/* Modusbits im SPSR anpassen */
-    cpsie i
-subs pc, lr, #4
-	/* TODO: JUMP OUT OF HANDLER */
+	sub lr, lr, #4
+    push {lr}
+    ldm sp!, {pc}^
 _fiq:
     cpsid if
     stmdb   sp!, {r0 - r12}
     stmdb   sp!, {r13 - r15}
     mov r0, sp
     bl	fiq
+	add sp, sp, #4 /* Addressiere das vorher auf dem stack gesicherte LR */
+	ldr lr, [sp]    /* Kopiere das gesicherte LR ins LR */
+	add sp, sp, #8 /* Addressiere die gesicherten unbanked Register */
+
+	ldmia sp!, {r0 - r12}
+	/* Modusbits im SPSR anpassen */
+	cpsie if
+    subs pc, lr, #4

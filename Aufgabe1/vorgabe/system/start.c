@@ -9,8 +9,11 @@
 volatile int debugMode;
 void start_kernel(void)
 {
-        /* initTimer(); */
+
+        volatile char baum[] = "ich bin ein baum";
         enableUartInterrupt();
         specialMessage("Kernel loaded! (UwU)");
+        initTimer();
+        /* register_checker(); */
         while(1);
 }

@@ -4,10 +4,12 @@
 
 #include "tests.h"
 #include "kio.h"
+#include <stdint.h>
 
+
+#pragma GCC diagnostic ignored "-Wunused-variable"
 void causeDataAbort() {
-        int* a = (int*)0x1;
-        kprintf("%x\n", *a);
+        volatile int b = *((uint32_t*)0x1);
 }
 
 void causeDataAbort0() { // causes Data abort

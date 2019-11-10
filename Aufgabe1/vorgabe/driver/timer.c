@@ -2,8 +2,11 @@
 #include "hwDefines.h"
 #include <stdint.h>
 
-#define TIMER_PRE_DIV_VALUE 0xEE6B27F
 
+#define TIMER_FREQUENCY 1
+
+#define TIMER_PRE_DIV_VALUE 250000
+#define TIMER_COUNTING_START 1823608 / TIMER_FREQUENCY
 /* 250 MHz System timer Speed angenommen
    Prescaler: 256
    Counter Value: 9765623
@@ -21,8 +24,8 @@ static volatile uint32_t* enable_basic_irq  = ENABLE_BASIC_IRQ;
 
 void initTimer() {
         *enable_basic_irq |= 0b1; /* Enable timer interrupt */
-        *timer_load        = 0b1;
-        *timer_control     = 0;         /* Set Timer Prescaler */
+        *timer_load        = TIMER_COUNTING_START;
+        *timer_control     = 1;         /* Set Timer Prescaler */
         *timer_control    |= 1 << 5;   /* Timer Interrupt */
         *timer_control    |= 1 << 1;   /* 23 Bit Counter */
         *timer_pre_div     = TIMER_PRE_DIV_VALUE; /* Durch 250mio teilen */

@@ -2,16 +2,16 @@
         .globl _reset
 _reset:
 	b	0x0
-	
-        .section .init
-        .global _start
-_start: 
+
+    .section .init
+    .global _start
+_start:
         /* Erkennen ob Hypervisor Mode aktiv */
 	mrs r0, cpsr
 	and r0, r0, #0x1F
 	mov r1, #0x1A	//Modebits = 0x1A = Hypervisor Mode
 	cmp r0, r1		//Vergleichen und Statusbits setzen für bedingte Sprünge
-	
+
 	/* Wenn Hypemode erkannt: abschalten (sprung nach _exitHyper)
 	 * wenn nicht erkannt: dann weitermachen (weiterlaufen nach _bsprak)
 	 */
@@ -32,8 +32,8 @@ _bsprak:
 	 * Auf dem Pi wurde dieser zwar bereits durch U-Boot
 	 * gesetzt, schadet aber auch nicht
 	*/
-        
-        /* Usermode Stackpointer */
+
+    /* Usermode Stackpointer */
 	ldr	sp,=0x20000
         
         /*Stackpointer für Interrupt modes*/
@@ -56,12 +56,14 @@ _bsprak:
         ldr     r0, =_ivt
         mcr 	p15, 0, r0, c12, c0, 0
 	
-	cpsie	i
+	cpsie	i, #0x13
 	/* Zu c Code springen */
+
    	bl      start_kernel
 
+.global .Lend
 
-.Lend:  
+.Lend:
 	WFI
 	b       .Lend
 

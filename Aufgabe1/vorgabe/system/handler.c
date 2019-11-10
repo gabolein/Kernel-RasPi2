@@ -11,7 +11,7 @@
 #include "regcheck.h"
 #include "tests.h"
 
-
+static volatile uint32_t ledStatus = 0;
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
 static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
@@ -50,7 +50,7 @@ void toggleDebugMode(){ /* TODO: DO WE KEEP IT HERE?? */
 int clockHandler() {
         if (*irq_basic_pending & 0b1) {
                 if (timerCheckInterruptSet()) {
-                        kprintf("\n\n\nTimer Interrupt thrown!\n\n\n");
+                         kprintf("\n\n\nTimer Interrupt thrown!\n\n\n");
                 }
                 timerIrqClr();
                 return 1;
@@ -114,7 +114,13 @@ void irq(void* sp){
                 registerDump(&rd);
         }
         if (clockHandler()){
-                kprintf("\nClock Handler\n");
+                if(ledStatus){
+                        yellow_off();
+                        ledStatus = 0;
+                }else{
+                        yellow_on();
+                        ledStatus = 1;
+                }
         }
         if (uartHandler()){
                 kprintf("\nUart Handler\n");
