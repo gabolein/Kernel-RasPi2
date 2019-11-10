@@ -37,7 +37,8 @@ _bsprak:
 	ldr	sp,=0x20000
         
         /*Stackpointer für Interrupt modes*/
-
+        ldr     r0, =0x20000
+        msr     sp_usr, r0
 	ldr	r0, =0x22000
 	msr	sp_svc, r0
 	ldr	r0, =0x24000
