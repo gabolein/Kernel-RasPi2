@@ -32,9 +32,8 @@ _undefined_instruction:
     ldr lr, [sp]    /* Kopiere das gesicherte LR ins LR */
     add sp, sp, #8 /* Addressiere die gesicherten unbanked Register */
     ldmia sp!, {r0 - r12}
-    push {lr}
     cpsie i
-	ldm sp!, {pc}^
+	movs pc, lr
 _software_interrupt:
     /* Software Interrupt nutzt normalen Registersatz */
     cpsid i
@@ -46,7 +45,6 @@ _software_interrupt:
     ldr lr, [sp]
     add sp, sp, #8
     ldmia sp!, {r0 - r12}
-    b .Lend /* Springe in Endlosschleife */
     cpsie i
     movs pc, lr
 _prefetch_abort:
@@ -55,6 +53,8 @@ _prefetch_abort:
 	stmdb   sp!, {r13 - r15}
     mov r0, sp
     bl	prefetch_abort
+    cpsie i
+    b .Lend
 _data_abort:
     cpsid i
     stmdb   sp!, {r0 - r12}
@@ -83,9 +83,7 @@ _irq:
 
     ldmia sp!, {r0 - r12}
 	/* Modusbits im SPSR anpassen */
-	sub lr, lr, #4
-    push {lr}
-    ldm sp!, {pc}^
+	subs pc, lr, #4
 _fiq:
     cpsid if
     stmdb   sp!, {r0 - r12}

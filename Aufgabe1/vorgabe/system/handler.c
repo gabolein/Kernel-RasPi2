@@ -50,7 +50,7 @@ void toggleDebugMode(){ /* TODO: DO WE KEEP IT HERE?? */
 int clockHandler() {
         if (*irq_basic_pending & 0b1) {
                 if (timerCheckInterruptSet()) {
-                         kprintf("\n\n\nTimer Interrupt thrown!\n\n\n");
+                         /* kprintf("\n\n\nTimer Interrupt thrown!\n\n\n"); */
                 }
                 timerIrqClr();
                 return 1;
