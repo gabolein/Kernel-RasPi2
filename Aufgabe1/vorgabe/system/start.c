@@ -14,7 +14,7 @@ void start_kernel(void)
                 int hasReceived = uartReceiveChar(&receivedChar);
                 if (hasReceived) {
                         switch(receivedChar){
-                                case 'd': debugMode = 1; break;
+                                case 'd': debugMode = !debugMode; break;
                                 case 'a': causeDataAbort(); break;
                                 case 'u': causeUndefinedInstruction(); break;
                                 case 's': causeSWI(); break;
