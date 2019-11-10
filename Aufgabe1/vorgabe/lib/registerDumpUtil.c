@@ -78,7 +78,7 @@ char* getPSRStrings(uint32_t psrReg, char* string){
 
 void printMode(enum Modes mode){
         switch(mode){
-        case USER_MODE:           kprintf("User");               break;
+        case USER_MODE:           kprintf("User      ");               break;
         case FAST_INTERRUPT_MODE: kprintf("FIQ       ");                break;
         case IRQ_MODE:            kprintf("IRQ       ");                break;
         case SUPERVISOR_MODE:     kprintf("Supervisor");         break;
@@ -86,8 +86,21 @@ void printMode(enum Modes mode){
         case ABORT_MODE:          kprintf("Abort     ");              break;
         case HYPERVISOR_MODE:     kprintf("Hypervisor");         break;
         case UNDEFINED_MODE:      kprintf("Undefined ");          break;
-        case SYSTEM_MODE:         kprintf("System");             break;
-        default:                  kprintf("Mode field invalid"); break;
+        case SYSTEM_MODE:         kprintf("System    ");             break;
+        default:                  kprintf("Invalid   "); break;
+        }
+}
+
+void printMode2(enum Modes mode){
+        switch(mode){
+                case USER_MODE:           kprintf("User/System:");      break;
+                case FAST_INTERRUPT_MODE: kprintf("FIQ:        ");      break;
+                case IRQ_MODE:            kprintf("IRQ:        ");      break;
+                case SUPERVISOR_MODE:     kprintf("Supervisor: ");      break;
+                case ABORT_MODE:          kprintf("Abort:      ");      break;
+                case UNDEFINED_MODE:      kprintf("Undefined:  ");      break;
+                case SYSTEM_MODE:         kprintf("User/System:");      break;
+                default:                  break;
         }
 }
 
@@ -96,7 +109,7 @@ void printModeRegs(enum Modes mode, uint32_t lr, uint32_t sp, uint32_t spsr) {
         if(mode == USER_MODE || mode == SYSTEM_MODE){
                 kprintf("User/System: %x %x\n", lr, sp);
         } else {
-                printMode(mode);
+                printMode2(mode);
                 {
                 char psrString[11];
                 getPSRStrings(spsr, psrString);

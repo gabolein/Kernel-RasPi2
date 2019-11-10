@@ -124,6 +124,8 @@ void printModeRegs(enum Modes, uint32_t, uint32_t, uint32_t);
 
 void printMode(enum Modes);
 
+void printMode2(enum Modes mode);
+
 /* Creates a regDump struct at pointer */
 struct regDump* getRegDumpStruct(struct regDump*, enum ExceptionType, void*);
 
