@@ -50,6 +50,7 @@ _irq:
 	stmdb   sp!, {r13 - r15}
     mov r0, sp
 	bl	irq
+	/* TODO: JUMP OUT OF HANDLER */
 _fiq:
     stmdb   sp!, {r0 - r12}
     stmdb   sp!, {r13 - r15}

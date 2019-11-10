@@ -87,7 +87,7 @@ void printMode(enum Modes mode){
         case HYPERVISOR_MODE:     kprintf("Hypervisor");         break;
         case UNDEFINED_MODE:      kprintf("Undefined");          break;
         case SYSTEM_MODE:         kprintf("System");             break;
-        default:                  kprintf("Mode field invalid"); break;
+        default:                  kprintf("Mode field invalid"); break; /* TODO: irgenwas leufd nicht */
         }
 }
 
@@ -103,7 +103,7 @@ void printModeRegs(enum Modes mode, uint32_t lr, uint32_t sp, uint32_t spsr) {
                 kprintf(":  %x %x %s ", lr, sp, psrString);
                 }
                 printMode(spsr & 0x1F); /* Print mode thats in SPSR of the current mode */
-                kprintf("    (%x)\n", spsr); /* TODO: Problem, brauchen getPSR String */
+                kprintf("    (%x)\n", spsr);
         }
 }
 
