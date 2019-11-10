@@ -13,7 +13,7 @@ void start_kernel(void)
         specialMessage("Kernel loaded! (UwU)");
         initTimer();
         /* register_checker(); */
-        kprintf("Dezimal: %u   |   %x", 0x80000000, 0x80000000);
+        kprintf("Dezimal: %u   |   %x", 0x80000000, 0x80000000); /* TODO: HEX HAT NEN OVERFLOW */
 
         while(1);
 }
