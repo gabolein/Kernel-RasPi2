@@ -107,7 +107,7 @@ void printMode2(enum Modes mode){
 
 void printModeRegs(enum Modes mode, uint32_t lr, uint32_t sp, uint32_t spsr) {
         if(mode == USER_MODE || mode == SYSTEM_MODE){
-                kprintf("User/System : %x %x\n", lr, sp);
+                kprintf("User/System:  %x %x\n", lr, sp);
         } else {
                 printMode2(mode);
                 {
