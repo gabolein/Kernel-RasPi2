@@ -104,18 +104,15 @@ void data_abort(void* sp){
 
 void irq(void* sp){
         maskInterrupts();
-	//kprintf("debugMode: %i\n", debugMode);
 	if(debugMode == 1) {
 		struct regDump rd;
                 getRegDumpStruct(&rd, IRQ, sp);
                 registerDump(&rd);
         }
         if (clockHandler()){
-                
                 while(1);
         }
         if (uartHandler()){
-              
                 while(1);
         }
 
