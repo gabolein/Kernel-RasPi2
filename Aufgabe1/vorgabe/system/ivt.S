@@ -27,7 +27,6 @@ _undefined_instruction:
 	stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}
     mov     r0, sp
-
     bl      undefined_instruction
     add sp, sp, #4 /* Addressiere das vorher auf dem stack gesicherte LR */
     ldr lr, [sp]    /* Kopiere das gesicherte LR ins LR */
@@ -43,21 +42,24 @@ _software_interrupt:
 	stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}
     mov r0, sp
+    bl	software_interrupt
+    add sp, sp, #4
+    ldr lr, [sp]
+    add sp, sp, #8
+    ldmia sp!, {r0 - r12}
     cpsie i
-	bl	software_interrupt
+    subs pc, lr, #4
 _prefetch_abort:
     cpsid i
 	stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}
     mov r0, sp
-    cpsie i
-	bl	prefetch_abort
+    bl	prefetch_abort
 _data_abort:
     cpsid i
     stmdb   sp!, {r0 - r12}
     stmdb   sp!, {r13 - r15}
 	mov     r0, sp
-
 	bl	    data_abort
 	add sp, sp, #4 /* Addressiere das vorher auf dem stack gesicherte LR */
             ldr lr, [sp]    /* Kopiere das gesicherte LR ins LR */
@@ -89,5 +91,4 @@ _fiq:
     stmdb   sp!, {r0 - r12}
     stmdb   sp!, {r13 - r15}
     mov r0, sp
-    cpsie if
-	bl	fiq
+    bl	fiq
