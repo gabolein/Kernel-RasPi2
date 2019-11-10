@@ -8,6 +8,8 @@
 #include "handlerUtil.h"
 #include "registerDumpUtil.h"
 #include "timer.h"
+#include "regcheck.h"
+#include "tests.h"
 
 
 /* Register Defs */
@@ -58,9 +60,20 @@ int clockHandler() {
 
 int uartHandler() {
         if(*irq_pending_2 & (uint32_t)(1 << 25)){
+
                 char receivedChar;
-                uartReceiveChar(&receivedChar);
-                kprintf("This character caused an interrupt: %c\n\n\n", receivedChar);
+                int hasReceived = uartReceiveChar(&receivedChar);
+                if (hasReceived) {
+                        switch(receivedChar){
+                        case 'd': toggleDebugMode();            break;
+                                //case 'e': enterSubProgramm(); break;
+                        case 'c': register_checker();           break;
+                        case 'a': causeDataAbort();             break;
+                        case 'u': causeUndefinedInstruction();  break;
+                        case 's': causeSWI();                   break;
+                        default: kprintf("Received Character: %c\n", receivedChar); break;
+                        }
+                }
                 *uart_icr = 0;
                 return 1;
         }

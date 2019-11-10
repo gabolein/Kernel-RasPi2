@@ -10,23 +10,7 @@ volatile int debugMode;
 void start_kernel(void)
 {
         /* initTimer(); */
-        //enableUartInterrupt();
+        enableUartInterrupt();
         specialMessage("Kernel loaded! (UwU)");
-        while(1){
-                char receivedChar;
-                int hasReceived = uartReceiveChar(&receivedChar);
-                /* TODO: MOVE THIS INTO HANDLER */
-                if (hasReceived) {
-                        switch(receivedChar){
-                                case 'd': toggleDebugMode(); break;
-                                //case 'e': enterSubProgramm(); break;
-                                case 'c': register_checker(); break;
-                                case 'a': causeDataAbort(); break;
-                                case 'u': causeUndefinedInstruction(); break;
-                                case 's': causeSWI(); break;
-                                case 'i': enableUartInterrupt(); break;
-                                default: break;
-                        }
-                }
- 	}
+        while(1);
 }
