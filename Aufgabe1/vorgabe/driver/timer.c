@@ -33,6 +33,6 @@ void timerIrqClr() {
         *timer_irq_clr_ack = 1;
 }
 
-uint8_t timerCheckInteruptSet() {
+uint8_t timerCheckInterruptSet() {
         return (*timer_masked_irq & 0b1);
 }

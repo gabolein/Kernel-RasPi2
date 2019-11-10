@@ -9,6 +9,8 @@ extern void prefetch_abort(void*);
 extern void data_abort(void*);
 extern void irq();
 extern void fiq();
+int clockHandler();
+int uartHandler();
 
 #endif
 

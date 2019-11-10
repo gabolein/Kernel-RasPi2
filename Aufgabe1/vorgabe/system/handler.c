@@ -7,10 +7,12 @@
 #include <stdint.h>
 #include "handlerUtil.h"
 #include "registerDumpUtil.h"
+#include "timer.h"
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
 static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
+static volatile uint32_t* irq_basic_pending = IRQ_BASIC_PENDING;
 
 /* General Procedure:
    Get Contents of DFSR in C variable using inline assembly.
@@ -42,6 +44,27 @@ static inline void unmaskInterrupts() {
    Prüfen um was für einen Interrupt es sich jeweils handelt
    Register vor dem Rücksprung wiederherstellen
 */
+int clockHandler() {
+        if (*irq_basic_pending & 0b1) {
+                if (timerCheckInterruptSet()) {
+                        kprintf("\n\n\nTimer Interrupt thrown!\n\n\n");
+                }
+                timerIrqClr();
+                return 1;
+        }
+        else return 0;
+}
+
+int uartHandler() {
+        if(*irq_pending_2 & (uint32_t)(1 << 25)){
+                char receivedChar;
+                uartReceiveChar(&receivedChar);
+                kprintf("This character caused an interrupt: %c\n\n\n", receivedChar);
+                *uart_icr = 0;
+                return 1;
+        }
+        else return 0;
+}
 void undefined_instruction(void* sp){
         maskInterrupts();
         green_on();
@@ -81,20 +104,18 @@ void data_abort(void* sp){
 void irq(){
         maskInterrupts();
         if (clockHandler()){
-
+                kprintf("I am useless now :D. Plz end me\n");
+                while(1);
         }
-        if (uarthandler()){
-            return
+        if (uartHandler()){
+                kprintf("I am useless now :D. Plz end me\n");
+                while(1);
         }
         /* Check for pending UART Interrupt */
-        if(*irq_pending_2 & (uint32_t)(1 << 25)){
-                char receivedChar;
-                uartReceiveChar(&receivedChar);
-                kprintf("This character caused an interrupt: %c\n\n\n", receivedChar);
-        }
+
         /* Clear all Interrupt state bits */
-        *uart_icr = 0;
-        kprintf("I am useless now :D. Plz end me\n");
+
+        kprintf("Thrown Interrupt couldn't be tracked\n");
         /* Abschmieren */
         while(1);
         //unmaskInterrupts();

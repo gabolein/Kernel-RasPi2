@@ -4,4 +4,4 @@ void initTimer();
 void timerIrqClr();
 
 /* 1 if Interrupt Set */
-uint8_t timerCheckInteruptSet();
+uint8_t timerCheckInterruptSet();
