@@ -123,7 +123,7 @@ void registerDump(struct regDump* regDump){
         kprintf("      (%x)\n\n", regDump->spsr);
 
         /* Aktuelle modusspezifische Register */
-        kprintf(">>> Aktuelle modusspezifische Register <<<\n              LR         SP        SPSR\n");
+        kprintf(">>> Aktuelle modusspezifische Register <<<\n              LR          SP        SPSR\n");
         printModeRegs(USER_MODE,
                       regDump->userLr,
                       regDump->userSp,
