@@ -27,8 +27,16 @@ _undefined_instruction:
 	stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}
     mov     r0, sp
-    cpsie i
+
     bl      undefined_instruction
+    add sp, sp, #4 /* Addressiere das vorher auf dem stack gesicherte LR */
+    ldr lr, [sp]    /* Kopiere das gesicherte LR ins LR */
+    add sp, sp, #8 /* Addressiere die gesicherten unbanked Register */
+
+        ldmia sp!, {r0 - r12}
+    	/* Modusbits im SPSR anpassen */
+    cpsie i
+    subs pc, lr, #4
 _software_interrupt:
     /* Software Interrupt nutzt normalen Registersatz */
     cpsid i
@@ -67,7 +75,7 @@ _irq:
     ldmia sp!, {r0 - r12}
 	/* Modusbits im SPSR anpassen */
     cpsie i
-    subs pc, lr, #4
+
 	/* TODO: JUMP OUT OF HANDLER */
 _fiq:
     cpsid if
