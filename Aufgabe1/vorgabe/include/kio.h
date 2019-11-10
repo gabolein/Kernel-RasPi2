@@ -6,6 +6,5 @@
 #define KIO_H
 
 void kprintf(const char* format, ...);
-void kprintfbuffer(const char* format, ...);
 
 #endif
