@@ -126,7 +126,7 @@ void irq(void* sp){
 
         /* Clear all Interrupt state bits */
 
-        kprintf("Thrown Interrupt couldn't be tracked\n");
+        kprintf("\nSpurious Interrupt ¯\\_(ツ)_/¯ \n");
         /* Abschmieren */
         while(1);
         //unmaskInterrupts();
