@@ -44,9 +44,9 @@ char* itoa10(unsigned int value){
 
 char* itoa16(unsigned int value){
 
-        static char c_buffer[8] = ""; // 8 -> maximal amount of characters needed to present 32 bits in hex
+        static char c_buffer[11] = "0x00000000"; // 8 -> maximal amount of characters needed to present 32 bits in hex
         static char presentation[] = "0123456789abcdef";
-        int i = 6; // start from the back
+        int i = 9; // start from the back
         do { // need do while in case value = 0
                 c_buffer[i] = presentation[value % 16];
                 --i;
