@@ -23,8 +23,7 @@ __fiq:                           .word _fiq
     /* TODO Register sichern */
     /* TODO IRQ und FIQ abschalten */
 _undefined_instruction:
-    cpsid i
-	stmdb   sp!, {r0 - r12}
+    stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}
     mov     r0, sp
     bl      undefined_instruction
@@ -32,12 +31,10 @@ _undefined_instruction:
     ldr lr, [sp]    /* Kopiere das gesicherte LR ins LR */
     add sp, sp, #8 /* Addressiere die gesicherten unbanked Register */
     ldmia sp!, {r0 - r12}
-    cpsie i
-	movs pc, lr
+    movs pc, lr
 _software_interrupt:
     /* Software Interrupt nutzt normalen Registersatz */
-    cpsid i
-	stmdb   sp!, {r0 - r12}
+    stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}
     mov r0, sp
     bl	software_interrupt
@@ -45,18 +42,14 @@ _software_interrupt:
     ldr lr, [sp]
     add sp, sp, #8
     ldmia sp!, {r0 - r12}
-    cpsie i
     movs pc, lr
 _prefetch_abort:
-    cpsid i
-	stmdb   sp!, {r0 - r12}
+    stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}
     mov r0, sp
     bl	prefetch_abort
-    cpsie i
     b .Lend
 _data_abort:
-    cpsid i
     stmdb   sp!, {r0 - r12}
     stmdb   sp!, {r13 - r15}
 	mov     r0, sp
@@ -66,12 +59,10 @@ _data_abort:
     add sp, sp, #8 /* Addressiere die gesicherten unbanked Register */
     ldmia sp!, {r0 - r12}
     /*b .Lend */
-	cpsie i
 	subs pc, lr, #4
 _not_used:
     nop
 _irq:
-    cpsid i
     stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}
     mov r0, sp
@@ -85,7 +76,6 @@ _irq:
 	/* Modusbits im SPSR anpassen */
 	subs pc, lr, #4
 _fiq:
-    cpsid if
     stmdb   sp!, {r0 - r12}
     stmdb   sp!, {r13 - r15}
     mov r0, sp
@@ -96,5 +86,4 @@ _fiq:
 
 	ldmia sp!, {r0 - r12}
 	/* Modusbits im SPSR anpassen */
-	cpsie if
-    subs pc, lr, #4
+	subs pc, lr, #4
