@@ -62,7 +62,7 @@ void kprintf(const char* format, ...) {
                                                 }
                                                 {
                                                 char c_buffer[10] = "";
-                                                kprintf(itoa10(int_num, &c_buffer));
+                                                kprintf(itoa10(int_num, c_buffer));
                                                 }
                                         }
                                         break;
@@ -70,7 +70,7 @@ void kprintf(const char* format, ...) {
                                         u_int_num = va_arg(arg, unsigned int);
                                         {
                                         char c_buffer[10] = "";
-                                        kprintf(itoa10(u_int_num, &c_buffer));
+                                        kprintf(itoa10(u_int_num, c_buffer));
                                         }
                                         break;
                                 case 'p' :
@@ -78,7 +78,7 @@ void kprintf(const char* format, ...) {
                                         address = va_arg(arg, uint32_t); // pointer -> 32Bit address
                                         {
                                         char c_buffer[11] = "0x00000000";
-                                        kprintf(itoa16(address, &c_buffer));
+                                        kprintf(itoa16(address, c_buffer));
                                         }
                                         break;
                                 default: // if unknown definer, behave like printf

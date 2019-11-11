@@ -35,10 +35,9 @@ _bsprak:
 
     /* Usermode Stackpointer */
 	ldr	sp,=0x20000
-        
-        /*Stackpointer für Interrupt modes*/
-        ldr     r0, =0x20000
-        msr     sp_usr, r0
+    /*Stackpointer für Interrupt modes*/
+    ldr     r0, =0x20000
+    msr     sp_usr, r0
 	ldr	r0, =0x22000
 	msr	sp_svc, r0
 	ldr	r0, =0x24000
@@ -49,13 +48,13 @@ _bsprak:
 	msr	sp_irq, r0
 	ldr	r0, =0x2C000
 	msr	sp_fiq, r0
-        
-	/* interrupts disablen */	
+
+    /* interrupts disablen */
 	/*cpsid	i*/
-        /* Adresse der IVT in r0 laden */
-        ldr     r0, =_ivt
-        mcr 	p15, 0, r0, c12, c0, 0
-	
+    /* Adresse der IVT in r0 laden */
+    ldr     r0, =_ivt
+    mcr 	p15, 0, r0, c12, c0, 0
+
 	cpsie	i, #0x13
 	/* Zu c Code springen */
 
@@ -74,14 +73,14 @@ _exitHyper:
 	 */
 	ldr lr, =_loopCores
 	msr ELR_hyp, lr
-	
+
 	/* Der Hypervisor mode ist auch "nur" eine etwas kompliziertere Exception.
 	 * Also springen wir aus dieser zurück.
 	 * (Rücksprunge in Aufgabe 2 sind anders zu lösen!).
 	 * Dazu zunächst das CPSR auslesen und die Modebits zum Supervisor ändern.
 	 * Danach dies in das SPSR für den Rücksprung schreiben.
 	 */
-	 
+
 	mrs r0, cpsr
 	bic r0, r0, #0x1F
 	orr r0, r0, #0x13	//Supervisormode
