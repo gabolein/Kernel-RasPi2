@@ -70,7 +70,6 @@ void kprintf(const char* format, ...) {
                                         }
                                         break;
                                 case 'p' :
-                                        kprintf("0x");
                                         address = va_arg(arg, uint32_t); // pointer -> 32Bit address
                                         {
                                         char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
