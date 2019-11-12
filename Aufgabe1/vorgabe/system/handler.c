@@ -14,6 +14,7 @@
 static volatile uint32_t* uart_icr  = UART_ICR;
 static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
 static volatile uint32_t* irq_basic_pending = IRQ_BASIC_PENDING;
+/* Register Defs End */
 
 /* Global CharBuffer */
 static char charBuffer[100] = "";
@@ -24,19 +25,6 @@ volatile int debugMode = 0;
 uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
-/* Static inline functions */
-static inline uint32_t getDFSRReg(){
-        uint32_t dfsr = 0;
-        asm volatile("mrc p15, 0, %0, c5, c0, 0" : "=r" (dfsr));
-        return dfsr;
-}
-
-static inline uint32_t getDFARReg(){
-        uint32_t dfar = 0;
-        asm volatile("mrc p15, 0, %0, c6, c0, 0" : "=r" (dfar));
-        return dfar;
-}
-
 void toggleDebugMode(){ /* TODO: DO WE KEEP IT HERE?? */
         debugMode = !debugMode;
         if (debugMode) {
@@ -46,10 +34,6 @@ void toggleDebugMode(){ /* TODO: DO WE KEEP IT HERE?? */
         }
 }
 
-/* TODO: Pending bit clearen (oder wie auch immer das heißt)
-   Prüfen um was für einen Interrupt es sich jeweils handelt
-   Register vor dem Rücksprung wiederherstellen
-*/
 int clockHandler() {
         if (*irq_basic_pending & 0b1) {
                 if (timerCheckInterruptSet()) {
@@ -110,7 +94,6 @@ int uartHandler() {
         return 0;
 }
 
-
 /* Begin C Handlers */
 
 void undefined_instruction(void* sp){
@@ -153,12 +136,6 @@ void irq(void* sp){
         if (uartHandler()){
 
         }
-
-        /* kprintf("\nSpurious Interrupt ¯\\_(ツ)_/¯ \n"); */
-
-        /* Clear all Interrupt state bits */
-        /* Restore regular register status */
-        /* restore modified lr */
         return;
 }
 void fiq(){

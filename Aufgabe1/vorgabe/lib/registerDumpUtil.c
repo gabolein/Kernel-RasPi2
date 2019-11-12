@@ -65,14 +65,14 @@ void printMode(enum Modes mode){
 
 void printModeDumpFormat(enum Modes mode){
         switch(mode){
-                case USER_MODE:           kprintf("User/System:");      break;
-                case FAST_INTERRUPT_MODE: kprintf("FIQ:        ");      break;
-                case IRQ_MODE:            kprintf("IRQ:        ");      break;
-                case SUPERVISOR_MODE:     kprintf("Supervisor: ");      break;
-                case ABORT_MODE:          kprintf("Abort:      ");      break;
-                case UNDEFINED_MODE:      kprintf("Undefined:  ");      break;
-                case SYSTEM_MODE:         kprintf("User/System:");      break;
-                default:                  break;
+        case USER_MODE:           kprintf("User/System:");      break;
+        case FAST_INTERRUPT_MODE: kprintf("FIQ:        ");      break;
+        case IRQ_MODE:            kprintf("IRQ:        ");      break;
+        case SUPERVISOR_MODE:     kprintf("Supervisor: ");      break;
+        case ABORT_MODE:          kprintf("Abort:      ");      break;
+        case UNDEFINED_MODE:      kprintf("Undefined:  ");      break;
+        case SYSTEM_MODE:         kprintf("User/System:");      break;
+        default:                  break;
         }
 }
 
