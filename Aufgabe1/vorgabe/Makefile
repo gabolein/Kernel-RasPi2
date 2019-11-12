@@ -35,7 +35,7 @@ KERNEL_USER_SPLIT = false
 
 # Hier eure Dateien hinzufügen
 # System
-OBJ = system/entry.o
+OBJ =  system/entry.o
 OBJ += system/ivt.o
 OBJ += system/start.o
 OBJ += system/handler.o
@@ -55,6 +55,10 @@ OBJ += lib/registerDumpUtil.o
 OBJ += lib/handlerUtil.o
 OBJ += lib/regcheck.o
 OBJ += lib/regcheck_asm.o
+
+# User
+OBJ += user/src/subProgram.o
+
 # Falls die binäre Musterlösung benutzt wird bitte auskommentieren
 # und gegebenenfalls Ordner anpassen:
 # OBJ_LSG = obj/$(BIN_LSG).o
