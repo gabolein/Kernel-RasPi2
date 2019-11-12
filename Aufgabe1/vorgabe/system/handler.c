@@ -17,18 +17,18 @@
 static volatile uint32_t* uart_icr  = UART_ICR;
 static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
 static volatile uint32_t* irq_basic_pending = IRQ_BASIC_PENDING;
-/* Register Defs End */
 
 /* Global CharBuffer */
 static char charBuffer[BUFFER_SIZE] = "";
 static uint32_t charBufferLength = 0;
 
+/* Flags */
 volatile uint32_t ledStatus = 0;
 volatile int debugMode = 0;
 uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
-void toggleDebugMode(){ /* TODO: DO WE KEEP IT HERE?? */
+void toggleDebugMode(){
         debugMode = !debugMode;
         if (debugMode) {
                 specialMessage("Debug Mode activated");
@@ -38,7 +38,7 @@ void toggleDebugMode(){ /* TODO: DO WE KEEP IT HERE?? */
 }
 
 int clockHandler() {
-        if (*irq_basic_pending & 0b1) {
+        if (*irq_basic_pending & 1) {
                 if (timerCheckInterruptSet()) {
                         if(ledStatus){
                                 yellow_off();
@@ -115,7 +115,6 @@ void software_interrupt(void* sp){
 }
 void prefetch_abort(void* sp){
         struct regDump rd;
-
         getRegDumpStruct(&rd, PREFETCH_ABORT, sp);
         registerDump(&rd);
         return;
@@ -133,12 +132,8 @@ void irq(void* sp){
                 getRegDumpStruct(&rd, IRQ, sp);
                 registerDump(&rd);
         }
-        if (clockHandler()){
-
-        }
-        if (uartHandler()){
-
-        }
+        clockHandler();
+        uartHandler();
         return;
 }
 void fiq(){

@@ -25,7 +25,7 @@
 #define UART_TDR       ((uint32_t *) (UART_BASE_ADDR + 0x8c))
 
 /* Interrupts */
-#define INTERRUPT_BASE                  (0x7E00B000 - 0x3F000000)
+#define INTERRUPT_BASE    (0x7E00B000 - 0x3F000000)
 #define IRQ_BASIC_PENDING ((uint32_t *) (INTERRUPT_BASE + 0x200))
 #define IRQ_PENDING_1     ((uint32_t *) (INTERRUPT_BASE + 0x204))
 #define IRQ_PENDING_2     ((uint32_t *) (INTERRUPT_BASE + 0x208))
