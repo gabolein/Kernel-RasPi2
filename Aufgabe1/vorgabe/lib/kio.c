@@ -1,7 +1,3 @@
-//
-// Created by gabolein on 22.10.19.
-//
-
 #include "kio.h"
 #include "serial.h"
 #include "utils.h"
@@ -9,7 +5,6 @@
 #include <stdint.h>
 
 #define MIN_INT -2147483648
-
 
 /*
  * Prints a string in the given format to screen
@@ -25,7 +20,6 @@ void kprintf(const char* format, ...) {
         unsigned int u_int_num;
         int int_num;
         unsigned int address;
-
 
         for (const char* traverse = format; *traverse != '\0'; traverse++) {
                 if (*traverse == '%') {
@@ -93,5 +87,3 @@ void kprintf(const char* format, ...) {
         }
         va_end(arg);
 }
-
-
