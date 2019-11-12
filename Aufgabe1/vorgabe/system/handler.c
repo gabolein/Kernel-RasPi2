@@ -79,6 +79,7 @@ char bufferGet() {
         for(uint32_t i = 1; i < charBufferLength; i++){
                 charBuffer[i - 1] = charBuffer[i];
         }
+        charBufferLength--;
         return returnChar;
 }
 
