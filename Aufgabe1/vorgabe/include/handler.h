@@ -14,5 +14,10 @@ int clockHandler();
 int uartHandler();
 extern volatile int debugMode;
 
+uint8_t bufferInsert(char);
+
+/* Returns 0 in case of an empty buffer */
+char bufferGet();
+
 #endif
 

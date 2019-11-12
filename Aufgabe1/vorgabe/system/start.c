@@ -12,8 +12,22 @@ void start_kernel(void)
         enableUartInterrupt();
         specialMessage("Kernel loaded! (UwU)");
         initTimer();
-        /* register_checker(); */
+
         kprintf("\n\nDezimal: %u   |   %x\n\n\n", 0x80000000, 0x80000000); /* TODO: HEX HAT NEN OVERFLOW */
 
-        while(1);
+        char receivedChar;
+        while(1) {
+                /* Anwendung */
+                if((receivedChar = bufferGet())){
+                        switch(receivedChar){
+                        case 'd': toggleDebugMode();                                break;
+                        /* case 'e': enterSubProgramm();                               break; */
+                        case 'c': register_checker();                               break;
+                        case 'a': causeDataAbort();                                 break;
+                        case 'u': causeUndefinedInstruction();                      break;
+                        case 's': causeSWI();                                       break;
+                        default: kprintf("Received Character: %c\n", receivedChar); break;
+                        }
+                }
+        }
 }

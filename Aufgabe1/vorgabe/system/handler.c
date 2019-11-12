@@ -17,9 +17,10 @@ static volatile uint32_t* uart_icr  = UART_ICR;
 static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
 static volatile uint32_t* irq_basic_pending = IRQ_BASIC_PENDING;
 
-/* General Procedure:
-   Get Contents of DFSR in C variable using inline assembly.
-*/
+/* Global CharBuffer */
+static char charBuffer[100] = "";
+static uint32_t charBufferLength = 0;
+
 
 /* Static inline functions */
 static inline uint32_t getDFSRReg(){
@@ -58,21 +59,35 @@ int clockHandler() {
         return 0;
 }
 
+uint8_t bufferInsert(char c){
+        if(charBufferLength >= 100){
+                return 1;       /* Buffer is full */
+        }
+        charBufferLength++;
+        charBuffer[charBufferLength - 1] = c;
+        return 0;
+}
+
+char bufferGet() {
+
+        if(charBufferLength <= 0) {
+                return 0;
+        }
+
+        char returnChar = charBuffer[0];
+
+        for(uint32_t i = 1; i < charBufferLength; i++){
+                charBuffer[i - 1] = charBuffer[i];
+        }
+        return returnChar;
+}
+
 int uartHandler() {
         if(*irq_pending_2 & (uint32_t)(1 << 25)){
-
                 char receivedChar;
                 int hasReceived = uartReceiveChar(&receivedChar);
                 if (hasReceived) {
-                        switch(receivedChar){
-                        case 'd': toggleDebugMode();            break;
-                        case 'e': enterSubProgramm(); break;
-                        case 'c': register_checker();           break;
-                        case 'a': causeDataAbort();             break;
-                        case 'u': causeUndefinedInstruction();  break;
-                        case 's': causeSWI();                   break;
-                        default: kprintf("Received Character: %c\n", receivedChar); break;
-                        }
+                        bufferInsert(receivedChar);
                 }
                 *uart_icr = 0;
                 return 1;
@@ -123,7 +138,7 @@ void irq(void* sp){
                 }
         }
         if (uartHandler()){
-                kprintf("\nUart Handler\n");
+
         }
 
         /* kprintf("\nSpurious Interrupt ¯\\_(ツ)_/¯ \n"); */
