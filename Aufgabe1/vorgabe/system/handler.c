@@ -66,7 +66,7 @@ int uartHandler() {
                 if (hasReceived) {
                         switch(receivedChar){
                         case 'd': toggleDebugMode();            break;
-                                //case 'e': enterSubProgramm(); break;
+                        case 'e': enterSubProgramm(); break;
                         case 'c': register_checker();           break;
                         case 'a': causeDataAbort();             break;
                         case 'u': causeUndefinedInstruction();  break;

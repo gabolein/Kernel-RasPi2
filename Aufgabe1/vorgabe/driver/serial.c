@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+
+
 /* Register Defs */
 static volatile uint32_t* uart_fr = UART_FR;
 static volatile uint32_t* uart_dr = UART_DR;
@@ -22,6 +24,10 @@ static volatile uint32_t* enable_irq_2  = ENABLE_IRQ_2;
 //static volatile uint32_t* disable_irq_2 = DISABLE_IRQ_2;
 
 /* Register Defs End */
+
+/* Global CharBuffer */
+static char CharBuffer[100] = "";
+
 
 void initUart() {
         disableUart();
