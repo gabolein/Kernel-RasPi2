@@ -121,7 +121,7 @@ void registerDump(struct regDump* regDump){
                 kprintf("SPSR: %s ", spsrString);
         }
 
-        printMode(regDump->spsr & 0x1F); /* Maske non-mode bits */
+        printMode(regDump->spsr & 0x1F); /* Mask non-mode bits */
         kprintf("      (%x)\n\n", regDump->spsr);
 
         /* Aktuelle modusspezifische Register */
