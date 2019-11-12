@@ -13,7 +13,8 @@ void toggleDebugMode();
 int clockHandler();
 int uartHandler();
 extern volatile int debugMode;
-
+extern uint8_t subProgramMode;
+extern volatile uint8_t checkerMode;
 uint8_t bufferInsert(char);
 
 /* Returns 0 in case of an empty buffer */

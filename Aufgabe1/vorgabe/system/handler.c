@@ -11,7 +11,6 @@
 #include "regcheck.h"
 #include "tests.h"
 
-static volatile uint32_t ledStatus = 0;
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
 static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
@@ -21,6 +20,10 @@ static volatile uint32_t* irq_basic_pending = IRQ_BASIC_PENDING;
 static char charBuffer[100] = "";
 static uint32_t charBufferLength = 0;
 
+volatile uint32_t ledStatus = 0;
+volatile int debugMode = 0;
+uint8_t subProgramMode = 0;
+volatile uint8_t checkerMode = 0;
 
 /* Static inline functions */
 static inline uint32_t getDFSRReg(){
@@ -43,7 +46,7 @@ void toggleDebugMode(){ /* TODO: DO WE KEEP IT HERE?? */
                 specialMessage("Debug Mode deactivated");
         }
 }
-/* Handlers */
+
 /* TODO: Pending bit clearen (oder wie auch immer das heißt)
    Prüfen um was für einen Interrupt es sich jeweils handelt
    Register vor dem Rücksprung wiederherstellen
@@ -51,7 +54,16 @@ void toggleDebugMode(){ /* TODO: DO WE KEEP IT HERE?? */
 int clockHandler() {
         if (*irq_basic_pending & 0b1) {
                 if (timerCheckInterruptSet()) {
-                         /* kprintf("\n\n\nTimer Interrupt thrown!\n\n\n"); */
+                        if(ledStatus){
+                                yellow_off();
+                                ledStatus = 0;
+                        }else{
+                                yellow_on();
+                                ledStatus = 1;
+                        }
+                        if(subProgramMode){
+                                kprintf("!\n");
+                        }
                 }
                 timerIrqClr();
                 return 1;
@@ -88,6 +100,9 @@ int uartHandler() {
                 char receivedChar;
                 int hasReceived = uartReceiveChar(&receivedChar);
                 if (hasReceived) {
+                        if(subProgramMode && (receivedChar == 'c')){
+                                checkerMode = 1;
+                        }
                         bufferInsert(receivedChar);
                 }
                 *uart_icr = 0;
@@ -95,6 +110,10 @@ int uartHandler() {
         }
         return 0;
 }
+
+
+/* Begin C Handlers */
+
 void undefined_instruction(void* sp){
         green_on();
         struct regDump rd;
@@ -130,13 +149,7 @@ void irq(void* sp){
                 registerDump(&rd);
         }
         if (clockHandler()){
-                if(ledStatus){
-                        yellow_off();
-                        ledStatus = 0;
-                }else{
-                        yellow_on();
-                        ledStatus = 1;
-                }
+
         }
         if (uartHandler()){
 

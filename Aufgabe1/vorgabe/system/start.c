@@ -5,8 +5,9 @@
 #include "handler.h"
 #include "kio.h"
 #include "regcheck.h"
+#include <stdint.h>
+#include "../user/include/subProgram.h"
 
-volatile int debugMode;
 void start_kernel(void)
 {
         enableUartInterrupt();
@@ -21,7 +22,7 @@ void start_kernel(void)
                 if((receivedChar = bufferGet())){
                         switch(receivedChar){
                         case 'd': toggleDebugMode();                                break;
-                        /* case 'e': enterSubProgramm();                               break; */
+                        case 'e': enterSubProgram();                                break;
                         case 'c': register_checker();                               break;
                         case 'a': causeDataAbort();                                 break;
                         case 'u': causeUndefinedInstruction();                      break;
