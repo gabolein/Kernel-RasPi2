@@ -3,7 +3,6 @@
 #ifndef HWDEFINES
 #define HWDEFINES
 
-
 /* UART Register Declarations */
 #define UART_BASE_ADDR (0x7E201000 - 0x3F000000)
 #define UART_DR        ((uint32_t *) UART_BASE_ADDR)

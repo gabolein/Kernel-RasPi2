@@ -1,7 +1,3 @@
-//
-// Created by gabolein on 04.11.19.
-//
-
 #include "tests.h"
 #include "kio.h"
 #include <stdint.h>
@@ -17,5 +13,5 @@ void causeUndefinedInstruction() {
 }
 
 void causeSWI(){
-        asm volatile ("SWI 0x42"); // works :)
+        asm volatile ("SWI 0x42");
 }

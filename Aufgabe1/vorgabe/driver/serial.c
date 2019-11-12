@@ -14,6 +14,7 @@
 #define FIFO_ON (1 << 4)
 #define UART_INTERRUPT_ENABLE (1 << 25)
 #define RX_INTERRUPT (1 << 4)
+#define UART_ON 1
 
 /* Register Defs */
 static volatile uint32_t* uart_fr = UART_FR;
@@ -26,11 +27,11 @@ static volatile uint32_t* enable_irq_2  = ENABLE_IRQ_2;
 /* Register Defs End */
 
 static inline void disableUart() {
-        *uart_cr &= ~1;
+        *uart_cr &= ~UART_ON;
 }
 
 static inline void enableUart() {
-        *uart_cr |= 1;
+        *uart_cr |= UART_ON;
 }
 
 void initUart() {

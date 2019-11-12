@@ -12,6 +12,7 @@
 
 #define BUFFER_SIZE 100
 #define UART_IRQ_PENDING (1 << 25)
+#define TIMER_IRQ_PENDING 1
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -38,7 +39,7 @@ void toggleDebugMode(){
 }
 
 int clockHandler() {
-        if (*irq_basic_pending & 1) {
+        if (*irq_basic_pending & TIMER_IRQ_PENDING) {
                 if (timerCheckInterruptSet()) {
                         if(ledStatus){
                                 yellow_off();

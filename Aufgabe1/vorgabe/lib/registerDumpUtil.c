@@ -10,7 +10,6 @@
 
 
 char* getPSRStrings(uint32_t psrReg, char* string){
-        //string = "NZCV E IFT";
         string[0] = 'N';
         string[1] = 'Z';
         string[2] = 'C';

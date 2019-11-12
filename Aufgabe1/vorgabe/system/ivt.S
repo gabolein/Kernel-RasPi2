@@ -20,8 +20,6 @@ __irq:                           .word _irq
 __fiq:                           .word _fiq
 
     /* Branch Vorbereiten */
-    /* TODO Register sichern */
-    /* TODO IRQ und FIQ abschalten */
 _undefined_instruction:
     stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}
