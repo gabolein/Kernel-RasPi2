@@ -5,7 +5,6 @@
 #include "serial.h"
 #include "presentations.h"
 #include <stdint.h>
-#include "handlerUtil.h"
 #include "registerDumpUtil.h"
 #include "timer.h"
 #include "regcheck.h"
