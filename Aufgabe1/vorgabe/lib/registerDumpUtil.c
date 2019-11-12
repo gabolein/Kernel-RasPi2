@@ -5,6 +5,8 @@
 /* Defines */
 #define DFSR_RW (1 << 11)
 #define STATUS_LEADING (1 << 10)
+#define ENDIANNESS_BIT (1 << 9)
+#define INSTRUCTION 4
 
 
 char* getPSRStrings(uint32_t psrReg, char* string){
@@ -39,7 +41,7 @@ char* getPSRStrings(uint32_t psrReg, char* string){
         }
 
         /* E-Bit */
-        if(psrReg & (1 << 9)){
+        if(psrReg & ENDIANNESS_BIT){
                 string[5] = 'E';
         } else {
                 string[5] = '_';
@@ -96,7 +98,10 @@ void getDFRegs(struct regDump* rd) {
         uint32_t dfsr;
         asm volatile("mrc p15, 0, %0, c5, c0, 0" : "=r" (dfsr));
         rd->accessStyle = dfsr & DFSR_RW;
+
+        /* assemble status code */
         rd->faultName = ((dfsr & STATUS_LEADING) << 4) + (dfsr & 0xF);
+
         asm volatile("mrc p15, 0, %0, c6, c0, 0" : "=r" (rd->accessAddress));
 }
 
@@ -154,11 +159,11 @@ struct regDump* getRegDumpStruct(struct regDump* rd, enum ExceptionType exType, 
 
         if(exType == DATA_ABORT) {
                 getDFRegs(rd);
-                rd->insAddress = rd->lr - 8;
+                rd->insAddress = rd->lr - (INSTRUCTION * 2);
         } else if(exType == UNDEFINED_INSTRUCTION ||
                   exType == PREFETCH_ABORT ||
                   exType == SOFTWARE_INTERRUPT){
-                rd->insAddress = rd->lr - 4;
+                rd->insAddress = rd->lr - INSTRUCTION;
         } else {
                 rd->insAddress = 0;
         }
