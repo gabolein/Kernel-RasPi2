@@ -10,6 +10,8 @@
 #include "regcheck.h"
 #include "tests.h"
 
+#define BUFFER_SIZE 100
+
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
 static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
@@ -17,7 +19,7 @@ static volatile uint32_t* irq_basic_pending = IRQ_BASIC_PENDING;
 /* Register Defs End */
 
 /* Global CharBuffer */
-static char charBuffer[100] = "";
+static char charBuffer[BUFFER_SIZE] = "";
 static uint32_t charBufferLength = 0;
 
 volatile uint32_t ledStatus = 0;
@@ -55,7 +57,7 @@ int clockHandler() {
 }
 
 uint8_t bufferInsert(char c){
-        if(charBufferLength >= 100){
+        if(charBufferLength >= BUFFER_SIZE){
                 return 1;       /* Buffer is full */
         }
         charBufferLength++;
