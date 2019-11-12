@@ -20,10 +20,10 @@ char* itoa16(unsigned int value, char* c_buffer){
 
         static char presentation[] = "0123456789abcdef";
         int i = 9; // start from the back
-        do { // need do while in case value = 0
+        while (value > 0) { // need do while in case value = 0
                 c_buffer[i] = presentation[value % 16];
                 --i;
                 value /= 16;
-        } while (value > 0);
-        return &c_buffer[0];
+        }
+        return c_buffer;
 }
