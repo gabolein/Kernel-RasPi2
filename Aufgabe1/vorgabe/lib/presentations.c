@@ -3,6 +3,8 @@
 #include "serial.h"
 #include "registerDumpUtil.h"
 
+#define PSR_STRING_SIZE 11
+
 void inputPresentation(char receivedChar) {
         char charAsString[2] = "";
         charAsString[0] = receivedChar;
@@ -105,21 +107,21 @@ void registerDump(struct regDump* regDump){
         kprintf("\n\n>>> Aktuelle Statusregister (SPSR des aktuellen Modus) <<<\n");
 
         {
-                char cpsrString[11];
+                char cpsrString[PSR_STRING_SIZE];
                 getPSRStrings(regDump->cpsr, cpsrString);
                 kprintf("CPSR: %s ", cpsrString);
         }
 
-        printMode(regDump->cpsr & 0x1F);
+        printMode(regDump->cpsr & 0x1F); /* Mask non-mode bits */
         kprintf("      (%x)\n", regDump->cpsr);
 
         {
-                char spsrString[11];
+                char spsrString[PSR_STRING_SIZE];
                 getPSRStrings(regDump->cpsr, spsrString);
                 kprintf("SPSR: %s ", spsrString);
         }
 
-        printMode(regDump->cpsr & 0x1F);
+        printMode(regDump->spsr & 0x1F); /* Maske non-mode bits */
         kprintf("      (%x)\n\n", regDump->spsr);
 
         /* Aktuelle modusspezifische Register */
@@ -151,10 +153,3 @@ void registerDump(struct regDump* regDump){
 
         kprintf("\n\nSystem angehalten.\n");
 }
-
-
-/*
-struct regDump* getRegDumpStruct(struct regDump* rd, ){
-
-}
-*/
