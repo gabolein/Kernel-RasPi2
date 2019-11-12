@@ -11,6 +11,7 @@
 #include "tests.h"
 
 #define BUFFER_SIZE 100
+#define UART_IRQ_PENDING (1 << 25)
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -81,7 +82,7 @@ char bufferGet() {
 }
 
 int uartHandler() {
-        if(*irq_pending_2 & (uint32_t)(1 << 25)){
+        if(*irq_pending_2 & UART_IRQ_PENDING){
                 char receivedChar;
                 int hasReceived = uartReceiveChar(&receivedChar);
                 if (hasReceived) {
