@@ -6,25 +6,23 @@
 
 #include <stdint.h>
 
-
-
 /* Register Defs */
 static volatile uint32_t* uart_fr = UART_FR;
 static volatile uint32_t* uart_dr = UART_DR;
 static volatile uint32_t* uart_cr = UART_CR;
-//static volatile uint32_t* uart_ris = UART_RIS;
 static volatile uint32_t* uart_lcrh = UART_LCRH;
 static volatile uint32_t* uart_imsc = UART_IMSC;
-//static volatile uint32_t* uart_icr  = UART_ICR;
-//static volatile uint32_t* uart_mis = UART_MIS;
 
-//static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
 static volatile uint32_t* enable_irq_2  = ENABLE_IRQ_2;
-//static volatile uint32_t* enable_irq_1	= ENABLE_IRQ_1;
-//static volatile uint32_t* disable_irq_2 = DISABLE_IRQ_2;
-
 /* Register Defs End */
 
+static inline void disableUart() {
+        *uart_cr &= ~1;
+}
+
+static inline void enableUart() {
+        *uart_cr |= 1;
+}
 
 void initUart() {
         disableUart();
@@ -34,14 +32,6 @@ void initUart() {
         *uart_cr |= 1 << 9;
         *uart_cr |= 1 << 8;
         enableUart();
-}
-
-static inline void disableUart() {
-        *uart_cr &= ~1;
-}
-
-static inline void enableUart() {
-        *uart_cr |= 1;
 }
 
 void kputChar(char c) {
@@ -63,12 +53,11 @@ uint8_t uartBusy(){
                 return 1;
         }
         return 0;
-        
 }
 
 /* Returns 1 in case a char has been received */
 uint8_t uartReceiveChar(char* c){
-        if(!uartRXFifoEmpty()){ 
+        if(!uartRXFifoEmpty()){
 		*c = *(const char*)uart_dr;
 		return 1;
 	}
@@ -117,9 +106,8 @@ void enableUartInterrupt() {
         *enable_irq_2= 1 << 25;
 
         /* Mask every bit except receive Interrupt */
-	*uart_imsc = 0;
-	*uart_imsc |= 1 << 4;
-	
+        *uart_imsc = 0;
+        *uart_imsc |= 1 << 4;
         enableUart();
         specialMessage("Interrupt Mode activated");
 }
