@@ -5,6 +5,8 @@
 #include <stdint.h>
 
 #define MIN_INT -2147483648
+#define DEC_BUFFER_SIZE 10
+#define HEX_BUFFER_SIZE 11
 
 /*
  * Prints a string in the given format to screen
@@ -41,7 +43,7 @@ void kprintf(const char* format, ...) {
                                 case 'x' :
                                         u_int_num = va_arg(arg, unsigned int);
                                         {
-                                        char c_buffer[11] = "0x00000000";
+                                        char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
                                         kprintf(itoa16(u_int_num, c_buffer));
                                         }
                                         break;
@@ -55,7 +57,7 @@ void kprintf(const char* format, ...) {
                                                         int_num *= -1;
                                                 }
                                                 {
-                                                char c_buffer[10] = "";
+                                                char c_buffer[DEC_BUFFER_SIZE] = "";
                                                 kprintf(itoa10(int_num, c_buffer));
                                                 }
                                         }
@@ -63,7 +65,7 @@ void kprintf(const char* format, ...) {
                                 case 'u' :
                                         u_int_num = va_arg(arg, unsigned int);
                                         {
-                                        char c_buffer[10] = "";
+                                        char c_buffer[DEC_BUFFER_SIZE] = "";
                                         kprintf(itoa10(u_int_num, c_buffer));
                                         }
                                         break;
@@ -71,7 +73,7 @@ void kprintf(const char* format, ...) {
                                         kprintf("0x");
                                         address = va_arg(arg, uint32_t); // pointer -> 32Bit address
                                         {
-                                        char c_buffer[11] = "0x00000000";
+                                        char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
                                         kprintf(itoa16(address, c_buffer));
                                         }
                                         break;
