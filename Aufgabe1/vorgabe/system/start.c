@@ -14,7 +14,6 @@ void start_kernel(void)
         specialMessage("Kernel loaded! (UwU)");
         initTimer();
 
-        kprintf("\n\nDezimal: %u   |   %x\n\n\n", 0x80000000, 0x80000000); /* TODO: HEX HAT NEN OVERFLOW */
 
         char receivedChar;
         while(1) {
