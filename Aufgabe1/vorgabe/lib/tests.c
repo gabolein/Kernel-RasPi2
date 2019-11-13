@@ -11,7 +11,3 @@ void causeDataAbort() {
 void causeUndefinedInstruction() {
         asm volatile (".word 0xf7f0a000\n");
 }
-
-void causeSWI(){
-        asm volatile ("SWI 0x42");
-}

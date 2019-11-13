@@ -24,7 +24,7 @@ void start_kernel(void)
                         case 'c': register_checker();                               break;
                         case 'a': causeDataAbort();                                 break;
                         case 'u': causeUndefinedInstruction();                      break;
-                        case 's': causeSWI();                                       break;
+                        case 's': asm volatile ("SWI 0x4b");                        break;
                         default: kprintf("Received Character: %c\n", receivedChar); break;
                         }
                 }

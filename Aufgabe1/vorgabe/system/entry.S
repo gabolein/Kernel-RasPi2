@@ -1,12 +1,12 @@
 
-        .globl _reset
+		.globl _reset
 _reset:
 	b	0x0
 
-    .section .init
-    .global _start
+	.section .init
+	.global _start
 _start:
-        /* Erkennen ob Hypervisor Mode aktiv */
+		/* Erkennen ob Hypervisor Mode aktiv */
 	mrs r0, cpsr
 	and r0, r0, #0x1F
 	mov r1, #0x1A	//Modebits = 0x1A = Hypervisor Mode
@@ -33,11 +33,9 @@ _bsprak:
 	 * gesetzt, schadet aber auch nicht
 	*/
 
-    /* Usermode Stackpointer */
-	ldr	sp,=0x20000
-    /*Stackpointer für Interrupt modes*/
-    ldr     r0, =0x20000
-    msr     sp_usr, r0
+	/*Stackpointer für Interrupt modes*/
+	ldr	 r0, =0x20000
+	msr	 sp_usr, r0
 	ldr	r0, =0x30000
 	msr	sp_svc, r0
 	ldr	r0, =0x40000
@@ -49,22 +47,20 @@ _bsprak:
 	ldr	r0, =0x70000
 	msr	sp_fiq, r0
 
-    /* interrupts disablen */
-	/*cpsid	i*/
-    /* Adresse der IVT in r0 laden */
-    ldr     r0, =_ivt
-    mcr 	p15, 0, r0, c12, c0, 0
+	/* Adresse der IVT in r0 laden */
+	ldr	 r0, =_ivt
+	mcr 	p15, 0, r0, c12, c0, 0
 
 	cpsie	i, #0x13
 	/* Zu c Code springen */
 
-   	bl      start_kernel
+   	bl	  start_kernel
 
 .global .Lend
 
 .Lend:
 	WFI
-	b       .Lend
+	b	   .Lend
 
 _exitHyper:
 
@@ -86,5 +82,3 @@ _exitHyper:
 	orr r0, r0, #0x13	//Supervisormode
 	msr spsr_hyp, r0
 	eret
-
-        
