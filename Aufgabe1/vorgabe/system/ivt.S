@@ -56,7 +56,6 @@ _data_abort:
     ldr lr, [sp]    /* Kopiere das gesicherte LR ins LR */
     add sp, sp, #8 /* Addressiere die gesicherten unbanked Register */
     ldmia sp!, {r0 - r12}
-    /*b .Lend */
 	subs pc, lr, #4
 _not_used:
     nop
