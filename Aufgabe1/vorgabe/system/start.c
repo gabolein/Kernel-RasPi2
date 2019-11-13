@@ -14,7 +14,6 @@ void start_kernel(void)
         specialMessage("Kernel loaded! (UwU)");
         initTimer();
 
-
         char receivedChar;
         while(1) {
                 /* Anwendung */
