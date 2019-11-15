@@ -6,39 +6,40 @@
 
 #include <stdint.h>
 
+#define ENABLE_RX (1 << 9)
+#define ENABLE_TX (1 << 8)
+#define UART_BUSY (1 << 2)
+#define TX_FIFO_FULL (1 << 5)
+#define RX_FIFO_EMPTY (1 << 4)
+#define FIFO_ON (1 << 4)
+#define UART_INTERRUPT_ENABLE (1 << 25)
+#define RX_INTERRUPT (1 << 4)
+#define UART_ON 1
+
 /* Register Defs */
 static volatile uint32_t* uart_fr = UART_FR;
 static volatile uint32_t* uart_dr = UART_DR;
 static volatile uint32_t* uart_cr = UART_CR;
-//static volatile uint32_t* uart_ris = UART_RIS;
 static volatile uint32_t* uart_lcrh = UART_LCRH;
 static volatile uint32_t* uart_imsc = UART_IMSC;
-//static volatile uint32_t* uart_icr  = UART_ICR;
-//static volatile uint32_t* uart_mis = UART_MIS;
 
-//static volatile uint32_t* irq_pending_2 = IRQ_PENDING_2;
 static volatile uint32_t* enable_irq_2  = ENABLE_IRQ_2;
-//static volatile uint32_t* enable_irq_1	= ENABLE_IRQ_1;
-//static volatile uint32_t* disable_irq_2 = DISABLE_IRQ_2;
-
 /* Register Defs End */
 
-void initUart() {
-        disableUart();
-        /* Wait for FIFO to be emptied by the hardware */
-        while(*uart_fr & 0x4);
-        /* Enable RX and TX */
-        *uart_cr |= 1 << 9;
-        *uart_cr |= 1 << 8;
-        enableUart();
-}
-
 static inline void disableUart() {
-        *uart_cr &= ~1;
+        *uart_cr &= ~UART_ON;
 }
 
 static inline void enableUart() {
-        *uart_cr |= 1;
+        *uart_cr |= UART_ON;
+}
+
+void initUart() {
+        disableUart();
+        while(*uart_fr & UART_BUSY);
+        *uart_cr |= ENABLE_RX;
+        *uart_cr |= ENABLE_TX;
+        enableUart();
 }
 
 void kputChar(char c) {
@@ -48,75 +49,45 @@ void kputChar(char c) {
 
 /* Returns 1 if txFIFO is full */
 uint8_t uartTxFifoFull() {
-        if(*uart_fr & 1 << 5){
+        if(*uart_fr & TX_FIFO_FULL){
                 return 1;
         }
         return 0;
 }
 
-/* Returns 1 if UART is Busy */
-uint8_t uartBusy(){
-        if(*uart_fr & 0x4){
-                return 1;
-        }
-        return 0;
-        
-}
 
 /* Returns 1 in case a char has been received */
 uint8_t uartReceiveChar(char* c){
-        if(!uartRXFifoEmpty()){ 
+        if(!uartRXFifoEmpty()){
 		*c = *(const char*)uart_dr;
 		return 1;
 	}
  	return 0;
 }
 
-/* state = 1 -> TX enable  */
-/* state = 0 -> TX disable */
-static inline void uartToggleTX(uint8_t state){
-        if(state){
-                *uart_cr |= 1 << 8;
-                return;
-        }
-        *uart_cr ^= 1 << 8;
-        return;
-}
-
-/* state = 1 -> RX enable  */
-/* state = 0 -> RX disable */
-static inline void uartToggleRX(uint8_t state){
-        if(state){
-                *uart_cr |= 1 << 9;
-                return;
-        }
-        *uart_cr ^= 1 << 9;
-}
 
 /* Returns 1 if Fifo empty */
 static inline uint8_t uartRXFifoEmpty(){
-        if(*uart_fr & 1 << 4){
+        if(*uart_fr & RX_FIFO_EMPTY){
                 return 1;
         }
         return 0;
 }
 
 static inline char waitForReceive() {
-        while(*uart_fr & (1 << 4));
+        while(*uart_fr & RX_FIFO_EMPTY);
         return (char)*uart_dr;
 }
 
 void enableUartInterrupt() {
         disableUart();
-        //while(*uart_fr & 0x4); //TODO might not be necessary
         /* Disable FIFO */
-        *uart_lcrh &= ~(1 << 4);
-        *enable_irq_2= 1 << 25;
+        *uart_lcrh &= ~(FIFO_ON);
+        *enable_irq_2 = UART_INTERRUPT_ENABLE;
 
         /* Mask every bit except receive Interrupt */
-	*uart_imsc = 0;
-	*uart_imsc |= 1 << 4;
-	
+        *uart_imsc = 0;
+        *uart_imsc |= RX_INTERRUPT;
         enableUart();
         specialMessage("Interrupt Mode activated");
 }

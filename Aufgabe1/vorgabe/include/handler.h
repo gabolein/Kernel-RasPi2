@@ -1,13 +1,24 @@
+#include <stdint.h>
+
 #ifndef _BAR_H_
 #define _BAR_H_
 
-extern void undefined_instruction();
-extern void software_interrupt();
-extern void prefetch_abort();
-extern void data_abort();
-extern void not_used();
-extern void irq();
+extern void undefined_instruction(void*);
+extern void software_interrupt(void*);
+extern void prefetch_abort(void*);
+extern void data_abort(void*);
+extern void irq(void*);
 extern void fiq();
+void toggleDebugMode();
+int clockHandler();
+int uartHandler();
+extern volatile int debugMode;
+extern uint8_t subProgramMode;
+extern volatile uint8_t checkerMode;
+uint8_t bufferInsert(char);
+
+/* Returns 0 in case of an empty buffer */
+char bufferGet();
 
 #endif
 
