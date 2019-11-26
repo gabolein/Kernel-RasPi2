@@ -1,5 +1,6 @@
 #include "thread.h"
 #include "registerDumpUtil.h"
+#include <stdint.h>
 
 #define AMOUNT_THREADS          32
 #define IDLE                    AMOUNT_THREADS
