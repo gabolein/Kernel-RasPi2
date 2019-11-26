@@ -17,7 +17,7 @@ uint8_t rrSchedule(uint8_t currentThread, uint8_t threadDied) {
                 uint8_t i = currentThread + 1;
                 /* return first Thread that is alive */
                 do {
-                        if (threadArray[i].status == THREAD_ALIVE) {
+                        if (threadArray[i].threadStatus == THREAD_ALIVE) {
                                 return i;
                         }
                         i = (i + 1) % THREAD_ARRAY_SIZE;
