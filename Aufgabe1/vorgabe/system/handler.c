@@ -45,7 +45,7 @@ void killOrDie(struct regDump* rd) {
 
 /* TODO: move to thread.c */
 void killThread(uint16_t currentThread) {
-        thisThread = threadArray[currentThread];
+        struct thcStruct thisThread = threadArray[currentThread];
         thisThread.status = DEAD;
         thisThread.context.sp = thisThread.initialSp;
         kprintf("\n\nThread %u angehalten.\n", thisThread.ID);
@@ -55,18 +55,18 @@ void killThread(uint16_t currentThread) {
  * TODO: maybe move these two to thread.c
  */
 void saveContext(uint16_t currentThread, void* sp) {
-        thisThread = threadArray[currentThread];
+        struct thcStruct thisThread = threadArray[currentThread];
         struct commonRegs* cr = (struct commonRegs*) sp;
         asm volatile ("mrs %0, SPSR_cxsf": "=r" (thisThread.context.spsr));
         thisThread.context = cr;
-        thisThread.status = ALIVE;
+        thisThread.status = READY;
 }
 
 void changeContext(uint16_t nextThread, void* sp){
-        thisThread = threadArray[nextThread];
+        struct thcStruct thisThread = threadArray[nextThread];
         struct commonRegs* cr = (struct commonRegs*) sp;
-        cr = thisThread.context;
-        asm volatile("msr SPSR_cxsf, %0":: "+r" (thisThread.context.spsr)); /* vodoo scheisse kp */
+        *cr = thisThread.context;
+        asm volatile("msr SPSR_cxsf, %0":: "+r" (thisThread.spsr)); /* vodoo scheisse kp */
         thisThread.status = RUNNING;
         kprintf("\n");
 }
@@ -132,18 +132,14 @@ int uartHandler() {
 
                 if (hasReceived) {
                         switch(receivedChar){
-                                case 'S': createThread(threadCauseSWI());                       break;
-                                case 'A': createThread(threadCauseDataAbort());                 break;
-                                case 'U': createThread(threadCauseSWI());                       break;
-                                case 'c':
-                                        if(subProgramMode) {
-                                                checkerMode = 1;
-                                        }
-                                        break;
+                        case 'S': createThread(threadCauseSWI());                       break;
+                        case 'A': createThread(threadCauseDataAbort());                 break;
+                        case 'U': createThread(threadCauseSWI());                       break;
+                        case 'c': if(subProgramMode) checkerMode = 1; break;
                                         /* TODO put kernel interrupts in here */
-                                default: createThread(user_thread(), receivedChar, 1 byte)      break;
+                        default: createThread(&user_thread, &receivedChar, 1)      break;
                         }
-                        bufferInsert(receivedChar);
+                        bufferInsert(receivedChar); /* TODO Wenn die scheisse an den user_thread weitergegeben wird, muss das doch nicht mehr in den buffer rein, oder? */
                 }
                 *uart_icr = 0;
                 return 1;
@@ -191,6 +187,7 @@ void irq(void* sp){
                 registerDump(&rd);
         }
         if(clockHandler()){
+                timerInterruptCount++;
                 uint16_t currentThread = getCurrentThread();
                 uint16_t nextThread = rrSchedule(currentThread, 0);
                 if (currentThread != nextThread) {
