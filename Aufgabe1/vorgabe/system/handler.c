@@ -187,8 +187,7 @@ void irq(void* sp){
                 registerDump(&rd);
         }
         if(clockHandler()){
-                timerInterruptCount++;
-                uint16_t currentThread = getCurrentThread();
+                uint16_t currentThread = getRunningThread();
                 uint16_t nextThread = rrSchedule(currentThread, 0);
                 if (currentThread != nextThread) {
                         saveContext(currentThread, sp);
