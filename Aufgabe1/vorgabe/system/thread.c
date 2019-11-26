@@ -25,7 +25,6 @@ void initThreadArray() {
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
-        /* TODO SPSR sinnvoll beschreiben */
         uint16_t newThread = getDeadThread();
         threadArray[newThread].status = READY;
         threadArray[newThread].context.pc = (uint32_t)func;
