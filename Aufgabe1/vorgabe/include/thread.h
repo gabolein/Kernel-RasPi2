@@ -2,7 +2,7 @@
 
 #ifndef THREAD_H
 #define THREAD_H
-enum threadStatus {
+enum ThreadStatus {
     ALIVE       = 0;
     DEAD        = 1;
     ACTIVE      = 2;
@@ -10,9 +10,10 @@ enum threadStatus {
 };
 
 struct thcStruct{
-    struct commonRegs;
-    uint32_t SPSR;
-    enum threadStatus;
+    struct commonRegs context;
+    uint32_t spsr;
+    enum status;
+    uint16_t threadID;
 };
 
 void initThreadArray();
