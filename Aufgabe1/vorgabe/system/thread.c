@@ -30,6 +30,7 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         threadArray[newThread].status = READY;
         threadArray[newThread].context.pc = (uint32_t)func;
         threadArray[newThread].context.lr = (uint32_t)&endThread;
+        threadArray[newThread].spsr = 0x2; /* User Mode, sonst nichts gesetzt */
         //Stack mit Argumenten füllen
         if(args_size){
                 volatile void* sp = (void*)threadArray[newThread].context.sp;
