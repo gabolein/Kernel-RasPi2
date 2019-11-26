@@ -86,6 +86,9 @@ int uartHandler() {
         if(*irq_pending_2 & UART_IRQ_PENDING){
                 char receivedChar;
                 int hasReceived = uartReceiveChar(&receivedChar);
+                /*
+                 * TODO :If receive S, A or U, spawn thread that cause Exception
+                 */
                 if (hasReceived) {
                         if(subProgramMode && (receivedChar == 'c')){
                                 checkerMode = 1;
