@@ -9,6 +9,8 @@
 #include "timer.h"
 #include "regcheck.h"
 #include "tests.h"
+#include "scheduler.h"
+#include "thread.h"
 
 #define BUFFER_SIZE 100
 #define UART_IRQ_PENDING (1 << 25)
@@ -29,7 +31,21 @@ volatile int debugMode = 0;
 uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
-/* TODO: IMPLEMENT CONTEXT CHANGE */
+void saveContext(uint16_t currentThread, void* sp) {
+        thisThread = threadArray[currentThread];
+        struct commonRegs* cr = (struct commonRegs*) sp;
+        asm volatile ("mrs %0, SPSR_cxsf": "=r" (thisThread.context.spsr));
+        thisThread.context = cr;
+        thisThread.status = ALIVE;
+}
+
+void changeContext(uint16_t nextThread, void* sp){
+        thisThread = threadArray[nextThread];
+        struct commonRegs* cr = (struct commonRegs*) sp;
+        cr = thisThread.context;
+        asm volatile("msr SPSR_cxsf, %0":: "+r" (thisThread.context.spsr)); /* vodoo scheisse kp */
+        thisThread.status = RUNNING;
+}
 
 void toggleDebugMode(){
         debugMode = !debugMode;
@@ -43,9 +59,6 @@ void toggleDebugMode(){
 int clockHandler() {
         if (*irq_basic_pending & TIMER_IRQ_PENDING) {
                 if (timerCheckInterruptSet()) {
-                        /*
-                         * TODO: call scheduler and decide whether to change context
-                         */
                         if(ledStatus){
                                 yellow_off();
                                 ledStatus = 0;
@@ -54,7 +67,7 @@ int clockHandler() {
                                 ledStatus = 1;
                         }
                         if(subProgramMode){
-                                kprintf("!\n");
+                                kprintf("!");
                         }
                 }
                 timerIrqClr();
@@ -158,7 +171,14 @@ void irq(void* sp){
                 getRegDumpStruct(&rd, IRQ, sp);
                 registerDump(&rd);
         }
-        clockHandler();
+        if(clockHandler()){
+                uint16_t currentThread = getCurrentThread();
+                uint16_t nextThread = rrSchedule(currentThread, 0);
+                if (currentThread != nextThread) {
+                        saveContext(currentThread, sp);
+                        changeContext(nextThread, sp);
+                }
+        }
         uartHandler();
         return;
 }
