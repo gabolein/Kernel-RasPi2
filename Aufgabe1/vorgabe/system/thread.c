@@ -1,6 +1,7 @@
 #include "thread.h"
 #include "registerDumpUtil.h"
 #include <stdint.h>
+#include "kio.h"
 
 #define AMOUNT_THREADS          32
 #define IDLE                    AMOUNT_THREADS
@@ -18,6 +19,50 @@ void initThreadArray() {
                 threadArray[i].threadID = i;
         }
         /* Init Idle Thread */
-        threadArray[IDLE].status = ALIVE;
+        threadArray[IDLE].status = RUNNING;
         /*TODO*/
+
+}
+
+void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
+        /* TODO SPSR sinnvoll beschreiben */
+        uint16_t newThread = getDeadThread();
+        threadArray[newThread].status = READY;
+        threadArray[newThread].context.pc = (uint32_t)func;
+        threadArray[newThread].context.lr = (uint32_t)&endThread;
+        //Stack mit Argumenten füllen
+        if(args_size){
+                volatile void* sp = (void*)threadArray[newThread].context.sp;
+                sp -= args_size;
+                /* Vielleicht funktioniert das nicht wenn der SP immer Wortaligned sein muss?
+                 Es könnte ja gelten: arg_size & 4 != 0*/
+                /* TODO */
+                for(uint32_t offset = 0; offset < args_size; offset += 4){
+                        *(uint32_t*)(sp + offset) = *(uint32_t*)(args + offset);
+                }
+        }
+}
+
+void endThread() {
+        asm volatile ("SWI 21");
+}
+
+uint16_t getDeadThread(){
+        for(uint16_t i = 0; i < AMOUNT_THREADS + 1; i++) {
+                if(threadArray[i].status == DEAD){
+                        return i;
+                }
+        }
+        kprintf("\n Error determining dead Thread! \n");
+        return 0;
+}
+
+uint16_t getRunningThread(){
+        for(uint16_t i = 0; i < AMOUNT_THREADS + 1; i++) {
+                if(threadArray[i].status == RUNNING){
+                        return i;
+                }
+        }
+        kprintf("\n Error determining running Thread! \n");
+        return 0;
 }

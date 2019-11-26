@@ -4,10 +4,10 @@
 #ifndef THREAD_H
 #define THREAD_H
 enum threadStatus {
-        ALIVE       = 0,
+        WAITING     = 0,
         DEAD        = 1,
-        ACTIVE      = 2,
-        SLEEPING    = 3
+        RUNNING     = 2,
+        READY       = 3
 };
 
 struct thcStruct{
@@ -19,7 +19,9 @@ struct thcStruct{
 
 void initThreadArray();
 void cpyStacktoTHC();
-void createThread(void *(void *), const void*, int);
-void startThread();
+void createThread(void (*func)(void *), const void*, uint32_t);
+uint16_t getRunningThread();
+uint16_t getDeadThread();
+void endThread();
 
 #endif //THREAD_H

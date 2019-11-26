@@ -7,7 +7,7 @@ struct thcStruct threadArray[33];
 *** Datenstrukturen
 **** enum Status
 #+BEGIN_SRC C
-enum thcStatus{
+enum threadStatus{
 
 }
 #+END_SRC
@@ -107,4 +107,4 @@ void restoreContext(struct thcStruct*)
   - rrScheduler(getCurrentThread(), 0);
   - Wenn return vom Scheduler was anderes als getCurrentThread() dann 
 
-** TODO getCurrentThread
+** TODO getRunningThread
