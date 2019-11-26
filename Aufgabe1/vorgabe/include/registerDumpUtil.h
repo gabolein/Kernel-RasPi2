@@ -1,6 +1,8 @@
 #ifndef REGISTER_DUMP_UTIL_H
 #define REGISTER_DUMP_UTIL_H
 
+#include <stdint.h>
+
 enum SFSRStatus {
         ALIGNMENT_FAULT                      = 0x1,
         DEBUG_EVENT                          = 0x2,

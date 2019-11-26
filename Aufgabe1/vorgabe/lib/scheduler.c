@@ -12,7 +12,8 @@ static uint16_t timerInterruptCount = 0;
 /* returns index of next Thread that is up */
 uint8_t rrSchedule(uint8_t currentThread, uint8_t threadDied) {
         if ((threadDied == THREAD_DEAD)
-            || (threadDied == THREAD_ALIVE && TIME_SLICE_INTERRUPTS >= timerInterruptCount++)) {
+            || (threadDied == THREAD_ALIVE && TIME_SLICE_INTERRUPTS >= timerInterruptCount++)
+            || currentThread == IDLE_THREAD) {
                 timerInterruptCount = 0;
                 uint8_t i = currentThread + 1;
                 /* return first Thread that is alive */
