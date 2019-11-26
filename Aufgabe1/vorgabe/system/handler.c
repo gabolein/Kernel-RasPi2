@@ -29,6 +29,8 @@ volatile int debugMode = 0;
 uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
+/* TODO: IMPLEMENT CONTEXT CHANGE */
+
 void toggleDebugMode(){
         debugMode = !debugMode;
         if (debugMode) {
@@ -41,6 +43,9 @@ void toggleDebugMode(){
 int clockHandler() {
         if (*irq_basic_pending & TIMER_IRQ_PENDING) {
                 if (timerCheckInterruptSet()) {
+                        /*
+                         * TODO: call scheduler and decide whether to change context
+                         */
                         if(ledStatus){
                                 yellow_off();
                                 ledStatus = 0;
@@ -88,6 +93,7 @@ int uartHandler() {
                 int hasReceived = uartReceiveChar(&receivedChar);
                 /*
                  * TODO :If receive S, A or U, spawn thread that cause Exception
+                 * if something else: start user thread
                  */
                 if (hasReceived) {
                         if(subProgramMode && (receivedChar == 'c')){
@@ -104,6 +110,10 @@ int uartHandler() {
 /* Begin C Handlers */
 
 void undefined_instruction(void* sp){
+        /* TODO: Check if user or BS Exception.
+         * if user: print reg dump, kill thread, context change
+         * if bs:  print reg dump, kill system
+        */
         green_on();
         struct regDump rd;
         getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
@@ -111,6 +121,10 @@ void undefined_instruction(void* sp){
         return;
 }
 void software_interrupt(void* sp){
+        /* TODO: Check if user or BS Exception.
+         * if user: print reg dump, kill thread, context change
+         * if bs:  print reg dump, kill system
+        */
         red_on();
         struct regDump rd;
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
@@ -118,12 +132,20 @@ void software_interrupt(void* sp){
         return;
 }
 void prefetch_abort(void* sp){
+        /* TODO: Check if user or BS Exception.
+         * if user: print reg dump, kill thread, context change
+         * if bs:  print reg dump, kill system
+        */
         struct regDump rd;
         getRegDumpStruct(&rd, PREFETCH_ABORT, sp);
         registerDump(&rd);
         return;
 }
 void data_abort(void* sp){
+        /* TODO: Check if user or BS Exception.
+         * if user: print reg dump, kill thread,context change
+         * if bs:  print reg dump, kill system
+        */
         struct regDump rd;
         getRegDumpStruct(&rd, DATA_ABORT, sp);
         registerDump(&rd);
