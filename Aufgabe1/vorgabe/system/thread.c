@@ -40,6 +40,7 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
                 for(uint32_t offset = 0; offset < args_size; offset += 4){
                         *(uint32_t*)(sp + offset) = *(uint32_t*)(args + offset);
                 }
+                threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben */
         }
 }
 
