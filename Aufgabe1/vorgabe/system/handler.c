@@ -68,6 +68,7 @@ void changeContext(uint16_t nextThread, void* sp){
         cr = thisThread.context;
         asm volatile("msr SPSR_cxsf, %0":: "+r" (thisThread.context.spsr)); /* vodoo scheisse kp */
         thisThread.status = RUNNING;
+        kprintf("\n");
 }
 
 
