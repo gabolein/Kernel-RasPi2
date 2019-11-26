@@ -67,3 +67,10 @@ uint16_t getRunningThread(){
         kprintf("\n Error determining running Thread! \n");
         return 0;
 }
+
+void killThread(uint16_t currentThread) {
+        struct thcStruct thisThread = threadArray[currentThread];
+        thisThread.status = DEAD;
+        thisThread.context.sp = thisThread.initialSp;
+        kprintf("\n\nThread %u angehalten.\n", thisThread.ID);
+}

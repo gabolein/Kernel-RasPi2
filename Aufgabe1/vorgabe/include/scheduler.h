@@ -1,8 +1,8 @@
 #include <stdint.h>
 
-#ifndef SCHEDULAR_H
-#define SCHEDULAR_H
+#ifndef SCHEDULER_H
+#define SCHEDULER_H
 
 uint8_t rrSchedule(uint8_t, uint8_t);
 
-#endif SCHEDULAR_H
+#endif //SCHEDULER_H

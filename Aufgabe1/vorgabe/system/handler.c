@@ -11,6 +11,7 @@
 #include "tests.h"
 #include "scheduler.h"
 #include "thread.h"
+#include "../user/include/user_thread.h"
 
 #define BUFFER_SIZE 100
 #define UART_IRQ_PENDING (1 << 25)
@@ -31,42 +32,31 @@ volatile int debugMode = 0;
 uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
-void killOrDie(struct regDump* rd) {
-        if ((rd->spsr & 0x1F) == USER) {
-                uint16_t currentThread = getCurrentThread();
+void killOrDie(struct regDump* rd, void* sp) {
+        if ((rd->spsr & 0x1F) == USER) { /* TODO DEFINE USER */
+                uint16_t currentThread = getRunningThread();
                 killThread(currentThread);
                 uint16_t nextThread = rrSchedule(currentThread, 1);
                 changeContext(nextThread, sp);
         } else {
                 kprintf("\n\nSystem angehalten.\n");
-                while();
+                while(1);
         }
 }
 
-/* TODO: move to thread.c */
-void killThread(uint16_t currentThread) {
-        struct thcStruct thisThread = threadArray[currentThread];
-        thisThread.status = DEAD;
-        thisThread.context.sp = thisThread.initialSp;
-        kprintf("\n\nThread %u angehalten.\n", thisThread.ID);
-}
-
-/*
- * TODO: maybe move these two to thread.c
- */
 void saveContext(uint16_t currentThread, void* sp) {
-        struct thcStruct thisThread = threadArray[currentThread];
+        struct thcStruct thisThread = threadArray[currentThread]; /*TODO ThreadArray Global or these two functions into thread.c */
         struct commonRegs* cr = (struct commonRegs*) sp;
-        asm volatile ("mrs %0, SPSR_cxsf": "=r" (thisThread.context.spsr));
-        thisThread.context = cr;
+        asm volatile ("mrs %0, SPSR": "=r" (thisThread.spsr));
+        thisThread.context = *cr;
         thisThread.status = READY;
 }
 
 void changeContext(uint16_t nextThread, void* sp){
         struct thcStruct thisThread = threadArray[nextThread];
         struct commonRegs* cr = (struct commonRegs*) sp;
-        *cr = thisThread.context;
-        asm volatile("msr SPSR_cxsf, %0":: "+r" (thisThread.spsr)); /* vodoo scheisse kp */
+        cr = *thisThread.context; /* TODO FUCK */
+        asm volatile("msr SPSR_cxsf, %0":: "r" (thisThread.spsr)); /* vodoo scheisse kp */
         thisThread.status = RUNNING;
         kprintf("\n");
 }
@@ -132,12 +122,12 @@ int uartHandler() {
 
                 if (hasReceived) {
                         switch(receivedChar){
-                        case 'S': createThread(threadCauseSWI());                       break;
-                        case 'A': createThread(threadCauseDataAbort());                 break;
-                        case 'U': createThread(threadCauseSWI());                       break;
+                        case 'S': createThread(&threadCauseSWI());                       break;
+                        case 'A': createThread(&threadCauseDataAbort());                 break;
+                        case 'U': createThread(&threadCauseSWI());                       break;
                         case 'c': if(subProgramMode) checkerMode = 1; break;
                                         /* TODO put kernel interrupts in here */
-                        default: createThread(&user_thread, &receivedChar, 1)      break;
+                        default: createThread(&user_thread, &receivedChar, 1);             break;
                         }
                         bufferInsert(receivedChar); /* TODO Wenn die scheisse an den user_thread weitergegeben wird, muss das doch nicht mehr in den buffer rein, oder? */
                 }
@@ -154,7 +144,7 @@ void undefined_instruction(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
         registerDump(&rd);
-        killOrDie(&rd)
+        killOrDie(&rd, sp);
         return;
 }
 void software_interrupt(void* sp){
@@ -162,21 +152,21 @@ void software_interrupt(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
         registerDump(&rd);
-        killOrDie(&rd);
+        killOrDie(&rd, sp);
         return;
 }
 void prefetch_abort(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, PREFETCH_ABORT, sp);
         registerDump(&rd);
-        killOrDie(&rd);
+        killOrDie(&rd, sp);
         return;
 }
 void data_abort(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, DATA_ABORT, sp);
         registerDump(&rd);
-        killOrDie(&rd);
+        killOrDie(&rd, sp);
         return;
 }
 

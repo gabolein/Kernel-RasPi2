@@ -23,5 +23,5 @@ void createThread(void (*func)(void *), const void*, uint32_t);
 uint16_t getRunningThread();
 uint16_t getDeadThread();
 void endThread();
-
+void killThread(uint16_t);
 #endif //THREAD_H
