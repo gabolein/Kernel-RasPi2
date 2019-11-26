@@ -43,6 +43,7 @@ void killOrDie(struct regDump* rd) {
         }
 }
 
+/* TODO: move to thread.c */
 void killThread(uint16_t currentThread) {
         thisThread = threadArray[currentThread];
         thisThread.status = DEAD;
@@ -50,6 +51,9 @@ void killThread(uint16_t currentThread) {
         kprintf("\n\nThread %u angehalten.\n", thisThread.ID);
 }
 
+/*
+ * TODO: maybe move these two to thread.c
+ */
 void saveContext(uint16_t currentThread, void* sp) {
         thisThread = threadArray[currentThread];
         struct commonRegs* cr = (struct commonRegs*) sp;
@@ -65,6 +69,7 @@ void changeContext(uint16_t nextThread, void* sp){
         asm volatile("msr SPSR_cxsf, %0":: "+r" (thisThread.context.spsr)); /* vodoo scheisse kp */
         thisThread.status = RUNNING;
 }
+
 
 void toggleDebugMode(){
         debugMode = !debugMode;
