@@ -5,6 +5,7 @@
 #include "handler.h"
 #include "kio.h"
 #include "regcheck.h"
+#include "thread.h"
 #include <stdint.h>
 #include "../user/include/subProgram.h"
 
@@ -13,6 +14,7 @@ void start_kernel(void)
         enableUartInterrupt();
         specialMessage("Kernel loaded! (UwU)");
         initTimer();
+        initThreadArray();
 
         char receivedChar;
         while(1) {
