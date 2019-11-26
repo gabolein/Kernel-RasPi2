@@ -151,5 +151,5 @@ void registerDump(struct regDump* regDump){
                       regDump->undefinedSp,
                       regDump->undefinedSpsr);
 
-        kprintf("\n\nSystem angehalten.\n");
+
 }

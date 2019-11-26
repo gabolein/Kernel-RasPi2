@@ -31,6 +31,13 @@ volatile int debugMode = 0;
 uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
+void killThread(currentThread) {
+        thisThread = threadArray[currentThread];
+        thisThread.status = DEAD;
+        thisThread.context.sp = thisThread.initialSp;
+        kprintf("\n\nThread %u angehalten.\n", thisThread.ID);
+}
+
 void saveContext(uint16_t currentThread, void* sp) {
         thisThread = threadArray[currentThread];
         struct commonRegs* cr = (struct commonRegs*) sp;
@@ -134,14 +141,21 @@ void undefined_instruction(void* sp){
         return;
 }
 void software_interrupt(void* sp){
-        /* TODO: Check if user or BS Exception.
-         * if user: print reg dump, kill thread, context change
-         * if bs:  print reg dump, kill system
-        */
-        red_on();
         struct regDump rd;
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
         registerDump(&rd);
+        /* TODO FIX ENUM SHIT */
+        if ((rd->spsr & 0x1F) == USER) {
+                uint16_t currentThread = getCurrentThread();
+                killThread(currentThread);
+                uint16_t nextThread = rrSchedule(currentThread, 1);
+                changeContext(nextThread, sp);
+        } else {
+                kprintf("\n\nSystem angehalten.\n");
+                while();
+        }
+        red_on();
+
         return;
 }
 void prefetch_abort(void* sp){
