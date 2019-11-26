@@ -17,6 +17,7 @@ void start_kernel(void)
         char receivedChar;
         while(1) {
                 /* Anwendung */
+                /* TODO: Think we removing dis shit */
                 if((receivedChar = bufferGet())){
                         switch(receivedChar){
                         case 'd': toggleDebugMode();                                break;

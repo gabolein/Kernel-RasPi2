@@ -128,13 +128,19 @@ int uartHandler() {
         if(*irq_pending_2 & UART_IRQ_PENDING){
                 char receivedChar;
                 int hasReceived = uartReceiveChar(&receivedChar);
-                /*
-                 * TODO :If receive S, A or U, spawn thread that cause Exception
-                 * if something else: start user thread
-                 */
+
                 if (hasReceived) {
-                        if(subProgramMode && (receivedChar == 'c')){
-                                checkerMode = 1;
+                        switch(receivedChar){
+                                case 'S': createThread(threadCauseSWI());                       break;
+                                case 'A': createThread(threadCauseDataAbort());                 break;
+                                case 'U': createThread(threadCauseSWI());                       break;
+                                case 'c':
+                                        if(subProgramMode) {
+                                                checkerMode = 1;
+                                        }
+                                        break;
+                                        /* TODO put kernel interrupts in here */
+                                default: createThread(user_thread(), receivedChar, 1 byte)      break;
                         }
                         bufferInsert(receivedChar);
                 }
