@@ -15,6 +15,7 @@ struct thcStruct{
     uint32_t spsr;
     enum threadStatus status;
     uint16_t threadID;
+    uint32_t initialSp;
 };
 
 void initThreadArray();

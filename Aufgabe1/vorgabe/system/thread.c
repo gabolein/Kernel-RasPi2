@@ -16,6 +16,7 @@ void initThreadArray() {
         for (int i = 0; i < AMOUNT_THREADS+1; i++) {
                 threadArray[i].status = DEAD;
                 threadArray[i].context.sp = USER_SP+THREAD_STACK_SIZE*i;
+                threadArray[i].initialSp = threadArray[i].context.sp;
                 threadArray[i].threadID = i;
         }
         /* Init Idle Thread */
@@ -72,7 +73,7 @@ void killThread(uint16_t currentThread) {
         struct thcStruct thisThread = threadArray[currentThread];
         thisThread.status = DEAD;
         thisThread.context.sp = thisThread.initialSp;
-        kprintf("\n\nThread %u angehalten.\n", thisThread.ID);
+        kprintf("\n\nThread %u angehalten.\n", thisThread.threadID);
 }
 
 void saveContext(uint16_t currentThread, void* sp) {
