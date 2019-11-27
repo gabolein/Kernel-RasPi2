@@ -114,7 +114,7 @@ LD = arm-none-eabi-ld
 OBJCOPY = arm-none-eabi-objcopy
 OBJDUMP = arm-none-eabi-objdump
 
-CFLAGS = -Wall -Wextra -ffreestanding -mcpu=cortex-a7 -O2
+CFLAGS = -Wall -Wextra -ffreestanding -mcpu=cortex-a7 -O2 -fno-tree-loop-distribute-patterns
 #CFLAGS = -ffreestanding -mcpu=cortex-a7 -O2
 CFLAGS_DEBUG = $(CFLAGS) -ggdb
 CPPFLAGS = -Iinclude

@@ -87,22 +87,28 @@ void saveContext(uint16_t currentThread, void* sp) {
 //void __attribute__((optimize("-fno-tree-loop-distribute-patterns"))) changeContext(uint16_t nextThread, void* sp){
 void changeContext(uint16_t nextThread, void* sp){
         struct thcStruct thisThread = threadArray[nextThread];
-        //struct commonRegs* cr = (struct commonRegs*) sp;
-        /* *cr = thisThread.context; */
-        uint32_t* stack = (uint32_t*) sp;
-        uint32_t* context = (uint32_t*)(&(thisThread.context));
-        memCpy(stack, context, 16*4);
+	fillStack(&thisThread.context, sp);
         asm volatile("msr SPSR_cxsf, %0":: "r" (thisThread.spsr)); /* vodoo scheisse kp */
         thisThread.status = RUNNING;
         kprintf("\n");
 }
 
-void memCpy(void* target, void* source, int size) {
-        int i;
-        uint32_t* t = (uint32_t*) target;
-        uint32_t* s = (uint32_t*) source;
-        for(i=0 ;i<size ;i++) {
-                t[i]=s[i];
-        }
-
+void fillStack(struct commonRegs* rd, void* sp){
+        struct commonRegs* cr = (struct commonRegs*) sp;
+        rd->r0 = cr->r0;
+        rd->r1 = cr->r1;
+        rd->r2 = cr->r2;
+        rd->r3 = cr->r3;
+        rd->r4 = cr->r4;
+        rd->r5 = cr->r5;
+        rd->r6 = cr->r6;
+        rd->r7 = cr->r7;
+        rd->r8 = cr->r8;
+        rd->r9 = cr->r9;
+        rd->r10 = cr->r10;
+        rd->r11 = cr->r11;
+        rd->r12 = cr->r12;
+        rd->sp = cr->sp;
+        rd->lr = cr->lr;
+        rd->pc = cr->pc;
 }
