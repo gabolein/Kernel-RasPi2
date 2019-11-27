@@ -84,10 +84,14 @@ void saveContext(uint16_t currentThread, void* sp) {
         thisThread.status = READY;
 }
 
-void changeContext(uint16_t nextThread, void* sp){
+void __attribute__((optimize("-fno-tree-loop-distribute-patterns"))) changeContext(uint16_t nextThread, void* sp){
         struct thcStruct thisThread = threadArray[nextThread];
         struct commonRegs* cr = (struct commonRegs*) sp;
-        *cr = thisThread.context; /* TODO FUCK */
+        /* *cr = thisThread.context; */
+        for(uint32_t i = 0; i < sizeof(struct commonRegs); i += 4){ /* geht nur weil die Größe von commonRegs 32Bit aligned ist */
+                *((uint32_t*)(cr+i)) = *((uint32_t*)((&(thisThread.context)) + i));
+        }
+
         asm volatile("msr SPSR_cxsf, %0":: "r" (thisThread.spsr)); /* vodoo scheisse kp */
         thisThread.status = RUNNING;
         kprintf("\n");
