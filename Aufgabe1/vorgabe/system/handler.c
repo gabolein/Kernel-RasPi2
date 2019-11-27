@@ -66,9 +66,9 @@ int clockHandler() {
                                 yellow_on();
                                 ledStatus = 1;
                         }
-                        if(subProgramMode){
-                                kprintf("!");
-                        }
+                       
+                        kprintf("!");
+                        
                 }
                 timerIrqClr();
                 return 1;
@@ -107,7 +107,7 @@ int uartHandler() {
 
                 if (hasReceived) {
                         switch(receivedChar){
-                        case 'S': createThread(&threadCauseSWI, NULL, 0);                       break;
+                        case 'S': createThread(&threadCauseSWI, NULL, 0);       kprintf("S\n");                break;
                         case 'A': createThread(&threadCauseDataAbort, NULL, 0);                 break;
                         case 'U': createThread(&threadCauseSWI, NULL, 0);                       break;
                         case 'c': if(subProgramMode) checkerMode = 1; break;
@@ -163,10 +163,13 @@ void irq(void* sp){
         }
         if(clockHandler()){
                 uint16_t currentThread = getRunningThread();
+		kprintf("currentirq: %u\n", currentThread);
                 uint16_t nextThread = rrSchedule(currentThread, 0);
                 if (currentThread != nextThread) {
+			kprintf("currentirq: %u, next: %u\n", currentThread, nextThread);
                         saveContext(currentThread, sp);
                         changeContext(nextThread, sp);
+			kprintf("nextThread status:%u\n", threadArray[nextThread].status);
                 }
         }
         uartHandler(); // TODO: if idle, call scheduler

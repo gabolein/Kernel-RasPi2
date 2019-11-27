@@ -30,7 +30,7 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         threadArray[newThread].status = READY;
         threadArray[newThread].context.pc = (uint32_t)func;
         threadArray[newThread].context.lr = (uint32_t)&endThread;
-        threadArray[newThread].spsr = 0x2; /* User Mode, sonst nichts gesetzt */
+        threadArray[newThread].spsr = 0x10; /* User Mode, sonst nichts gesetzt */
         //Stack mit Argumenten füllen
         if(args_size){
                 volatile void* sp = (void*)threadArray[newThread].context.sp;
@@ -77,20 +77,17 @@ void killThread(uint16_t currentThread) {
 }
 
 void saveContext(uint16_t currentThread, void* sp) {
-        struct thcStruct thisThread = threadArray[currentThread]; /*TODO ThreadArray Global or these two functions into thread.c */
         struct commonRegs* cr = (struct commonRegs*) sp;
-        asm volatile ("mrs %0, SPSR": "=r" (thisThread.spsr));
-        thisThread.context = *cr;
-        thisThread.status = READY;
+        asm volatile ("mrs %0, SPSR": "=r" (threadArray[currentThread].spsr));
+        threadArray[currentThread].context = *cr;
+        threadArray[currentThread].status = READY;
 }
 
-//void __attribute__((optimize("-fno-tree-loop-distribute-patterns"))) changeContext(uint16_t nextThread, void* sp){
+
 void changeContext(uint16_t nextThread, void* sp){
-        struct thcStruct thisThread = threadArray[nextThread];
-	fillStack(&thisThread.context, sp);
-        asm volatile("msr SPSR_cxsf, %0":: "r" (thisThread.spsr)); /* vodoo scheisse kp */
-        thisThread.status = RUNNING;
-        kprintf("\n");
+	fillStack(&threadArray[nextThread].context, sp);
+        asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* vodoo scheisse kp */
+       	threadArray[nextThread].status = RUNNING;
 }
 
 void fillStack(struct commonRegs* rd, void* sp){

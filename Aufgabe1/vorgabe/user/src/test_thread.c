@@ -3,6 +3,7 @@
 #include "tests.h"
 
 void threadCauseSWI() {
+	kprintf("hereedww");
         endThread();
 }
 
