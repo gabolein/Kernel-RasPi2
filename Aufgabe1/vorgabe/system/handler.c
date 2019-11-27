@@ -143,7 +143,7 @@ void software_interrupt(void* sp){
 void prefetch_abort(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, PREFETCH_ABORT, sp);
-        registerDump(&rd);*cr = thisThread.context;
+        registerDump(&rd);
         killOrDie(&rd, sp);
         return;
 }
