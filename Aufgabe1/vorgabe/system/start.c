@@ -17,9 +17,9 @@ void start_kernel(void)
         initThreadArray();
 
         char receivedChar;
-        while(1) {
-                /* Anwendung */
-                /* TODO: Think we removing dis shit */
+        while(1);
+        /*while(1) {
+
                 if((receivedChar = bufferGet())){
                         switch(receivedChar){
                         case 'd': toggleDebugMode();                                break;
@@ -31,5 +31,5 @@ void start_kernel(void)
                         default: kprintf("Received Character: %c\n", receivedChar); break;
                         }
                 }
-        }
+        }*/
 }
