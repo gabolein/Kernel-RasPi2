@@ -6,7 +6,6 @@
 #define AMOUNT_CHARS 15
 
 void user_thread(void* arg) {
-        kprintf("\n Yo ich bin der User_Thread\n");
         subProgramMode = 1;
         char receivedChar = (char)((*(uint32_t*)arg));
 
@@ -17,7 +16,5 @@ void user_thread(void* arg) {
                 }
                 kprintf("%c", receivedChar);
                 blockFunc();
-
-
         }
 }
