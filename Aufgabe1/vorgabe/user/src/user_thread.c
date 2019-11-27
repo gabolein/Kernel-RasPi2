@@ -15,6 +15,7 @@ void user_thread(void* arg) {
                 }
                 kprintf("%c", receivedChar);
                 blockFunc();
+                /* TODO: cause Interrupts*/
 
         }
 }
