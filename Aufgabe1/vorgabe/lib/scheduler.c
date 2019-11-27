@@ -22,7 +22,6 @@ uint16_t rrSchedule(uint16_t currentThread, uint16_t threadDied) {
                 uint8_t i = (currentThread + 1)%THREAD_ARRAY_SIZE;
                 /* return first Thread that is alive */
                 do {
-			//kprintf("i: %u, status: %u", i, threadArray[i].status);
                         if (threadArray[i].status == THREAD_ALIVE || threadArray[i].status == 2) {
                                 return i;
                         }

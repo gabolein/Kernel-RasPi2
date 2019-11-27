@@ -117,6 +117,7 @@ int uartHandler() {
                         bufferInsert(receivedChar); /* TODO Wenn die scheisse an den user_thread weitergegeben wird, muss das doch nicht mehr in den buffer rein, oder? */
                 }
                 *uart_icr = 0;
+		
                 return 1;
         }
         return 0;
@@ -172,7 +173,9 @@ void irq(void* sp){
 			kprintf("nextThread status:%u\n", threadArray[nextThread].status);
                 }
         }
-        uartHandler(); // TODO: if idle, call scheduler
+        if(uartHandler()){ 
+		// TODO: if idle, call scheduler
+	}
         return;
 }
 void fiq(){

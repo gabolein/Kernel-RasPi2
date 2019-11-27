@@ -70,10 +70,9 @@ uint16_t getRunningThread(){
 }
 
 void killThread(uint16_t currentThread) {
-        struct thcStruct thisThread = threadArray[currentThread];
-        thisThread.status = DEAD;
-        thisThread.context.sp = thisThread.initialSp;
-        kprintf("\n\nThread %u angehalten.\n", thisThread.threadID);
+        threadArray[currentThread].status = DEAD;
+        threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
+        kprintf("\n\nThread %u angehalten.\n", threadArray[currentThread].threadID);
 }
 
 void saveContext(uint16_t currentThread, void* sp) {
@@ -86,12 +85,12 @@ void saveContext(uint16_t currentThread, void* sp) {
 
 void changeContext(uint16_t nextThread, void* sp){
 	fillStack(&threadArray[nextThread].context, sp);
-        asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* vodoo scheisse kp */
+       	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* vodoo scheisse kp */
        	threadArray[nextThread].status = RUNNING;
 }
 
-void fillStack(struct commonRegs* rd, void* sp){
-        struct commonRegs* cr = (struct commonRegs*) sp;
+void fillStack(struct commonRegs* cr, void* sp){
+        struct commonRegs* rd = (struct commonRegs*) sp;
         rd->r0 = cr->r0;
         rd->r1 = cr->r1;
         rd->r2 = cr->r2;
