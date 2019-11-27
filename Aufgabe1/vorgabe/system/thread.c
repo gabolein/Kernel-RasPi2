@@ -87,6 +87,7 @@ void changeContext(uint16_t nextThread, void* sp){
         fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* vodoo scheisse kp */
        	threadArray[nextThread].status = RUNNING;
+       	kprintf("\n");
 }
 
 void fillStack(volatile struct commonRegs* context, void* sp){

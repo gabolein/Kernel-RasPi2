@@ -108,7 +108,7 @@ int uartHandler() {
 
                 if (hasReceived) {
                         switch((char)receivedChar){
-                        case 'S': createThread(&threadCauseSWI, NULL, 0);       kprintf("S\n"); break;
+                        case 'S': createThread(&threadCauseSWI, NULL, 0);                       break;
                         case 'A': createThread(&threadCauseDataAbort, NULL, 0);                 break;
                         case 'U': createThread(&threadCauseUndefinedInstruction, NULL, 0);      break;
                         case 'c': if(subProgramMode) checkerMode = 1;                           break;
