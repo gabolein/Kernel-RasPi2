@@ -5,6 +5,8 @@
 #include "subProgram.h"
 
 #define AMOUNT_CHARS 15
+#include "../user/include/user_thread.h"
+
 
 void user_thread(void* arg){
         subProgramMode = 1;
