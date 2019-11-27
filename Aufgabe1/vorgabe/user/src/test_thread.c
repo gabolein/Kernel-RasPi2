@@ -1,4 +1,4 @@
-#include "test_thread.h"
+#include "../user/include/test_thread.h"
 #include "thread.h"
 #include "tests.h"
 
