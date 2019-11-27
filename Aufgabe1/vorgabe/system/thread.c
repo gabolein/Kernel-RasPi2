@@ -84,15 +84,25 @@ void saveContext(uint16_t currentThread, void* sp) {
         thisThread.status = READY;
 }
 
-void __attribute__((optimize("-fno-tree-loop-distribute-patterns"))) changeContext(uint16_t nextThread, void* sp){
+//void __attribute__((optimize("-fno-tree-loop-distribute-patterns"))) changeContext(uint16_t nextThread, void* sp){
+void changeContext(uint16_t nextThread, void* sp){
         struct thcStruct thisThread = threadArray[nextThread];
-        struct commonRegs* cr = (struct commonRegs*) sp;
+        //struct commonRegs* cr = (struct commonRegs*) sp;
         /* *cr = thisThread.context; */
-        for(uint32_t i = 0; i < sizeof(struct commonRegs); i += 4){ /* geht nur weil die Größe von commonRegs 32Bit aligned ist */
-                *((uint32_t*)(cr+i)) = *((uint32_t*)((&(thisThread.context)) + i));
-        }
-
+        uint32_t* stack = (uint32_t*) sp;
+        uint32_t* context = (uint32_t*)(&(thisThread.context));
+        memCpy(stack, context, 16*4);
         asm volatile("msr SPSR_cxsf, %0":: "r" (thisThread.spsr)); /* vodoo scheisse kp */
         thisThread.status = RUNNING;
         kprintf("\n");
+}
+
+void memCpy(void* target, void* source, int size) {
+        int i;
+        uint32_t* t = (uint32_t*) target;
+        uint32_t* s = (uint32_t*) source;
+        for(i=0 ;i<size ;i++) {
+                t[i]=s[i];
+        }
+
 }
