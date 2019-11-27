@@ -27,4 +27,7 @@ void endThread();
 void killThread(uint16_t);
 void saveContext(uint16_t, void*);
 void changeContext(uint16_t, void*);
+
+extern struct thcStruct threadArray[];
+
 #endif //THREAD_H

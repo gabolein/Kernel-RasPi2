@@ -9,7 +9,7 @@
 #define END_USER_STACK          0x10000
 #define THREAD_STACK_SIZE       (USER_SP-END_USER_STACK)/(AMOUNT_THREADS+1)
 
-static struct thcStruct threadArray[AMOUNT_THREADS+1];
+struct thcStruct threadArray[AMOUNT_THREADS+1];
 
 void initThreadArray() {
         /* Init all threads as dead and give them a stackpointer */
