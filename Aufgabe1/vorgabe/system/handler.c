@@ -16,6 +16,7 @@
 #define BUFFER_SIZE 100
 #define UART_IRQ_PENDING (1 << 25)
 #define TIMER_IRQ_PENDING 1
+#define USER 0x10 /* TODO */ 
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -44,22 +45,9 @@ void killOrDie(struct regDump* rd, void* sp) {
         }
 }
 
-void saveContext(uint16_t currentThread, void* sp) {
-        struct thcStruct thisThread = threadArray[currentThread]; /*TODO ThreadArray Global or these two functions into thread.c */
-        struct commonRegs* cr = (struct commonRegs*) sp;
-        asm volatile ("mrs %0, SPSR": "=r" (thisThread.spsr));
-        thisThread.context = *cr;
-        thisThread.status = READY;
-}
 
-void changeContext(uint16_t nextThread, void* sp){
-        struct thcStruct thisThread = threadArray[nextThread];
-        struct commonRegs* cr = (struct commonRegs*) sp;
-        cr = *thisThread.context; /* TODO FUCK */
-        asm volatile("msr SPSR_cxsf, %0":: "r" (thisThread.spsr)); /* vodoo scheisse kp */
-        thisThread.status = RUNNING;
-        kprintf("\n");
-}
+
+
 
 
 void toggleDebugMode(){

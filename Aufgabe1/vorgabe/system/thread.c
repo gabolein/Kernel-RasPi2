@@ -74,3 +74,20 @@ void killThread(uint16_t currentThread) {
         thisThread.context.sp = thisThread.initialSp;
         kprintf("\n\nThread %u angehalten.\n", thisThread.ID);
 }
+
+void saveContext(uint16_t currentThread, void* sp) {
+        struct thcStruct thisThread = threadArray[currentThread]; /*TODO ThreadArray Global or these two functions into thread.c */
+        struct commonRegs* cr = (struct commonRegs*) sp;
+        asm volatile ("mrs %0, SPSR": "=r" (thisThread.spsr));
+        thisThread.context = *cr;
+        thisThread.status = READY;
+}
+
+void changeContext(uint16_t nextThread, void* sp){
+        struct thcStruct thisThread = threadArray[nextThread];
+        struct commonRegs* cr = (struct commonRegs*) sp;
+        cr = *thisThread.context; /* TODO FUCK */
+        asm volatile("msr SPSR_cxsf, %0":: "r" (thisThread.spsr)); /* vodoo scheisse kp */
+        thisThread.status = RUNNING;
+        kprintf("\n");
+}

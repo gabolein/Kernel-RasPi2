@@ -24,4 +24,6 @@ uint16_t getRunningThread();
 uint16_t getDeadThread();
 void endThread();
 void killThread(uint16_t);
+void saveContext(uint16_t, void*);
+void changeContext(uint16_t, void*);
 #endif //THREAD_H

@@ -18,8 +18,7 @@ extern uint8_t subProgramMode;
 extern volatile uint8_t checkerMode;
 uint8_t bufferInsert(char);
 void killOrDie(struct regDump*, void*);
-void saveContext(uint16_t, void*);
-void changeContext(uint16_t, void*);
+
 
 /* Returns 0 in case of an empty buffer */
 char bufferGet();
