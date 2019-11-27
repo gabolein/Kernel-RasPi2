@@ -11,12 +11,14 @@
 #include "tests.h"
 #include "scheduler.h"
 #include "thread.h"
+#include "../user/include/test_thread.h"
 #include "../user/include/user_thread.h"
 
 #define BUFFER_SIZE 100
 #define UART_IRQ_PENDING (1 << 25)
 #define TIMER_IRQ_PENDING 1
-#define USER 0x10 /* TODO */ 
+#define USER 0x10 /* TODO */
+#define NULL 0 /* TODO */
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -110,9 +112,9 @@ int uartHandler() {
 
                 if (hasReceived) {
                         switch(receivedChar){
-                        case 'S': createThread(&threadCauseSWI());                       break;
-                        case 'A': createThread(&threadCauseDataAbort());                 break;
-                        case 'U': createThread(&threadCauseSWI());                       break;
+                        case 'S': createThread(&threadCauseSWI(), NULL, 0);                       break;
+                        case 'A': createThread(&threadCauseDataAbort(), NULL, 0);                 break;
+                        case 'U': createThread(&threadCauseSWI(), NULL, 0);                       break;
                         case 'c': if(subProgramMode) checkerMode = 1; break;
                                         /* TODO put kernel interrupts in here */
                         default: createThread(&user_thread, &receivedChar, 1);             break;
