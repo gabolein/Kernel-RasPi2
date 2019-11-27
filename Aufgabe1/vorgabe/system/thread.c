@@ -87,7 +87,7 @@ void saveContext(uint16_t currentThread, void* sp) {
 void changeContext(uint16_t nextThread, void* sp){
         struct thcStruct thisThread = threadArray[nextThread];
         struct commonRegs* cr = (struct commonRegs*) sp;
-        cr = *thisThread.context; /* TODO FUCK */
+        *cr = thisThread.context; /* TODO FUCK */
         asm volatile("msr SPSR_cxsf, %0":: "r" (thisThread.spsr)); /* vodoo scheisse kp */
         thisThread.status = RUNNING;
         kprintf("\n");
