@@ -61,6 +61,7 @@ OBJ += lib/scheduler.o
 OBJ += user/src/subProgram.o
 OBJ += user/src/user_thread.o
 OBJ += user/src/test_thread.o
+OBJ += user/src/idleThread.o
 
 # Falls die binäre Musterlösung benutzt wird bitte auskommentieren
 # und gegebenenfalls Ordner anpassen:

@@ -2,12 +2,14 @@
 #include "registerDumpUtil.h"
 #include <stdint.h>
 #include "kio.h"
+#include "../user/include/idleThread.h"
 
 #define AMOUNT_THREADS          32
 #define IDLE                    AMOUNT_THREADS
 #define USER_SP                 0x20000
 #define END_USER_STACK          0x10000
 #define THREAD_STACK_SIZE       (USER_SP-END_USER_STACK)/(AMOUNT_THREADS+1)
+#define NULL                    0
 
 struct thcStruct threadArray[AMOUNT_THREADS+1];
 
@@ -22,6 +24,7 @@ void initThreadArray() {
         /* Init Idle Thread */
         threadArray[IDLE].status = RUNNING;
         asm volatile ("msr lr_usr, %0" :: "r" (&endThread));
+        createThread(&goIdle, NULL, 0);
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {

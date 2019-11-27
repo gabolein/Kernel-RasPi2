@@ -10,7 +10,6 @@ void user_thread(void* arg) {
         subProgramMode = 1;
         char receivedChar = (char)((*(uint32_t*)arg));
 
-        char myChar = *((char *) arg);
         for (int i = 0; i < AMOUNT_CHARS; i++) {
                 if (checkerMode) {
                         //register_checker();
@@ -18,7 +17,7 @@ void user_thread(void* arg) {
                 }
                 kprintf("%c", receivedChar);
                 blockFunc();
-                /* TODO: cause Interrupts*/
+
 
         }
 }
