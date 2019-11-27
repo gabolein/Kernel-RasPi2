@@ -148,7 +148,7 @@ void software_interrupt(void* sp){
 void prefetch_abort(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, PREFETCH_ABORT, sp);
-        registerDump(&rd);
+        registerDump(&rd);*cr = thisThread.context;
         killOrDie(&rd, sp);
         return;
 }
@@ -174,7 +174,7 @@ void irq(void* sp){
                         changeContext(nextThread, sp);
                 }
         }
-        uartHandler();
+        uartHandler(); // TODO: if idle, call scheduler
         return;
 }
 void fiq(){
