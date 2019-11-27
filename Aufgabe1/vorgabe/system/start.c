@@ -16,7 +16,7 @@ void start_kernel(void)
         initTimer();
         initThreadArray();
 
-        char receivedChar;
+        //char receivedChar;
         while(1);
         /*while(1) {
 
