@@ -47,11 +47,6 @@ void killOrDie(struct regDump* rd, void* sp) {
         }
 }
 
-
-
-
-
-
 void toggleDebugMode(){
         debugMode = !debugMode;
         if (debugMode) {
@@ -174,7 +169,7 @@ void irq(void* sp){
                         changeContext(nextThread, sp);
                 }
         }
-        uartHandler();
+        uartHandler(); // TODO: if idle, call scheduler
         return;
 }
 void fiq(){
