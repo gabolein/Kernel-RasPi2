@@ -17,8 +17,9 @@
 #define BUFFER_SIZE 100
 #define UART_IRQ_PENDING (1 << 25)
 #define TIMER_IRQ_PENDING 1
-#define USER 0x10 /* TODO */
-#define NULL 0 /* TODO */
+#define USER 0x10
+#define NULL 0
+#define IDLE_THREAD 32
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -36,7 +37,7 @@ uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
 void killOrDie(struct regDump* rd, void* sp) {
-        if ((rd->spsr & 0x1F) == USER) { /* TODO DEFINE USER */
+        if ((rd->spsr & 0x1F) == USER) {
                 uint16_t currentThread = getRunningThread();
                 killThread(currentThread);
                 uint16_t nextThread = rrSchedule(currentThread, 1);
@@ -172,7 +173,14 @@ void irq(void* sp){
                 }
         }
         if(uartHandler()){
-		// TODO: if idle, call scheduler
+		uint16_t currentThread = getRunningThread();
+		if (currentThread == IDLE_THREAD) {
+                        uint16_t nextThread = rrSchedule(currentThread, 0);
+                        if (currentThread != nextThread) {
+                                saveContext(currentThread, sp);
+                                changeContext(nextThread, sp);
+                        }
+		}
 	}
         return;
 }
