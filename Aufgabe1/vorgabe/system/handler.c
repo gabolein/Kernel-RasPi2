@@ -47,11 +47,6 @@ void killOrDie(struct regDump* rd, void* sp) {
         }
 }
 
-
-
-
-
-
 void toggleDebugMode(){
         debugMode = !debugMode;
         if (debugMode) {
