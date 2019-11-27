@@ -6,11 +6,14 @@
 #define AMOUNT_CHARS 15
 
 void user_thread(void* arg) {
+        kprintf("\n Yo ich bin der User_Thread\n");
         subProgramMode = 1;
-        char receivedChar = *((char *) arg);
+        char receivedChar = (char)((*(uint32_t*)arg));
+
+        char myChar = *((char *) arg);
         for (int i = 0; i < AMOUNT_CHARS; i++) {
                 if (checkerMode) {
-                        register_checker();
+                        //register_checker();
                         checkerMode = 0;
                 }
                 kprintf("%c", receivedChar);

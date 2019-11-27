@@ -21,27 +21,23 @@ void initThreadArray() {
         }
         /* Init Idle Thread */
         threadArray[IDLE].status = RUNNING;
-        /*TODO*/
-
+        asm volatile ("msr lr_usr, %0" :: "r" (&endThread));
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         uint16_t newThread = getDeadThread();
         threadArray[newThread].status = READY;
-        threadArray[newThread].context.pc = (uint32_t)func;
-        threadArray[newThread].context.lr = (uint32_t)&endThread;
+        threadArray[newThread].context.lr = (uint32_t)func + 4;
         threadArray[newThread].spsr = 0x10; /* User Mode, sonst nichts gesetzt */
         //Stack mit Argumenten füllen
         if(args_size){
                 volatile void* sp = (void*)threadArray[newThread].context.sp;
-                sp -= args_size;
-                /* Vielleicht funktioniert das nicht wenn der SP immer Wortaligned sein muss?
-                 Es könnte ja gelten: arg_size & 4 != 0*/
-                /* TODO */
-                for(uint32_t offset = 0; offset < args_size; offset += 4){
-                        *(uint32_t*)(sp + offset) = *(uint32_t*)(args + offset);
+                sp -= args_size * 4;
+                for(uint32_t offset = 0; offset < args_size; offset++){
+                        *(uint32_t*)(sp + offset * 4) = *(uint32_t*)(args + offset * 4);
                 }
                 threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben */
+
         }
 }
 
@@ -84,27 +80,27 @@ void saveContext(uint16_t currentThread, void* sp) {
 
 
 void changeContext(uint16_t nextThread, void* sp){
-	fillStack(&threadArray[nextThread].context, sp);
+        fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* vodoo scheisse kp */
        	threadArray[nextThread].status = RUNNING;
 }
 
-void fillStack(struct commonRegs* cr, void* sp){
-        struct commonRegs* rd = (struct commonRegs*) sp;
-        rd->r0 = cr->r0;
-        rd->r1 = cr->r1;
-        rd->r2 = cr->r2;
-        rd->r3 = cr->r3;
-        rd->r4 = cr->r4;
-        rd->r5 = cr->r5;
-        rd->r6 = cr->r6;
-        rd->r7 = cr->r7;
-        rd->r8 = cr->r8;
-        rd->r9 = cr->r9;
-        rd->r10 = cr->r10;
-        rd->r11 = cr->r11;
-        rd->r12 = cr->r12;
-        rd->sp = cr->sp;
-        rd->lr = cr->lr;
-        rd->pc = cr->pc;
+void fillStack(volatile struct commonRegs* context, void* sp){
+        volatile struct commonRegs* stackStruct = (struct commonRegs*) sp;
+        stackStruct->r0  = context->r0;
+        stackStruct->r1  = context->r1;
+        stackStruct->r2  = context->r2;
+        stackStruct->r3  = context->r3;
+        stackStruct->r4  = context->r4;
+        stackStruct->r5  = context->r5;
+        stackStruct->r6  = context->r6;
+        stackStruct->r7  = context->r7;
+        stackStruct->r8  = context->r8;
+        stackStruct->r9  = context->r9;
+        stackStruct->r10 = context->r10;
+        stackStruct->r11 = context->r11;
+        stackStruct->r12 = context->r12;
+        stackStruct->sp  = context->sp;
+        stackStruct->lr  = context->lr;
+        stackStruct->pc  = context->pc;
 }

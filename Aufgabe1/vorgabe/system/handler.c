@@ -102,22 +102,23 @@ char bufferGet() {
 
 int uartHandler() {
         if(*irq_pending_2 & UART_IRQ_PENDING){
-                char receivedChar;
-                int hasReceived = uartReceiveChar(&receivedChar);
+                uint32_t receivedChar;
+                int hasReceived = uartReceiveChar((char*)&receivedChar);
 
                 if (hasReceived) {
-                        switch(receivedChar){
-                        case 'S': createThread(&threadCauseSWI, NULL, 0);       kprintf("S\n");                break;
+                        switch((char)receivedChar){
+                        case 'S': createThread(&threadCauseSWI, NULL, 0);       kprintf("S\n"); break;
                         case 'A': createThread(&threadCauseDataAbort, NULL, 0);                 break;
-                        case 'U': createThread(&threadCauseSWI, NULL, 0);                       break;
-                        case 'c': if(subProgramMode) checkerMode = 1; break;
-                                        /* TODO put kernel interrupts in here */
-                        default: createThread(&user_thread, &receivedChar, 1);             break;
+                        case 'U': createThread(&threadCauseUndefinedInstruction, NULL, 0);      break;
+                        case 'c': if(subProgramMode) checkerMode = 1;                           break;
+                        case 'a': causeDataAbort(); break;
+                        case 's': asm volatile ("SWI 0x4b"); break;
+                        case 'u': causeUndefinedInstruction(); break;
+
+                        default: createThread(&user_thread, &receivedChar, 1);                  break;
                         }
-                        bufferInsert(receivedChar); /* TODO Wenn die scheisse an den user_thread weitergegeben wird, muss das doch nicht mehr in den buffer rein, oder? */
                 }
                 *uart_icr = 0;
-		
                 return 1;
         }
         return 0;
@@ -164,16 +165,13 @@ void irq(void* sp){
         }
         if(clockHandler()){
                 uint16_t currentThread = getRunningThread();
-		kprintf("currentirq: %u\n", currentThread);
                 uint16_t nextThread = rrSchedule(currentThread, 0);
                 if (currentThread != nextThread) {
-			kprintf("currentirq: %u, next: %u\n", currentThread, nextThread);
                         saveContext(currentThread, sp);
                         changeContext(nextThread, sp);
-			kprintf("nextThread status:%u\n", threadArray[nextThread].status);
                 }
         }
-        if(uartHandler()){ 
+        if(uartHandler()){
 		// TODO: if idle, call scheduler
 	}
         return;
