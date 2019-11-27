@@ -22,9 +22,10 @@ void initThreadArray() {
                 threadArray[i].threadID = i;
         }
         /* Init Idle Thread */
-        threadArray[IDLE].status = RUNNING;
+        threadArray[IDLE].status = READY;
         asm volatile ("msr lr_usr, %0" :: "r" (&endThread));
-        createThread(&goIdle, NULL, 0);
+        threadArray[IDLE].context.lr = (uint32_t)&goIdle + 4;
+        threadArray[IDLE].spsr = 0x10;
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
