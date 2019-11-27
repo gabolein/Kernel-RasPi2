@@ -22,7 +22,7 @@ void initThreadArray() {
                 threadArray[i].threadID = i;
         }
         /* Init Idle Thread */
-        threadArray[IDLE].status = READY;
+        threadArray[IDLE].status = RUNNING;
         asm volatile ("msr lr_usr, %0" :: "r" (&endThread));
         threadArray[IDLE].context.lr = (uint32_t)&goIdle + 4;
         threadArray[IDLE].spsr = 0x10;
