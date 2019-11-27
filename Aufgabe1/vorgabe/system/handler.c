@@ -112,9 +112,9 @@ int uartHandler() {
 
                 if (hasReceived) {
                         switch(receivedChar){
-                        case 'S': createThread(&threadCauseSWI(), NULL, 0);                       break;
-                        case 'A': createThread(&threadCauseDataAbort(), NULL, 0);                 break;
-                        case 'U': createThread(&threadCauseSWI(), NULL, 0);                       break;
+                        case 'S': createThread(&threadCauseSWI, NULL, 0);                       break;
+                        case 'A': createThread(&threadCauseDataAbort, NULL, 0);                 break;
+                        case 'U': createThread(&threadCauseSWI, NULL, 0);                       break;
                         case 'c': if(subProgramMode) checkerMode = 1; break;
                                         /* TODO put kernel interrupts in here */
                         default: createThread(&user_thread, &receivedChar, 1);             break;

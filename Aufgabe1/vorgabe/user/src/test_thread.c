@@ -2,14 +2,14 @@
 #include "thread.h"
 #include "tests.h"
 
-void threadCauseSWI(void*) {
+void threadCauseSWI() {
         endThread();
 }
 
-void threadCauseDataAbort(void*) {
+void threadCauseDataAbort() {
         causeDataAbort();
 }
 
-void threadCauseUndefinedInstruction(void*) {
+void threadCauseUndefinedInstruction() {
         causeUndefinedInstruction();
 }
