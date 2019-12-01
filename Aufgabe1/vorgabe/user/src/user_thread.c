@@ -1,13 +1,16 @@
 #include <kio.h>
+#include <stdint.h>
 #include "swiInterface.h"
-#include "subprogram.c"
+#include "testThread.h"
+#include "threadUtil.h"
+
 
 #define COMPUTATION_LEN 300000
 #define AMOUNT_CHARS 15
 #define CAPITAL_LETTER_LIM 97
 
 void user_thread(void* arg) {
-        char receivedChar = (char) (uint_32_t) * arg;
+        char receivedChar = (char)*((uint32_t*)arg);
         if (receivedChar == 's') {
                 threadCauseSWI();
         }
@@ -24,6 +27,6 @@ void user_thread(void* arg) {
 void spawner() {
         while(1) {
                 char c = getChar();
-                createThread(&user_thread, c, 1);
+                createThread(&user_thread, &c, 1);
         }
 }

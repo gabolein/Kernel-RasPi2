@@ -12,7 +12,7 @@ void putChar(char x) {
 char getChar() {
         asm volatile("swi #2");
         uint32_t holder = 0;
-        asm volatile("mov %0, r0": "+r" (holder))
+        asm volatile("mov %0, r0": "+r" (holder));
         return (char)holder;
 }
 

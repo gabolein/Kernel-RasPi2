@@ -31,7 +31,7 @@
 BIN_LSG =
 
 # Ab Aufgabe 4 auf true
-KERNEL_USER_SPLIT = false
+KERNEL_USER_SPLIT = true
 
 # Hier eure Dateien hinzufügen
 # System
@@ -56,12 +56,6 @@ OBJ += lib/registerDumpUtil.o
 OBJ += lib/regcheck.o
 OBJ += lib/regcheck_asm.o
 OBJ += lib/scheduler.o
-
-# User
-OBJ += user/src/subProgram.o
-OBJ += user/src/user_thread.o
-OBJ += user/src/test_thread.o
-OBJ += user/src/idleThread.o
 
 # Falls die binäre Musterlösung benutzt wird bitte auskommentieren
 # und gegebenenfalls Ordner anpassen:

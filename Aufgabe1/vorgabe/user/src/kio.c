@@ -1,6 +1,6 @@
 #include "kio.h"
-#include "serial.h"
-#include "utils.h"
+#include "swiInterface.h"
+#include "threadUtil.h"
 #include <stdarg.h>
 #include <stdint.h>
 
@@ -30,11 +30,11 @@ void kprintf(const char* format, ...) {
                         switch(*traverse) {
 
                                 case '%' :
-                                        kputChar('%');
+                                        putChar('%');
                                         break;
                                 case 'c' :
                                         char_rep = va_arg(arg, int);
-                                        kputChar(char_rep);
+                                        putChar(char_rep);
                                         break;
                                 case 's' :
                                         str = va_arg(arg, const char*);
@@ -53,7 +53,7 @@ void kprintf(const char* format, ...) {
                                                 kprintf("-21474836478");
                                         } else {
                                                 if (int_num < 0) { // if negative, print '-' and treat like unsigned int
-                                                        kputChar('-');
+                                                        putChar('-');
                                                         int_num *= -1;
                                                 }
                                                 {
@@ -77,13 +77,13 @@ void kprintf(const char* format, ...) {
                                         }
                                         break;
                                 default: // if unknown definer, behave like printf
-                                        kputChar('%');
-                                        kputChar(*traverse);
+                                        putChar('%');
+                                        putChar(*traverse);
                                         break;
                         }
 
                 } else {
-                        kputChar(*traverse);
+                        putChar(*traverse);
                 }
         }
         va_end(arg);
