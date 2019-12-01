@@ -12,7 +12,7 @@
 void user_thread(void* arg) {
         char receivedChar = (char)*((uint32_t*)arg);
         if (receivedChar == 's') {
-                threadCauseSWI();
+                asm volatile ("swi #69");
         }
         for (int i = 0; i < AMOUNT_CHARS; i++) {
                 kprintf("%c", receivedChar);
