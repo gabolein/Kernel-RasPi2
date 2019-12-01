@@ -11,7 +11,7 @@
 #include "tests.h"
 #include "scheduler.h"
 #include "thread.h"
-#include "../user/include/test_thread.h"
+#include "../user/include/testThread.h"
 #include "../user/include/user_thread.h"
 
 #define BUFFER_SIZE 100
