@@ -1,20 +1,29 @@
 #include <kio.h>
-#include "handler.h"
-#include "regcheck.h"
-#include "../user/include/subProgram.h"
-#include "../user/include/user_thread.h"
+#include "swiInterface.h"
+#include "subprogram.c"
+
+#define COMPUTATION_LEN 300000
 #define AMOUNT_CHARS 15
+#define CAPITAL_LETTER_LIM 97
 
 void user_thread(void* arg) {
-        subProgramMode = 1;
-        char receivedChar = (char)((*(uint32_t*)arg));
-
+        char receivedChar = (char) (uint_32_t) * arg;
+        if (receivedChar == 's') {
+                threadCauseSWI();
+        }
         for (int i = 0; i < AMOUNT_CHARS; i++) {
-                if (checkerMode) {
-                        //register_checker();
-                        checkerMode = 0;
-                }
                 kprintf("%c", receivedChar);
-                blockFunc();
+                if (receivedChar < CAPITAL_LETTER_LIM) {
+                        blockFunc();
+                } else {
+                        sleep(COMPUTATION_LEN);
+                }
+        }
+}
+
+void spawner() {
+        while(1) {
+                char c = getChar();
+                createThread(&user_thread, c, 1);
         }
 }
