@@ -7,7 +7,7 @@
 #include "regcheck.h"
 #include "thread.h"
 #include <stdint.h>
-#include "../user/include/subProgram.h"
+#include "../user/include/threadUtil.h"
 
 void start_kernel(void)
 {
