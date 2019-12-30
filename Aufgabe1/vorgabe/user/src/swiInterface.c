@@ -5,7 +5,6 @@
 void putChar(char x) {
         asm volatile("mov r0, %0"::"r" (x));
         asm volatile("swi #1");
-
 }
 
 /* calls software interrupt, then returns content of r0*/
@@ -18,6 +17,7 @@ char getChar() {
 
 /* put arguments on stack, call software interrupt */
 uint8_t createThread(void (*func)(void *), const void * args, uint32_t args_size) {
+        asm volatile("ldmia sp!, {r0 - r2}");
         asm volatile("swi #3");
         return 1;
 }
