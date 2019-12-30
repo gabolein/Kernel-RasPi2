@@ -7,7 +7,7 @@
 #define AMOUNT_THREADS          32
 #define IDLE                    AMOUNT_THREADS
 #define USER_SP                 0x20000
-#define END_USER_STACK          0x10000
+#define END_USER_STACK          0x0FF9D
 #define THREAD_STACK_SIZE       (USER_SP-END_USER_STACK)/(AMOUNT_THREADS+1)
 #define NULL                    0
 
@@ -30,7 +30,7 @@ void initThreadArray() {
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         uint16_t newThread = getDeadThread();
-        asm volatile ("msr lr_usr, %0" :: "r" (&endThread));
+        threadArray[newThread].hasRun = 0;
         threadArray[newThread].status = READY;
         threadArray[newThread].context.lr = (uint32_t)func + 4; /* +4, da im trampoline 4 subtrahiert wird */
         threadArray[newThread].spsr = 0x10; /* User Mode, sonst nichts gesetzt */
@@ -42,7 +42,6 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
                         *(uint32_t*)(sp + offset * 4) = *(uint32_t*)(args + offset * 4);
                 }
                 threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben */
-
         }
 }
 
@@ -84,6 +83,10 @@ void saveContext(uint16_t currentThread, void* sp) {
 }
 
 void changeContext(uint16_t nextThread, void* sp){
+        if(!threadArray[nextThread].hasRun){
+                asm volatile ("msr lr_usr, %0" :: "r" (&endThread));
+                threadArray[nextThread].hasRun = 1;
+        }
         fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* TODO Maybe include statusbits */
        	threadArray[nextThread].status = RUNNING;
