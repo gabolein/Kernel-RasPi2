@@ -23,15 +23,16 @@ void initThreadArray() {
         }
         /* Init Idle Thread */
         threadArray[IDLE].status = RUNNING;
-        asm volatile ("msr lr_usr, %0" :: "r" (&endThread));
+
         threadArray[IDLE].context.lr = (uint32_t)&goIdle + 4;
         threadArray[IDLE].spsr = 0x10;
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         uint16_t newThread = getDeadThread();
+        asm volatile ("msr lr_usr, %0" :: "r" (&endThread));
         threadArray[newThread].status = READY;
-        threadArray[newThread].context.lr = (uint32_t)func + 4;
+        threadArray[newThread].context.lr = (uint32_t)func + 4; /* +4, da im trampoline 4 subtrahiert wird */
         threadArray[newThread].spsr = 0x10; /* User Mode, sonst nichts gesetzt */
         //Stack mit Argumenten füllen
         if(args_size){
@@ -82,11 +83,11 @@ void saveContext(uint16_t currentThread, void* sp) {
         threadArray[currentThread].status = READY;
 }
 
-
 void changeContext(uint16_t nextThread, void* sp){
         fillStack(&(threadArray[nextThread].context), sp);
-       	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* vodoo scheisse kp */
+       	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* TODO Maybe include statusbits */
        	threadArray[nextThread].status = RUNNING;
+        asm volatile("msr sp_usr, %0":: "r" ((threadArray[nextThread].context.sp) + 13 * 4));
        	kprintf("\n");
 }
 

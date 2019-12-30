@@ -67,9 +67,7 @@ int clockHandler() {
                                 yellow_on();
                                 ledStatus = 1;
                         }
-                       
-                        kprintf("!");
-                        
+                       kprintf("!");
                 }
                 timerIrqClr();
                 return 1;
