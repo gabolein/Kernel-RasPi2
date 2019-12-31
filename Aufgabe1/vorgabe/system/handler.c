@@ -36,11 +36,49 @@ volatile int debugMode = 0;
 uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
+void (*swiHandlerArray[5])() = {
+        putCharHandler,
+        getCharHandler,
+        newThreadHandler,
+        exitHandler,
+        sleepHandler
+};
+
+
 /* Erwartet den Char in R1 */
 void putCharHandler() {
         char myChar = 0;
         asm volatile("mov %0, r1": "+r" (myChar));
         kputChar(myChar);
+}
+
+/* Gibt den char in r0 zurück */
+void getCharHandler() {
+        char myChar = 0;
+        if(uartReceiveChar(&myChar)){
+                asm volatile("mov r0, %0":: "r" (myChar));
+        }
+}
+
+/* Expects  funcpointer in r1, argCount in r2, args_size in r3*/
+void newThreadHandler() {
+        uint32_t args_size = 0;
+        void* args = NULL;
+        void (*func)(void *) = NULL;
+        asm volatile("mov %0, r1": "+r" (func));
+        asm volatile("mov %0, r2": "+r" (args));
+        asm volatile("mov %0, r3": "+r" (args_size));
+        createThread(func, args, args_size);
+}
+
+void exitHandler() {
+        uint16_t currentThread = getRunningThread();
+        killThread(currentThread);
+}
+
+/* Erwatet die Sleeptime in r1 */
+void sleepHandler(){
+        /* TODO */
 }
 
 void killOrDie(struct regDump* rd, void* sp) {
@@ -141,11 +179,19 @@ void undefined_instruction(void* sp){
         return;
 }
 void software_interrupt(void* sp){
-        red_on();
         struct regDump rd;
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
+        if ((rd.spsr & 0x1F) == USER) {
+                uint8_t swiID = 0;
+                asm volatile("mov %0, r0": "+r" (swiID));
+                swiHandlerArray[swiID]();
+
+                /* TODO Maybe add context change vodoo */
+                return;
+        }
         registerDump(&rd);
-        killOrDie(&rd, sp);
+        kprintf("\n\nSystem angehalten.\n");
+        while(1);
         return;
 }
 void prefetch_abort(void* sp){
