@@ -1,4 +1,4 @@
-#include <kio.h>
+#include <kioUser.h>
 #include <stdint.h>
 #include "swiInterface.h"
 #include "testThread.h"

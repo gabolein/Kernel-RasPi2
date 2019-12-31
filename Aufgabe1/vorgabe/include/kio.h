@@ -1,5 +1,5 @@
-#ifndef KIO_H
-#define KIO_H
+#ifndef KIOUSER_H
+#define KIOUSER_H
 
 void kprintf(const char*, ...);
 
