@@ -4,20 +4,8 @@
 #define AMOUNT_CHARS 15
 #define COMPUTATION_LEN 300000
 
-void blockFunc() {
-        volatile uint32_t baum = 0;
-        for(int i = 0; i < COMPUTATION_LEN; i++){
-                baum += 1;      /* "Berechnung" */
-        }
-}
 
-void setEmptyString(char c_buffer[], int buf_len){
-        for(int i=0; i < buf_len; i++) {
-                c_buffer[i] = '\0';
-        }
-}
-
-char* itoa10(unsigned int value, char* c_buffer){
+char* kitoa10(unsigned int value, char* c_buffer){
 
         static char presentation[] = "0123456789";
         int i = 8; // start from the back
@@ -29,7 +17,7 @@ char* itoa10(unsigned int value, char* c_buffer){
         return &c_buffer[i+1];
 }
 
-char* itoa16(unsigned int value, char* c_buffer){
+char* kitoa16(unsigned int value, char* c_buffer){
 
         static char presentation[] = "0123456789abcdef";
         int i = 9; // start from the back

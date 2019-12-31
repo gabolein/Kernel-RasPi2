@@ -44,7 +44,7 @@ void kprintf(const char* format, ...) {
                                         u_int_num = va_arg(arg, unsigned int);
                                         {
                                                 char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
-                                                kprintf(itoa16(u_int_num, c_buffer));
+                                                kprintf(kitoa16(u_int_num, c_buffer));
                                         }
                                         break;
                                 case 'i' :
@@ -58,7 +58,7 @@ void kprintf(const char* format, ...) {
                                                 }
                                                 {
                                                         char c_buffer[DEC_BUFFER_SIZE] = "";
-                                                        kprintf(itoa10(int_num, c_buffer));
+                                                        kprintf(kitoa10(int_num, c_buffer));
                                                 }
                                         }
                                         break;
@@ -66,14 +66,14 @@ void kprintf(const char* format, ...) {
                                         u_int_num = va_arg(arg, unsigned int);
                                         {
                                                 char c_buffer[DEC_BUFFER_SIZE] = "";
-                                                kprintf(itoa10(u_int_num, c_buffer));
+                                                kprintf(kitoa10(u_int_num, c_buffer));
                                         }
                                         break;
                                 case 'p' :
                                         address = va_arg(arg, uint32_t); // pointer -> 32Bit address
                                         {
                                                 char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
-                                                kprintf(itoa16(address, c_buffer));
+                                                kprintf(kitoa16(address, c_buffer));
                                         }
                                         break;
                                 default: // if unknown definer, behave like printf

@@ -15,7 +15,7 @@ void user_thread(void* arg) {
                 asm volatile ("swi #69");
         }
         for (int i = 0; i < AMOUNT_CHARS; i++) {
-                kprintf("%c", receivedChar);
+                printf("%c", receivedChar);
                 if (receivedChar < CAPITAL_LETTER_LIM) {
                         blockFunc();
                 } else {
@@ -27,6 +27,6 @@ void user_thread(void* arg) {
 void spawner() {
         while(1) {
                 char c = getChar();
-                createThread(&user_thread, &c, 1);
+                newThread(&user_thread, &c, 1);
         }
 }

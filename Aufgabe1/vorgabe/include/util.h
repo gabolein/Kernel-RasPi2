@@ -1,4 +1,2 @@
-void blockFunc();
-char* itoa10(unsigned int, char*);
-char* itoa16(unsigned int, char*);
-void setEmptyString(char[], int);
+char* kitoa10(unsigned int, char*);
+char* kitoa16(unsigned int, char*);
