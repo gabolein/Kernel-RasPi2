@@ -51,7 +51,6 @@ OBJ += driver/timer.o
 OBJ += lib/kio.o
 OBJ += lib/presentations.o
 OBJ += lib/tests.o
-OBJ += lib/utils.o
 OBJ += lib/registerDumpUtil.o
 OBJ += lib/regcheck.o
 OBJ += lib/regcheck_asm.o

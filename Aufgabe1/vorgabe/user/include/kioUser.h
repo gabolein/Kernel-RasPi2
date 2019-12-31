@@ -1,6 +1,6 @@
 #ifndef KIOUSER_H
 #define KIOUSER_H
 
-void kprintf(const char*, ...);
+void printf(const char*, ...);
 
 #endif

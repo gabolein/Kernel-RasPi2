@@ -5,7 +5,7 @@
 
 void putChar(char);
 char getChar();
-uint8_t createThread(void (*)(void *), const void *, uint32_t);
+uint8_t newThread(void (*)(void *), const void *, uint32_t);
 void exit(uint32_t);
 void sleep(uint32_t);
 

@@ -17,7 +17,7 @@ char getChar() {
 }
 
 /* put arguments on stack, call software interrupt */
-uint8_t createThread(void (*func)(void *), const void * args, uint32_t args_size) {
+uint8_t newThread(void (*func)(void *), const void * args, uint32_t args_size) {
         asm volatile("ldmia sp!, {r0 - r2}");
         asm volatile("swi #3");
         return 1;
