@@ -56,6 +56,7 @@ OBJ += lib/registerDumpUtil.o
 OBJ += lib/regcheck.o
 OBJ += lib/regcheck_asm.o
 OBJ += lib/scheduler.o
+OBJ += lib/util.o
 
 # Falls die binäre Musterlösung benutzt wird bitte auskommentieren
 # und gegebenenfalls Ordner anpassen:

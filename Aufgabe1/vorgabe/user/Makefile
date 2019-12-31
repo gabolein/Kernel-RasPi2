@@ -20,7 +20,7 @@ OBJ += src/swiInterface.o
 OBJ += src/testThread.o
 OBJ += src/threadUtil.o
 OBJ += src/user_thread.o
-OBJ += src/kio.o
+OBJ += src/kioUser.o
 
 # --- Ab hier sollte nichts mehr angepasst werden müssen ;D ---
 

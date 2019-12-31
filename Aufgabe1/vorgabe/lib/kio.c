@@ -1,6 +1,6 @@
 #include "kio.h"
-#include "swiInterface.h"
-#include "threadUtil.h"
+#include "serial.h"
+#include "util.h"
 #include <stdarg.h>
 #include <stdint.h>
 
@@ -30,11 +30,11 @@ void kprintf(const char* format, ...) {
                         switch(*traverse) {
 
                                 case '%' :
-                                        putChar('%');
+                                        kputChar('%');
                                         break;
                                 case 'c' :
                                         char_rep = va_arg(arg, int);
-                                        putChar(char_rep);
+                                        kputChar(char_rep);
                                         break;
                                 case 's' :
                                         str = va_arg(arg, const char*);
@@ -43,8 +43,8 @@ void kprintf(const char* format, ...) {
                                 case 'x' :
                                         u_int_num = va_arg(arg, unsigned int);
                                         {
-                                        char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
-                                        kprintf(itoa16(u_int_num, c_buffer));
+                                                char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
+                                                kprintf(itoa16(u_int_num, c_buffer));
                                         }
                                         break;
                                 case 'i' :
@@ -53,37 +53,37 @@ void kprintf(const char* format, ...) {
                                                 kprintf("-21474836478");
                                         } else {
                                                 if (int_num < 0) { // if negative, print '-' and treat like unsigned int
-                                                        putChar('-');
+                                                        kputChar('-');
                                                         int_num *= -1;
                                                 }
                                                 {
-                                                char c_buffer[DEC_BUFFER_SIZE] = "";
-                                                kprintf(itoa10(int_num, c_buffer));
+                                                        char c_buffer[DEC_BUFFER_SIZE] = "";
+                                                        kprintf(itoa10(int_num, c_buffer));
                                                 }
                                         }
                                         break;
                                 case 'u' :
                                         u_int_num = va_arg(arg, unsigned int);
                                         {
-                                        char c_buffer[DEC_BUFFER_SIZE] = "";
-                                        kprintf(itoa10(u_int_num, c_buffer));
+                                                char c_buffer[DEC_BUFFER_SIZE] = "";
+                                                kprintf(itoa10(u_int_num, c_buffer));
                                         }
                                         break;
                                 case 'p' :
                                         address = va_arg(arg, uint32_t); // pointer -> 32Bit address
                                         {
-                                        char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
-                                        kprintf(itoa16(address, c_buffer));
+                                                char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
+                                                kprintf(itoa16(address, c_buffer));
                                         }
                                         break;
                                 default: // if unknown definer, behave like printf
-                                        putChar('%');
-                                        putChar(*traverse);
+                                        kputChar('%');
+                                        kputChar(*traverse);
                                         break;
                         }
 
                 } else {
-                        putChar(*traverse);
+                        kputChar(*traverse);
                 }
         }
         va_end(arg);
