@@ -36,6 +36,13 @@ volatile int debugMode = 0;
 uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
+/* Erwartet den Char in R1 */
+void putCharHandler() {
+        char myChar = 0;
+        asm volatile("mov %0, r1": "+r" (myChar));
+        kputChar(myChar);
+}
+
 void killOrDie(struct regDump* rd, void* sp) {
         if ((rd->spsr & 0x1F) == USER) {
                 uint16_t currentThread = getRunningThread();
