@@ -1,9 +1,10 @@
 #include "swiInterface.h"
 #include <stdint.h>
 
-/* put given character into r0, then call software interrupt 1*/
+/* put given character into r1, then call software interrupt 1*/
 void putChar(char x) {
-        asm volatile("mov r0, %0"::"r" (x));
+        asm volatile("mov r1, %0"::"r" (x));
+        asm volatile("mov r0, #1");
         asm volatile("swi #1");
 }
 
