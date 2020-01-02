@@ -17,16 +17,16 @@ char getChar() {
         return (char)holder;
 }
 
-/* put arguments on stack, call software interrupt */
-uint8_t newThread(void (*func)(void *), const void * args, uint32_t args_size) {
-        asm volatile("ldmia sp!, {r0 - r2}");
+/* put arguments in r1-r3, call software interrupt */
+void newThread(void (*func)(void *), const void * args, uint32_t args_size) {
+        asm volatile("ldmia sp!, {r1 - r3}");
         asm volatile("mov r0, #2");
         asm volatile("swi #2");
         return 1;
 }
 
-/* write exit code in register, call software interrupt */
-void exit(uint32_t exitCode){
+/* call software interrupt, no exit code */
+void exit(){
         asm volatile("mov r0, #3");
         asm volatile ("swi #3");
 }

@@ -23,7 +23,6 @@ void initThreadArray() {
         }
         /* Init Idle Thread */
         threadArray[IDLE].status = RUNNING;
-
         threadArray[IDLE].context.lr = (uint32_t)&goIdle + 4;
         threadArray[IDLE].spsr = 0x10;
 }

@@ -8,6 +8,9 @@
 #include "thread.h"
 #include <stdint.h>
 #include "../user/include/threadUtil.h"
+#include "../user/include/user_thread.h"
+
+#define NULL 0
 
 void start_kernel(void)
 {
@@ -15,21 +18,6 @@ void start_kernel(void)
         specialMessage("Kernel loaded! (UwU)");
         initTimer();
         initThreadArray();
-
-        //char receivedChar;
+        createThread(&user_thread, NULL, 0); /* Init user thread */
         while(1);
-        /*while(1) {
-
-                if((receivedChar = bufferGet())){
-                        switch(receivedChar){
-                        case 'd': toggleDebugMode();                                break;
-                        case 'e': enterSubProgram();                                break;
-                        case 'c': register_checker();                               break;
-                        case 'a': causeDataAbort();                                 break;
-                        case 'u': causeUndefinedInstruction();                      break;
-                        case 's': asm volatile ("SWI 0x4b");                        break;
-                        default: kprintf("Received Character: %c\n", receivedChar); break;
-                        }
-                }
-        }*/
 }

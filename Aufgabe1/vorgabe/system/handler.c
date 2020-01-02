@@ -20,6 +20,7 @@
 #define USER 0x10
 #define NULL 0
 #define IDLE_THREAD 32
+#define END_THREAD 3
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -52,7 +53,7 @@ void putCharHandler() {
         kputChar(myChar);
 }
 
-/* Gibt den char in r0 zurück */
+/* returns char in r0 */
 void getCharHandler() {
         char myChar = 0;
         if(uartReceiveChar(&myChar)){
@@ -71,12 +72,12 @@ void newThreadHandler() {
         createThread(func, args, args_size);
 }
 
-void exitHandler() {
+void exitHandler(void* sp) {
         uint16_t currentThread = getRunningThread();
         killThread(currentThread);
 }
 
-/* Erwatet die Sleeptime in r1 */
+/* Expects sleeptime in r1 */
 void sleepHandler(){
         /* TODO */
 }
@@ -147,6 +148,7 @@ char bufferGet() {
 int uartHandler() {
         if(*irq_pending_2 & UART_IRQ_PENDING){
                 uint32_t receivedChar;
+                /*
                 int hasReceived = uartReceiveChar((char*)&receivedChar);
 
                 if (hasReceived) {
@@ -162,6 +164,7 @@ int uartHandler() {
                         default: createThread(&user_thread, &receivedChar, 1);                  break;
                         }
                 }
+                 */
                 *uart_icr = 0;
                 return 1;
         }
@@ -185,7 +188,11 @@ void software_interrupt(void* sp){
                 uint8_t swiID = 0;
                 asm volatile("mov %0, r0": "+r" (swiID));
                 swiHandlerArray[swiID]();
-
+                if (swiID == END_THREAD) {
+                        uint16_t currentThread = getRunningThread();
+                        uint16_t nextThread = rrSchedule(currentThread, 1);
+                        changeContext(nextThread, sp);
+                }
                 /* TODO Maybe add context change vodoo */
                 return;
         }
