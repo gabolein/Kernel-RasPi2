@@ -20,11 +20,6 @@ uint8_t bufferInsert(char);
 void killOrDie(struct regDump*, void*);
 
 /* SWI Handlers */
-void putCharHandler();
-void getCharHandler();
-void newThreadHandler();
-void exitHandler();
-void sleepHandler();
 
 /* Returns 0 in case of an empty buffer */
 char bufferGet();

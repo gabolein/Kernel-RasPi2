@@ -39,6 +39,7 @@ OBJ =  system/entry.o
 OBJ += system/ivt.o
 OBJ += system/start.o
 OBJ += system/handler.o
+OBJ += system/swiHandler.o
 OBJ += system/thread.o
 
 # Driver
