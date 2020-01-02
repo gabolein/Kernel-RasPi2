@@ -38,17 +38,13 @@ volatile int debugMode = 0;
 uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
-void killOrDie(struct regDump* rd, void* sp) {
-        if ((rd->spsr & 0x1F) == USER) {
-                uint16_t currentThread = getRunningThread();
-                killThread(currentThread);
-                uint16_t nextThread = rrSchedule(currentThread, 1);
-                changeContext(nextThread, sp);
-        } else {
-                kprintf("\n\nSystem angehalten.\n");
-                while(1);
-        }
-}
+void (*swiHandlerArray[5])() = {
+        putCharHandler,
+        getCharHandler,
+        newThreadHandler,
+        exitHandler,
+        sleepHandler
+};
 
 void toggleDebugMode(){
         debugMode = !debugMode;
@@ -103,37 +99,13 @@ char bufferGet() {
 
 int uartHandler() {
         if(*irq_pending_2 & UART_IRQ_PENDING){
-                uint32_t receivedChar;
-                /*
-                int hasReceived = uartReceiveChar((char*)&receivedChar);
-
-                if (hasReceived) {
-                        switch((char)receivedChar){
-                        case 'S': createThread(&threadCauseSWI, NULL, 0);                       break;
-                        case 'A': createThread(&threadCauseDataAbort, NULL, 0);                 break;
-                        case 'U': createThread(&threadCauseUndefinedInstruction, NULL, 0);      break;
-                        case 'c': if(subProgramMode) checkerMode = 1;                           break;
-                        case 'a': causeDataAbort(); break;
-                        case 's': asm volatile ("SWI 0x4b"); break;
-                        case 'u': causeUndefinedInstruction(); break;
-
-                        default: createThread(&user_thread, &receivedChar, 1);                  break;
-                        }
-                }
-                 */
                 *uart_icr = 0;
                 return 1;
         }
         return 0;
 }
 
-void (*swiHandlerArray[5])() = {
-        putCharHandler,
-        getCharHandler,
-        newThreadHandler,
-        exitHandler,
-        sleepHandler
-};
+
 
 /* Begin C Handlers */
 
@@ -209,4 +181,19 @@ void irq(void* sp){
 void fiq(){
         //handle das business
         return;
+}
+
+
+
+
+void killOrDie(struct regDump* rd, void* sp) {
+        if ((rd->spsr & 0x1F) == USER) {
+                uint16_t currentThread = getRunningThread();
+                killThread(currentThread);
+                uint16_t nextThread = rrSchedule(currentThread, 1);
+                changeContext(nextThread, sp);
+        } else {
+                kprintf("\n\nSystem angehalten.\n");
+                while(1);
+        }
 }
