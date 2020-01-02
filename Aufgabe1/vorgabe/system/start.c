@@ -18,6 +18,6 @@ void start_kernel(void)
         specialMessage("Kernel loaded! (UwU)");
         initTimer();
         initThreadArray();
-        createThread(&user_thread, NULL, 0); /* Init user thread */
+        createThread(&spawner, NULL, 0); /* Init user thread */
         while(1);
 }
