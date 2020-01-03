@@ -1,6 +1,7 @@
 #include "serial.h"
 #include "thread.h"
 #include "kio.h"
+#include "handler.h"
 
 #define NULL 0
 
@@ -9,15 +10,21 @@
 /* Erwartet den Char in R1 */
 void putCharHandler(struct regDump* rd) {
         uint32_t myChar = rd->r1;
+	//kprintf("hallo");
         kputChar((char)myChar);
 }
 
 /* returns char in r0 */
 void getCharHandler(struct regDump* rd) {
-        char myChar = 0;
-        if(uartReceiveChar(&myChar)){
-                asm volatile("mov r0, %0":: "r" (myChar));
+	//kprintf("hallo\n");
+	char myChar = bufferGet();
+        if(myChar){
+		//kprintf("hey: %c \n", myChar);
+                rd->r0 = myChar;
+		kprintf("received Char: %c \n", (char)rd->r0);
+		kprintf("end getCharHAndler\n");
         }
+	
 }
 
 /* Expects  funcpointer in r1, argCount in r2, args_size in r3*/

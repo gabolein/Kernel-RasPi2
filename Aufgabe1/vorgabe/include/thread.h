@@ -12,11 +12,11 @@ enum threadStatus {
 
 struct thcStruct{
         struct commonRegs context;
-        uint32_t spsr;
+        volatile uint32_t spsr;
         enum threadStatus status;
         uint16_t threadID;
         uint32_t initialSp;
-        uint8_t hasRun;         /* 1 or 0 */
+        volatile uint8_t hasRun;         /* 1 or 0 */
 };
 
 void initThreadArray();

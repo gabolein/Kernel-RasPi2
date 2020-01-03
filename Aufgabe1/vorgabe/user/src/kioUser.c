@@ -11,9 +11,7 @@
 /*
  * Prints a string in the given format to screen
  */
-__attribute__((format(printf, 1, 2)))
 void printf(const char* format, ...) {
-
         va_list arg;
         va_start(arg, format);
 
@@ -22,8 +20,8 @@ void printf(const char* format, ...) {
         unsigned int u_int_num;
         int int_num;
         unsigned int address;
-
         for (const char* traverse = format; *traverse != '\0'; traverse++) {
+		
                 if (*traverse == '%') {
                         traverse++; // move to next character, we dont wanna print the '%'
 

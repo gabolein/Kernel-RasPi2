@@ -99,6 +99,10 @@ char bufferGet() {
 
 int uartHandler() {
         if(*irq_pending_2 & UART_IRQ_PENDING){
+		char myChar = 0;
+		if(uartReceiveChar(&myChar)) {
+			bufferInsert(myChar);
+		}
                 *uart_icr = 0;
                 return 1;
         }
@@ -120,8 +124,7 @@ void undefined_instruction(void* sp){
 void software_interrupt(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
-	kprintf("COntent of r1 in swi: %i\n", rd.r1);
-        //if ((rd.spsr & 0x1F) == USER) {
+        if ((rd.spsr & 0x1F) == USER) {
                 uint32_t swiID = 0;
                 asm volatile("mov %0, r7": "+r" (swiID));
 		//kprintf("Received syscall code %i \n", swiID);	
@@ -133,11 +136,11 @@ void software_interrupt(void* sp){
                 }
                 /* TODO Maybe add context change vodoo */
                 return;
-        //}
-        //registerDump(&rd);
-        //kprintf("\n\nSystem angehalten.\n");
-        //while(1);
-        //return;
+        }
+        registerDump(&rd);
+        kprintf("\n\nSystem angehalten.\n");
+        while(1);
+        return;
 }
 void prefetch_abort(void* sp){
         struct regDump rd;

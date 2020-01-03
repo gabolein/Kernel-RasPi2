@@ -83,6 +83,7 @@ void saveContext(uint16_t currentThread, void* sp) {
 }
 
 void changeContext(uint16_t nextThread, void* sp){
+	kprintf("has run : %i \n", threadArray[nextThread].hasRun);
         if(!threadArray[nextThread].hasRun){
                 asm volatile ("msr lr_usr, %0" :: "r" (&endThread));
                 threadArray[nextThread].hasRun = 1;

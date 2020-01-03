@@ -26,8 +26,13 @@ void user_thread(void* arg) {
 
 void spawner() {
         while(1) {
-		putChar('D');
-                char c = getChar();
-                newThread(&user_thread, &c, 1);
+		//putChar('d');
+		//printf("Hallo freunde! %c\n", 'c');
+		//putChar('a');
+                volatile char c = getChar();
+		//putChar('d');
+		//printf("Hallo %i \n", 13);
+		putChar('b');
+                //newThread(&user_thread, &c, 1);
         }
 }

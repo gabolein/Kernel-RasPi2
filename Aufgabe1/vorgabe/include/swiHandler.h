@@ -2,7 +2,7 @@
 #ifndef SWIHANDLER_H
 #define SWIHANDLER_H
 
-void putCharHandler(struct redDump*);
+void putCharHandler(struct regDump*);
 void getCharHandler(struct regDump*);
 void newThreadHandler(struct regDump*);
 void exitHandler(struct regDump*);

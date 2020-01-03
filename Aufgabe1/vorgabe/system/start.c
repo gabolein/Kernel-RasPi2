@@ -18,11 +18,6 @@ void start_kernel(void)
         specialMessage("Kernel loaded! (UwU)");
         initTimer();
         initThreadArray();
-        //createThread(&spawner, NULL, 0); /* Init user thread */
-        while(1){
-		char x = 'x';
-		asm volatile("mov r1, %0"::"r" ((uint32_t)x));
-        	asm volatile("mov r7, #0");
-        	asm volatile("swi #0");
-	}
+        createThread(&spawner, NULL, 0); /* Init user thread */
+        while(1);
 }
