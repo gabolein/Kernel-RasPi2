@@ -125,7 +125,7 @@ void software_interrupt(void* sp){
                 uint32_t swiID = 0;
                 asm volatile("mov %0, r7": "+r" (swiID));
 		//kprintf("Received syscall code %i \n", swiID);	
-                swiHandlerArray[swiID]();
+                swiHandlerArray[swiID](&rd);
                 if (swiID == END_THREAD) {
                         uint16_t currentThread = getRunningThread();
                         uint16_t nextThread = rrSchedule(currentThread, 1);

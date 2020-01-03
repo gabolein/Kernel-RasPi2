@@ -1,10 +1,11 @@
+#include "registerDumpUtil.h"
 #ifndef SWIHANDLER_H
 #define SWIHANDLER_H
 
-void putCharHandler();
-void getCharHandler();
-void newThreadHandler();
-void exitHandler();
-void sleepHandler();
+void putCharHandler(struct redDump*);
+void getCharHandler(struct regDump*);
+void newThreadHandler(struct regDump*);
+void exitHandler(struct regDump*);
+void sleepHandler(struct regDump*);
 
 #endif //SWIHANDLER_H
