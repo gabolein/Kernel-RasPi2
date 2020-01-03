@@ -45,6 +45,7 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
 }
 
 void endThread() {
+	kprintf("Calling swi to end thread");
         asm volatile ("SWI 21");
 }
 

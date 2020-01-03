@@ -26,6 +26,7 @@ void user_thread(void* arg) {
 
 void spawner() {
         while(1) {
+		putChar('D');
                 char c = getChar();
                 newThread(&user_thread, &c, 1);
         }

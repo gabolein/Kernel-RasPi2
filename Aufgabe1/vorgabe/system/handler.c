@@ -122,7 +122,7 @@ void software_interrupt(void* sp){
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
         if ((rd.spsr & 0x1F) == USER) {
                 uint8_t swiID = 0;
-                asm volatile("mov %0, r0": "+r" (swiID));
+                asm volatile("mov %0, r7": "+r" (swiID));
                 swiHandlerArray[swiID]();
                 if (swiID == END_THREAD) {
                         uint16_t currentThread = getRunningThread();
@@ -160,6 +160,7 @@ void irq(void* sp){
         }
         if(clockHandler()){
                 uint16_t currentThread = getRunningThread();
+		kprintf("Current Running Thread: %i\n", currentThread);
                 uint16_t nextThread = rrSchedule(currentThread, 0);
                 if (currentThread != nextThread) {
                         saveContext(currentThread, sp);
