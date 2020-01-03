@@ -2,6 +2,7 @@
 #include "thread.h"
 #include "kio.h"
 #include "handler.h"
+#include "../user/include/user_thread.h"
 
 #define NULL 0
 
@@ -26,13 +27,18 @@ void getCharHandler(struct regDump* rd) {
 
 /* Expects  funcpointer in r1, argCount in r2, args_size in r3*/
 void newThreadHandler(struct regDump* rd) {
+	kprintf("Entering new THread Handler\n");
         uint32_t args_size = 0;
         void* args = NULL;
         void (*func)(void *) = NULL;
-        asm volatile("mov %0, r1": "+r" (func));
-        asm volatile("mov %0, r2": "+r" (args));
-        asm volatile("mov %0, r3": "+r" (args_size));
-        createThread(func, args, args_size);
+	func = (void*)rd->r1;
+	args = (void*)rd->r2;
+	args_size = rd->r3;
+	kprintf("func0: %x\n", &user_thread);
+	kprintf("func: %x\n", func);
+	// TODO: FIX THIS PIECE OF GARBAGE
+        createThread(&user_thread, args, args_size);
+	kprintf("Exeting new THread Handler\n");
 }
 
 void exitHandler(struct regDump* rd) {

@@ -33,6 +33,9 @@ void newThread(void (*func)(void *), const void * args, uint32_t args_size) {
 	asm volatile("mov r3, %0"::"r" (args_size));
         asm volatile("mov r7, #2");
         asm volatile("swi #2");
+	asm volatile("mov r1, #0");
+	asm volatile("mov r2, #0");
+	asm volatile("mov r3, #0");
 }
 
 /* call software interrupt, no exit code */

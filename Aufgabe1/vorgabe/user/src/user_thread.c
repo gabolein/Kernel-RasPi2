@@ -10,6 +10,7 @@
 #define CAPITAL_LETTER_LIM 97
 
 void user_thread(void* arg) {
+	putChar('l');
         char receivedChar = (char)*((uint32_t*)arg);
         if (receivedChar == 's') {
                 asm volatile ("swi #69");
@@ -30,7 +31,9 @@ void spawner() {
 		//printf("Hallo freunde! %c\n", 'c');
 		//putChar('a');
                 volatile char c = getChar();
-		putChar(c);
-                //newThread(&user_thread, &c, 1);
+		putChar('o');
+		if (c) {
+                	newThread(&user_thread, (const void*)(&c), 1);
+		}
         }
 }
