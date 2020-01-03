@@ -1,5 +1,6 @@
 #include "serial.h"
 #include "thread.h"
+#include "kio.h"
 
 #define NULL 0
 
@@ -7,9 +8,10 @@
 
 /* Erwartet den Char in R1 */
 void putCharHandler() {
-        char myChar = 0;
+        uint32_t myChar = 0;
         asm volatile("mov %0, r1": "+r" (myChar));
-        kputChar(myChar);
+	kprintf("content of r1: %i, %c\n", myChar, (char)myChar);
+        kputChar((char)myChar);
 }
 
 /* returns char in r0 */
