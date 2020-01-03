@@ -122,18 +122,21 @@ void undefined_instruction(void* sp){
         return;
 }
 void software_interrupt(void* sp){
+	uint16_t currentThread = getRunningThread();
+	saveContext(currentThread, sp);
         struct regDump rd;
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
+	//registerDump(&rd);
         if ((rd.spsr & 0x1F) == USER) {
                 uint32_t swiID = 0;
-                asm volatile("mov %0, r7": "+r" (swiID));
+                asm volatile("mov %0, r7": "=r" (swiID));
 		//kprintf("Received syscall code %i \n", swiID);	
                 swiHandlerArray[swiID](&rd);
-                if (swiID == END_THREAD) {
-                        uint16_t currentThread = getRunningThread();
-                        uint16_t nextThread = rrSchedule(currentThread, 1);
+                //if (swiID == END_THREAD) {
+                  	
+                        uint16_t nextThread = rrSchedule(currentThread, 0);
                         changeContext(nextThread, sp);
-                }
+                //}
                 /* TODO Maybe add context change vodoo */
                 return;
         }

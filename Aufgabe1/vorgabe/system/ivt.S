@@ -40,7 +40,8 @@ _software_interrupt:
 	ldr lr, [sp]
 	add sp, sp, #8
 	ldmia sp!, {r0 - r12}
-	subs pc, lr, #4
+	/*subs pc, lr, #4*/
+	movs pc, lr
 _prefetch_abort:
 	stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}

@@ -10,19 +10,16 @@
 /* Erwartet den Char in R1 */
 void putCharHandler(struct regDump* rd) {
         uint32_t myChar = rd->r1;
-	//kprintf("hallo");
         kputChar((char)myChar);
 }
 
-/* returns char in r0 */
+/* returns char in r1 */
 void getCharHandler(struct regDump* rd) {
-	//kprintf("hallo\n");
 	char myChar = bufferGet();
         if(myChar){
-		//kprintf("hey: %c \n", myChar);
-                rd->r0 = myChar;
-		kprintf("received Char: %c \n", (char)rd->r0);
-		kprintf("end getCharHAndler\n");
+		
+		uint16_t currentThread = getRunningThread();
+		threadArray[currentThread].context.r1 = myChar;
         }
 	
 }

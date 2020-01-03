@@ -5,26 +5,24 @@
 
 /* put given character into r1, then call software interrupt 1*/
 void putChar(char x) {
-	uint32_t charCode = x;
-	//putChar('z');
-        asm volatile("mov r1, %0"::"r" (charCode));
-        asm volatile("mov r7, #0");
-        asm volatile("swi #0");
+	volatile uint32_t charCode = x;
+	
+	if(charCode){
+        	asm volatile("mov r1, %0"::"r" (charCode));
+        	asm volatile("mov r7, #0");
+        	asm volatile("swi #0");
+		asm volatile("mov r1, #0");
+	}
 }
 
 /* calls software interrupt, then returns content of r0*/
 char getChar() {
-	//putChar('z');
         asm volatile("mov r7, #1");
-	//putChar('a');
         asm volatile("swi #1");
-	//putChar('a');
+	//asm volatile("swi #444");
         uint32_t holder = 0;
-        asm volatile("mov %0, r0": "+r" (holder));
-	//printf("lol");
-	//blockFunc();
-	//putChar('a');
-	//putChar((char)holder);
+        asm volatile("mov %0, r1": "+r" (holder));
+	asm volatile("mov r1, #0");
         return (char)holder;
 }
 

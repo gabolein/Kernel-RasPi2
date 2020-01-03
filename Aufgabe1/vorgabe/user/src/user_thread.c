@@ -30,9 +30,7 @@ void spawner() {
 		//printf("Hallo freunde! %c\n", 'c');
 		//putChar('a');
                 volatile char c = getChar();
-		//putChar('d');
-		//printf("Hallo %i \n", 13);
-		putChar('b');
+		putChar(c);
                 //newThread(&user_thread, &c, 1);
         }
 }

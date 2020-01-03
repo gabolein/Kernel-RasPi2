@@ -83,7 +83,6 @@ void saveContext(uint16_t currentThread, void* sp) {
 }
 
 void changeContext(uint16_t nextThread, void* sp){
-	kprintf("has run : %i \n", threadArray[nextThread].hasRun);
         if(!threadArray[nextThread].hasRun){
                 asm volatile ("msr lr_usr, %0" :: "r" (&endThread));
                 threadArray[nextThread].hasRun = 1;
@@ -92,7 +91,7 @@ void changeContext(uint16_t nextThread, void* sp){
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* TODO Maybe include statusbits */
        	threadArray[nextThread].status = RUNNING;
         asm volatile("msr sp_usr, %0":: "r" ((threadArray[nextThread].context.sp) + 13 * 4));
-       	kprintf("\n");
+       	// TODO: kprintf("\n");
 }
 
 void fillStack(volatile struct commonRegs* context, void* sp){
