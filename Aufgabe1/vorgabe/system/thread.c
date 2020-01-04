@@ -43,7 +43,7 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
                 volatile void* sp = (void*)threadArray[newThread].initialSp;
                 sp -= args_size * 4;
                 for(uint32_t offset = 0; offset < args_size; offset++){
-                        *(uint32_t*)(sp + offset * 4) = *(uint32_t*)(args + offset * 4);
+                        *(uint32_t*)(sp + offset * 4) = *(uint32_t*)(args + offset * 4); //TODO
                 }
                 threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben */
         }

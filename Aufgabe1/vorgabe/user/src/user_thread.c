@@ -16,6 +16,7 @@ void user_thread(void* arg) {
         /* } else { */
         for (int i = 0; i < AMOUNT_CHARS; i++) {
                 putChar(receivedChar);
+                putChar('|');
                 /* if (*receivedChar < CAPITAL_LETTER_LIM) { */
                 /*     	blockFunc(); */
                 /* } else { */
@@ -31,7 +32,8 @@ void spawner() {
         while(1) {
                 volatile char c = getChar();
                 if (c) {
-                        newThread(&user_thread, &c, 1);
+                        uint32_t number = (uint32_t) c;
+                        newThread(&user_thread, &number, 1);
                 }
         }
 }
