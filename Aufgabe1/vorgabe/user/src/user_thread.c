@@ -10,7 +10,7 @@
 #define CAPITAL_LETTER_LIM 97
 
 void user_thread(void* arg) {
-	putChar('l');
+	while(1);
         char* receivedChar = arg; /* TODO: correct argument passing, received Char always '2'?? */
         if (*receivedChar == 's') {
                 asm volatile ("swi #69");
@@ -28,18 +28,13 @@ void user_thread(void* arg) {
 }
 
 void spawner() {
-        while(1) {;
+        while(1) {
                 volatile char c = getChar();
-		
 		//putChar(c);
 		if (c) {
 			const void* charPointer = &c;
 			//char* charPointerInt = charPointer; 
                 	newThread(&user_thread, charPointer, 1);
-			//putChar((char)*((uint32_t*)((const void*)(&c))));
-			putChar('\n');
-			putChar('r');
-			putChar('\n');
 			
 		}
         }

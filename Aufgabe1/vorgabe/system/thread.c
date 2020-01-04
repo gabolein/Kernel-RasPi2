@@ -26,6 +26,7 @@ void initThreadArray() {
         threadArray[IDLE].status = RUNNING;
         threadArray[IDLE].context.lr = (uint32_t)&goIdle + 4;
         threadArray[IDLE].spsr = 0x10;
+	threadArray[IDLE].cpsr = 0x13;
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
@@ -34,6 +35,8 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         threadArray[newThread].status = READY;
         threadArray[newThread].context.lr = (uint32_t)func + 4; /* +4, da im trampoline 4 subtrahiert wird */
         threadArray[newThread].spsr = 0x10; /* User Mode, sonst nichts gesetzt */
+	threadArray[newThread].cpsr = 0x13; /* SVC Mode */
+	threadArray[newThread].userLR = (uint32_t)&exit;
         //Stack mit Argumenten füllen
         if(args_size){
                 volatile void* sp = (void*)threadArray[newThread].context.sp;
@@ -70,26 +73,30 @@ uint16_t getRunningThread(){
         return 0;
 }
 
-void killThread(uint16_t currentThread) {
+void killThread(uint16_t currentThread) { 
         threadArray[currentThread].status = DEAD;
         threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
         kprintf("\n\nThread %u angehalten.\n", threadArray[currentThread].threadID);
 }
 
-void saveContext(uint16_t currentThread, void* sp) {
+void saveContext(uint16_t currentThread, void* sp) { 
         struct commonRegs* cr = (struct commonRegs*) sp;
         asm volatile ("mrs %0, SPSR": "=r" (threadArray[currentThread].spsr));
+	asm volatile ("mrs %0, CPSR": "=r" (threadArray[currentThread].cpsr));
+	asm volatile ("mrs %0, lr_usr": "=r" (threadArray[currentThread].userLR));
         threadArray[currentThread].context = *cr;
         threadArray[currentThread].status = READY;
 }
 
 void changeContext(uint16_t nextThread, void* sp){
-        if(!threadArray[nextThread].hasRun){
+	/* Set lr to exit function, if first time context is being loaded */
+        /*if(!threadArray[nextThread].hasRun){
                 asm volatile ("msr lr_usr, %0" :: "r" (&exit));
                 threadArray[nextThread].hasRun = 1;
-        }
+        }*/
         fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* TODO Maybe include statusbits */
+	asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));
        	threadArray[nextThread].status = RUNNING;
         asm volatile("msr sp_usr, %0":: "r" ((threadArray[nextThread].context.sp) + 13 * 4));
        	kprintf("\n");

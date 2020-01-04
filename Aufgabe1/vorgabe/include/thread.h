@@ -13,6 +13,8 @@ enum threadStatus {
 struct thcStruct{
         struct commonRegs context;
         volatile uint32_t spsr;
+	volatile uint32_t cpsr;
+	volatile uint32_t userLR;
         enum threadStatus status;
         uint16_t threadID;
         uint32_t initialSp;
