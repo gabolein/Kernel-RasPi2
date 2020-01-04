@@ -31,9 +31,9 @@ void spawner() {
 		//printf("Hallo freunde! %c\n", 'c');
 		//putChar('a');
                 volatile char c = getChar();
-		putChar('o');
-		if (c) {
+		putChar(c);
+		/*if (c) {
                 	newThread(&user_thread, (const void*)(&c), 1);
-		}
+		}*/
         }
 }

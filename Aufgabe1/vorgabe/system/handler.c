@@ -22,6 +22,7 @@
 #define NULL 0
 #define IDLE_THREAD 32
 #define END_THREAD 3
+#define SYSCALLS 5
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -122,24 +123,25 @@ void undefined_instruction(void* sp){
         return;
 }
 void software_interrupt(void* sp){
-	uint16_t currentThread = getRunningThread();
-	saveContext(currentThread, sp);
-        struct regDump rd;
+	//uint16_t currentThread = getRunningThread();
+	//saveContext(currentThread, sp);
+        struct regDump rd; /* can actually take this from context */
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
 	//registerDump(&rd);
         if ((rd.spsr & 0x1F) == USER) {
                 uint32_t swiID = 0;
-                asm volatile("mov %0, r7": "=r" (swiID));
-		//kprintf("Received syscall code %i \n", swiID);	
-                swiHandlerArray[swiID](&rd);
-                //if (swiID == END_THREAD) {
-                  	
-                        uint16_t nextThread = rrSchedule(currentThread, 0);
-                        changeContext(nextThread, sp);
-                //}
-                /* TODO Maybe add context change vodoo */
-                return;
-        }
+                asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
+		//kprintf("Received syscall code %i \n", swiID);
+		if (swiID < SYSCALLS) {	
+                	swiHandlerArray[swiID](&rd, sp);
+                	if (swiID == END_THREAD) {
+                  		registerDump(&rd);
+                        	//uint16_t nextThread = rrSchedule(currentThread, 0);
+                        	//changeContext(nextThread, sp);	
+                	}  
+        	}
+		return;
+	}
         registerDump(&rd);
         kprintf("\n\nSystem angehalten.\n");
         while(1);

@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "kio.h"
 #include "../user/include/idleThread.h"
+#include "../user/include/swiInterface.h"
 
 #define AMOUNT_THREADS          32
 #define IDLE                    AMOUNT_THREADS
@@ -84,7 +85,7 @@ void saveContext(uint16_t currentThread, void* sp) {
 
 void changeContext(uint16_t nextThread, void* sp){
         if(!threadArray[nextThread].hasRun){
-                asm volatile ("msr lr_usr, %0" :: "r" (&endThread));
+                asm volatile ("msr lr_usr, %0" :: "r" (&exit));
                 threadArray[nextThread].hasRun = 1;
         }
         fillStack(&(threadArray[nextThread].context), sp);
