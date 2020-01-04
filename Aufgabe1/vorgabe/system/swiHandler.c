@@ -33,7 +33,7 @@ void newThreadHandler(struct regDump* rd, void* sp) {
         void (*func)(void *) = NULL;
         func = (void*)rd->r3;
         args = rd->r4;
-        args_size = rd->r5;
+        args_size = rd->r3;
         kprintf("func0: %x\n", &user_thread);
         kprintf("func: %x\n", func);
         char* myChar = args;
@@ -44,6 +44,12 @@ void newThreadHandler(struct regDump* rd, void* sp) {
 
 void exitHandler(struct regDump* rd, void* sp) {
         uint16_t currentThread = getRunningThread();
+        threadArray[currentThread].context.r0 = 0;
+        threadArray[currentThread].context.r1 = 0;
+        threadArray[currentThread].context.r2 = 0;
+        threadArray[currentThread].context.r3 = 0;
+        threadArray[currentThread].context.r4 = 0;
+        threadArray[currentThread].context.r5 = 0;
         threadArray[currentThread].status = DEAD;
         threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
         kprintf("\n\nThread %u angehalten.\n", threadArray[currentThread].threadID);

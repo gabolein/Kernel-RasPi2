@@ -26,7 +26,7 @@ void initThreadArray() {
         threadArray[IDLE].status = RUNNING;
         threadArray[IDLE].context.lr = (uint32_t)&goIdle + 4;
         threadArray[IDLE].spsr = 0x10;
-	threadArray[IDLE].cpsr = 0x13;
+        threadArray[IDLE].cpsr = 0x13;
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
@@ -39,7 +39,8 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         threadArray[newThread].userLR = (uint32_t)&exit;
         //Stack mit Argumenten füllen
         if(args_size){
-                volatile void* sp = (void*)threadArray[newThread].context.sp;
+                /* volatile void* sp = (void*)threadArray[newThread].context.sp; */
+                volatile void* sp = (void*)threadArray[newThread].initialSp;
                 sp -= args_size * 4;
                 for(uint32_t offset = 0; offset < args_size; offset++){
                         *(uint32_t*)(sp + offset * 4) = *(uint32_t*)(args + offset * 4);
@@ -49,7 +50,7 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
 }
 
 void endThread() {
-	kprintf("Calling swi to end thread");
+        kprintf("Calling swi to end thread");
         asm volatile ("SWI 21");
 }
 
@@ -73,7 +74,8 @@ uint16_t getRunningThread(){
         return 0;
 }
 
-void killThread(uint16_t currentThread) { 
+void killThread(uint16_t currentThread) {
+        kprintf("\nICH BIN KILLTHREAD\n");
         threadArray[currentThread].status = DEAD;
         threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
         kprintf("\n\nThread %u angehalten.\n", threadArray[currentThread].threadID);
@@ -89,6 +91,7 @@ void saveContext(uint16_t currentThread, void* sp) {
 }
 
 void changeContext(uint16_t nextThread, void* sp){
+        kprintf("\nIch bin der Kontextwechsel\n");
         fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* TODO Maybe include statusbits */
         asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));

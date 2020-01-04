@@ -16,12 +16,13 @@ void user_thread(void* arg) {
         } else {
         	for (int i = 0; i < AMOUNT_CHARS; i++) {
                 	//putChar(*receivedChar);
-			putChar('x');
-                	if (*receivedChar < CAPITAL_LETTER_LIM) {
-                        	blockFunc();
-                	} else {
-                        	sleep(COMPUTATION_LEN);
-                	}
+                    putChar('x');
+                	/* if (*receivedChar < CAPITAL_LETTER_LIM) { */
+                    /*     	blockFunc(); */
+                	/* } else { */
+                    /*         //	sleep(COMPUTATION_LEN); */
+                	/* } */
+            blockFunc();
         	}
 	}
 }
@@ -29,13 +30,12 @@ void user_thread(void* arg) {
 void spawner() {
         while(1) {
                 volatile char c = getChar();
-		//putChar(c);
-		if (c) {
-			void* charPointer = &c;
-			char* charPointerInt = charPointer;
-			//putChar(*charPointerInt);
-                	newThread(&user_thread, charPointer, 1);
-			
-		}
+                //putChar(c);
+                if (c) {
+                        void* charPointer = &c;
+                        char* charPointerInt = charPointer;
+                        //putChar(*charPointerInt);
+                        newThread(&user_thread, &c, 1);
+                }
         }
 }
