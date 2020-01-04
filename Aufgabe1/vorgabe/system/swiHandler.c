@@ -35,19 +35,21 @@ void newThreadHandler(struct regDump* rd, void* sp) {
         void* args = NULL;
         void (*func)(void *) = NULL;
 	func = (void*)rd->r1;
-	args = (void*)rd->r2;
+	args = rd->r2;
 	args_size = rd->r3;
 	kprintf("func0: %x\n", &user_thread);
 	kprintf("func: %x\n", func);
+	char* myChar = args;
+	kprintf("\n This is the argssize: %i\n", args_size);
 	// TODO: FIX THIS PIECE OF GARBAGE
         createThread(&user_thread, args, args_size);
-	kprintf("Exeting new THread Handler\n");
 }
 
 void exitHandler(struct regDump* rd, void* sp) {
         uint16_t currentThread = getRunningThread();
         threadArray[currentThread].status = DEAD;
         threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
+	kprintf("Entering Exit handler\n");
         kprintf("\n\nThread %u angehalten.\n", threadArray[currentThread].threadID);
 	/* TODO MAybe set everything to 0 */
 }

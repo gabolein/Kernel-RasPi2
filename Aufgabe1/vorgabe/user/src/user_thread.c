@@ -11,29 +11,36 @@
 
 void user_thread(void* arg) {
 	putChar('l');
-        char receivedChar = (char)*((uint32_t*)arg);
-        if (receivedChar == 's') {
+        char* receivedChar = arg; /* TODO: correct argument passing, received Char always '2'?? */
+        if (*receivedChar == 's') {
                 asm volatile ("swi #69");
-        }
-        for (int i = 0; i < AMOUNT_CHARS; i++) {
-                printf("%c", receivedChar);
-                if (receivedChar < CAPITAL_LETTER_LIM) {
-                        blockFunc();
-                } else {
-                        sleep(COMPUTATION_LEN);
-                }
-        }
+        } else {
+        	for (int i = 0; i < AMOUNT_CHARS; i++) {
+                	putChar(*receivedChar);
+                	if (*receivedChar < CAPITAL_LETTER_LIM) {
+                        	blockFunc();
+                	} else {
+                        	sleep(COMPUTATION_LEN);
+                	}
+        	}
+		putChar('e');
+	}
 }
 
 void spawner() {
-        while(1) {
-		//putChar('d');
-		//printf("Hallo freunde! %c\n", 'c');
-		//putChar('a');
+        while(1) {;
                 volatile char c = getChar();
-		putChar(c);
-		/*if (c) {
-                	newThread(&user_thread, (const void*)(&c), 1);
-		}*/
+		
+		//putChar(c);
+		if (c) {
+			const void* charPointer = &c;
+			//char* charPointerInt = charPointer; 
+                	newThread(&user_thread, charPointer, 1);
+			//putChar((char)*((uint32_t*)((const void*)(&c))));
+			putChar('\n');
+			putChar('r');
+			putChar('\n');
+			
+		}
         }
 }

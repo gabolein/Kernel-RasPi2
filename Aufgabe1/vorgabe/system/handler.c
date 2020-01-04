@@ -135,9 +135,10 @@ void software_interrupt(void* sp){
 		if (swiID < SYSCALLS) {	
                 	swiHandlerArray[swiID](&rd, sp);
                 	if (swiID == END_THREAD) {
-                  		registerDump(&rd);
-                        	//uint16_t nextThread = rrSchedule(currentThread, 0);
-                        	//changeContext(nextThread, sp);	
+                  		//registerDump(&rd);
+				uint16_t currentThread = getRunningThread();
+                        	uint16_t nextThread = rrSchedule(currentThread, 0);
+                        	changeContext(nextThread, sp);	
                 	}  
         	}
 		return;
@@ -170,7 +171,7 @@ void irq(void* sp){
         }
         if(clockHandler()){
                 uint16_t currentThread = getRunningThread();
-		kprintf("Current Running Thread: %i\n", currentThread);
+		kprintf("Current Running Thread: %i", currentThread);
                 uint16_t nextThread = rrSchedule(currentThread, 0);
                 if (currentThread != nextThread) {
                         saveContext(currentThread, sp);
