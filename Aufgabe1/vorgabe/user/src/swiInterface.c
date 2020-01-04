@@ -26,10 +26,14 @@ char getChar() {
 }
 
 /* put arguments in r1-r3, call software interrupt */
-void newThread(void (*func)(void *), const void * args, uint32_t args_size) {
-	asm volatile("mov r1, %0"::"r" (func));
-	asm volatile("mov r2, %0"::"r" (args));
-	asm volatile("mov r3, %0"::"r" (args_size));
+void newThread(void (*func)(void *), void * args, uint32_t args_size) {
+	char* charPointer = args;
+	putChar(args_size+48);
+	putChar(*charPointer+48);
+	putChar('\n');
+	asm volatile("mov r3, %0"::"r" (func));
+	asm volatile("mov r4, %0"::"r" (args));
+	asm volatile("mov r5, %0"::"r" (args_size));
         asm volatile("mov r7, #2");
         asm volatile("swi #2");
 	asm volatile("mov r1, #0");
