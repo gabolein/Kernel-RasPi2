@@ -123,14 +123,13 @@ void undefined_instruction(void* sp){
         return;
 }
 void software_interrupt(void* sp){
-	uint16_t currentThread = getRunningThread();
-	/* adapt lr */
-	struct commonRegs* stackStruct = (struct commonRegs*) sp;
-	stackStruct->lr += 4;
-        struct regDump rd; /* can actually take this from context */
+    	struct regDump rd; /* can actually take this from context */
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
-	//registerDump(&rd);
         if ((rd.spsr & 0x1F) == USER) {
+		uint16_t currentThread = getRunningThread();
+		/* adjust lr, because we are in svc mode*/
+		struct commonRegs* stackStruct = (struct commonRegs*) sp;
+		stackStruct->lr += 4;
                 uint32_t swiID = 0;
                 asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
 		if (swiID < SYSCALLS) {	

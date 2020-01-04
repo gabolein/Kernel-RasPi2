@@ -10,20 +10,19 @@
 #define CAPITAL_LETTER_LIM 97
 
 void user_thread(void* arg) {
-	while(1);
         char* receivedChar = arg; /* TODO: correct argument passing, received Char always '2'?? */
         if (*receivedChar == 's') {
                 asm volatile ("swi #69");
         } else {
         	for (int i = 0; i < AMOUNT_CHARS; i++) {
-                	putChar(*receivedChar);
+                	//putChar(*receivedChar);
+			putChar('x');
                 	if (*receivedChar < CAPITAL_LETTER_LIM) {
                         	blockFunc();
                 	} else {
                         	sleep(COMPUTATION_LEN);
                 	}
         	}
-		putChar('e');
 	}
 }
 

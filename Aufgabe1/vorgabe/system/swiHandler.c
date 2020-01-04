@@ -9,7 +9,7 @@
 
 
 
-/* Erwartet den Char in R1 */
+/* Expects char in r1 */
 void putCharHandler(struct regDump* rd, void* sp) {
         uint32_t myChar = rd->r1;
         kputChar((char)myChar);
@@ -49,12 +49,11 @@ void exitHandler(struct regDump* rd, void* sp) {
         uint16_t currentThread = getRunningThread();
         threadArray[currentThread].status = DEAD;
         threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
-	kprintf("Entering Exit handler\n");
         kprintf("\n\nThread %u angehalten.\n", threadArray[currentThread].threadID);
 	/* TODO MAybe set everything to 0 */
 }
 
 /* Expects sleeptime in r1 */
 void sleepHandler(struct regDump* rd, void* sp){
-        /* TODO */
+        
 }
