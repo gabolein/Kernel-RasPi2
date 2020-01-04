@@ -6,12 +6,11 @@
 /* put given character into r1, then call software interrupt 1*/
 void putChar(char x) {
 	volatile uint32_t charCode = x;
-	
 	if(charCode){
         	asm volatile("mov r1, %0"::"r" (charCode));
         	asm volatile("mov r7, #0");
         	asm volatile("swi #0");
-		asm volatile("mov r1, #0");
+            asm volatile("mov r1, #0");
 	}
 }
 
@@ -21,20 +20,21 @@ char getChar() {
         asm volatile("swi #1");
         uint32_t holder = 0;
         asm volatile("mov %0, r1": "+r" (holder));
-	asm volatile("mov r1, #0");
+        asm volatile("mov r1, #0");
         return (char)holder;
 }
 
 /* put arguments in r1-r3, call software interrupt */
 void newThread(void (*func)(void *), const void * args, uint32_t args_size) {
-	asm volatile("mov r1, %0"::"r" (func));
-	asm volatile("mov r2, %0"::"r" (args));
-	asm volatile("mov r3, %0"::"r" (args_size));
+        asm volatile("mov r1, %0"::"r" (func));
+        asm volatile("mov r2, %0"::"r" (args));
+        asm volatile("mov r3, %0"::"r" (args_size));
         asm volatile("mov r7, #2");
         asm volatile("swi #2");
-	asm volatile("mov r1, #0");
-	asm volatile("mov r2, #0");
-	asm volatile("mov r3, #0");
+        asm volatile("mov r1, #0");
+        asm volatile("mov r2, #0");
+        asm volatile("mov r3, #0");
+        printf("\n\nDeinemom\n\n");
 }
 
 /* call software interrupt, no exit code */

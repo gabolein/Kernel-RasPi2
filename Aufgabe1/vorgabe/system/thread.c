@@ -35,8 +35,8 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         threadArray[newThread].status = READY;
         threadArray[newThread].context.lr = (uint32_t)func + 4; /* +4, da im trampoline 4 subtrahiert wird */
         threadArray[newThread].spsr = 0x10; /* User Mode, sonst nichts gesetzt */
-	threadArray[newThread].cpsr = 0x13; /* SVC Mode */
-	threadArray[newThread].userLR = (uint32_t)&exit;
+        threadArray[newThread].cpsr = 0x13; /* SVC Mode */
+        threadArray[newThread].userLR = (uint32_t)&exit;
         //Stack mit Argumenten füllen
         if(args_size){
                 volatile void* sp = (void*)threadArray[newThread].context.sp;
@@ -89,14 +89,9 @@ void saveContext(uint16_t currentThread, void* sp) {
 }
 
 void changeContext(uint16_t nextThread, void* sp){
-	/* Set lr to exit function, if first time context is being loaded */
-        /*if(!threadArray[nextThread].hasRun){
-                asm volatile ("msr lr_usr, %0" :: "r" (&exit));
-                threadArray[nextThread].hasRun = 1;
-        }*/
         fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* TODO Maybe include statusbits */
-	asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));
+        asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));
        	threadArray[nextThread].status = RUNNING;
         asm volatile("msr sp_usr, %0":: "r" ((threadArray[nextThread].context.sp) + 13 * 4));
        	kprintf("\n");
