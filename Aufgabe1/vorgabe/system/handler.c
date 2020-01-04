@@ -126,22 +126,22 @@ void software_interrupt(void* sp){
     	struct regDump rd; /* can actually take this from context */
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
         if ((rd.spsr & 0x1F) == USER) {
-		uint16_t currentThread = getRunningThread();
-		/* adjust lr, because we are in svc mode*/
-		struct commonRegs* stackStruct = (struct commonRegs*) sp;
-		stackStruct->lr += 4;
+                uint16_t currentThread = getRunningThread();
+                /* adjust lr, because we are in svc mode*/
+                struct commonRegs* stackStruct = (struct commonRegs*) sp;
+                stackStruct->lr += 4;
                 uint32_t swiID = 0;
                 asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
-		if (swiID < SYSCALLS) {	
-                	swiHandlerArray[swiID](&rd, sp);
-                	if (swiID == END_THREAD) {
-                        	uint16_t nextThread = rrSchedule(currentThread, 0);
-                        	changeContext(nextThread, sp);
-				//registerDump(&rd);	
-                	}  
-        	}
-		return;
-	}
+                if (swiID < SYSCALLS) {
+                        swiHandlerArray[swiID](&rd, sp);
+                        if (swiID == END_THREAD) {
+                                uint16_t nextThread = rrSchedule(currentThread, 0);
+                                changeContext(nextThread, sp);
+                                //registerDump(&rd);
+                        }
+                }
+                return;
+        }
         registerDump(&rd);
         kprintf("\n\nSystem angehalten.\n");
         while(1);
@@ -170,7 +170,7 @@ void irq(void* sp){
         }
         if(clockHandler()){
                 uint16_t currentThread = getRunningThread();
-		kprintf("Current Running Thread: %i", currentThread);
+                kprintf("Current Running Thread: %i\n", currentThread);
                 uint16_t nextThread = rrSchedule(currentThread, 0);
                 if (currentThread != nextThread) {
                         saveContext(currentThread, sp);
@@ -178,17 +178,18 @@ void irq(void* sp){
                 }
         }
         if(uartHandler()){
-		uint16_t currentThread = getRunningThread();
-		if (currentThread == IDLE_THREAD) {
+                uint16_t currentThread = getRunningThread();
+                if (currentThread == IDLE_THREAD) {
                         uint16_t nextThread = rrSchedule(currentThread, 0);
                         if (currentThread != nextThread) {
                                 saveContext(currentThread, sp);
                                 changeContext(nextThread, sp);
                         }
-		}
-	}
+                }
+        }
         return;
 }
+
 void fiq(){
         //handle das business
         return;

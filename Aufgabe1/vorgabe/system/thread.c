@@ -84,14 +84,16 @@ void killThread(uint16_t currentThread) {
 void saveContext(uint16_t currentThread, void* sp) { 
         struct commonRegs* cr = (struct commonRegs*) sp;
         asm volatile ("mrs %0, SPSR": "=r" (threadArray[currentThread].spsr));
-	asm volatile ("mrs %0, CPSR": "=r" (threadArray[currentThread].cpsr));
-	asm volatile ("mrs %0, lr_usr": "=r" (threadArray[currentThread].userLR));
+        asm volatile ("mrs %0, CPSR": "=r" (threadArray[currentThread].cpsr));
+        asm volatile ("mrs %0, lr_usr": "=r" (threadArray[currentThread].userLR));
         threadArray[currentThread].context = *cr;
         threadArray[currentThread].status = READY;
 }
 
 void changeContext(uint16_t nextThread, void* sp){
         kprintf("\nIch bin der Kontextwechsel\n");
+        kprintf("\0");          /* Wenn das hier nicht ist bekommt Thomas UndefInstructions */
+        /* kprintf("userLR: %x LR: %x\n", threadArray[nextThread].userLR, threadArray[nextThread].context.lr); */
         fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* TODO Maybe include statusbits */
         asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));

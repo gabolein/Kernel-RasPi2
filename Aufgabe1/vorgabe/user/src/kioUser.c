@@ -14,14 +14,12 @@
 void printf(const char* format, ...) {
         va_list arg;
         va_start(arg, format);
-
         unsigned char char_rep;
         const char* str;
         unsigned int u_int_num;
         int int_num;
         unsigned int address;
         for (const char* traverse = format; *traverse != '\0'; traverse++) {
-		
                 if (*traverse == '%') {
                         traverse++; // move to next character, we dont wanna print the '%'
 

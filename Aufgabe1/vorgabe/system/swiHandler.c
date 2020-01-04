@@ -31,15 +31,14 @@ void newThreadHandler(struct regDump* rd, void* sp) {
         uint32_t args_size = 0;
         void* args = NULL;
         void (*func)(void *) = NULL;
-        func = (void*)rd->r3;
-        args = rd->r4;
+        func = (void*)rd->r1;
+        args = rd->r2;
         args_size = rd->r3;
         kprintf("func0: %x\n", &user_thread);
         kprintf("func: %x\n", func);
-        char* myChar = args;
+        kprintf("Cahracter: %c\n", *(char*)args);
         kprintf("\n This is the argssize: %i\n", args_size);
-        // TODO: FIX THIS PIECE OF GARBAGE
-        createThread(&user_thread, args, args_size);
+        createThread(func, args, args_size);
 }
 
 void exitHandler(struct regDump* rd, void* sp) {
