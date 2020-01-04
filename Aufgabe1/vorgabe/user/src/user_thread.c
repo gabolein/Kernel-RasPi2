@@ -31,8 +31,9 @@ void spawner() {
                 volatile char c = getChar();
 		//putChar(c);
 		if (c) {
-			const void* charPointer = &c;
-			//char* charPointerInt = charPointer; 
+			void* charPointer = &c;
+			char* charPointerInt = charPointer;
+			//putChar(*charPointerInt);
                 	newThread(&user_thread, charPointer, 1);
 			
 		}

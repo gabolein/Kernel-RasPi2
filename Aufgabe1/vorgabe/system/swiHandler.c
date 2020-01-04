@@ -31,9 +31,9 @@ void newThreadHandler(struct regDump* rd, void* sp) {
         uint32_t args_size = 0;
         void* args = NULL;
         void (*func)(void *) = NULL;
-        func = (void*)rd->r1;
-        args = rd->r2;
-        args_size = rd->r3;
+        func = (void*)rd->r3;
+        args = rd->r4;
+        args_size = rd->r5;
         kprintf("func0: %x\n", &user_thread);
         kprintf("func: %x\n", func);
         char* myChar = args;
@@ -52,5 +52,5 @@ void exitHandler(struct regDump* rd, void* sp) {
 
 /* Expects sleeptime in r1 */
 void sleepHandler(struct regDump* rd, void* sp){
-
+        uint32_t sleeptime = rd->r1;
 }
