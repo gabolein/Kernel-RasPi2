@@ -40,7 +40,8 @@ void adjustSleptTime(){
 		if(threadArray[i].sleepingTime){
 			threadArray[i].sleptTime++;
 			if(threadArray[i].sleptTime >= threadArray[i].sleepingTime) {
-				threadArray[i].sleepingTime = threadArray[i].sleptTime = 0;
+				threadArray[i].sleepingTime = 0;
+				threadArray[i].sleptTime = 0;
 			}
 		}
 	}
