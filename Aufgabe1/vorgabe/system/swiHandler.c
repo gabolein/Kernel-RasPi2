@@ -18,31 +18,25 @@ void putCharHandler(struct regDump* rd, void* sp) {
 void getCharHandler(struct regDump* rd, void* sp) {
 	char myChar = bufferGet();
         if(myChar){
-                //uint16_t currentThread = getRunningThread();
                 struct commonRegs* stackStruct = (struct commonRegs*) sp;
                 stackStruct->r1 = myChar;
-                //threadArray[currentThread].context.r1 = myChar;
         }
 }
 
 /* Expects  funcpointer in r1, argCount in r2, args_size in r3*/
 void newThreadHandler(struct regDump* rd, void* sp) {
-        kprintf("Entering new THread Handler\n");
         uint32_t args_size = 0;
         void* args = NULL;
         void (*func)(void *) = NULL;
         func = (void*)rd->r1;
         args = rd->r2;
         args_size = rd->r3;
-        kprintf("func0: %x\n", &user_thread);
-        kprintf("func: %x\n", func);
-        kprintf("Cahracter: %c\n", *(char*)args);
-        kprintf("\n This is the argssize: %i\n", args_size);
         createThread(func, args, args_size);
 }
 
 void exitHandler(struct regDump* rd, void* sp) {
         uint16_t currentThread = getRunningThread();
+	/* zero registers */
         threadArray[currentThread].context.r0 = 0;
         threadArray[currentThread].context.r1 = 0;
         threadArray[currentThread].context.r2 = 0;
@@ -51,11 +45,12 @@ void exitHandler(struct regDump* rd, void* sp) {
         threadArray[currentThread].context.r5 = 0;
         threadArray[currentThread].status = DEAD;
         threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
-        kprintf("\n\nThread %u angehalten.\n", threadArray[currentThread].threadID);
-        /* TODO MAybe set everything to 0 */
+        kprintf("\n\nThread %u was deaded as fuck.\n", threadArray[currentThread].threadID);
 }
 
 /* Expects sleeptime in r1 */
 void sleepHandler(struct regDump* rd, void* sp){
         uint32_t sleeptime = rd->r1;
+	uint16_t currentThread = getRunningThread();
+	threadArray[currentThread].sleepingTime = sleeptime;
 }

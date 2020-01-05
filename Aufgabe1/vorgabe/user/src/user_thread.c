@@ -6,7 +6,7 @@
 
 
 #define COMPUTATION_LEN 300000
-#define AMOUNT_CHARS 15
+#define AMOUNT_CHARS 3
 #define CAPITAL_LETTER_LIM 97
 
 void user_thread(void* arg) {
@@ -16,19 +16,15 @@ void user_thread(void* arg) {
         /* } else { */
         for (int i = 0; i < AMOUNT_CHARS; i++) {
                 putChar(receivedChar);
-                putChar('|');
-                /* if (*receivedChar < CAPITAL_LETTER_LIM) { */
-                /*     	blockFunc(); */
-                /* } else { */
-                /*         //	sleep(COMPUTATION_LEN); */
-                /* } */
-                //blockFunc();
-                /* } */
+                if (receivedChar < CAPITAL_LETTER_LIM) {
+                	blockFunc();
+                } else {
+                	sleep(5);
+                }
         }
 }
 
 void spawner() {
-        printf("Release the kraken\n");
         while(1) {
                 volatile char c = getChar();
                 if (c) {

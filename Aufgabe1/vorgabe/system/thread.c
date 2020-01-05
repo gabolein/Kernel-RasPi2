@@ -91,14 +91,14 @@ void saveContext(uint16_t currentThread, void* sp) {
 }
 
 void changeContext(uint16_t nextThread, void* sp){
-        kprintf("\nIch bin der Kontextwechsel\n");
-        kprintf("\0");          /* Wenn das hier nicht ist bekommt Thomas UndefInstructions */
+        //kprintf("\nChanging context to thread %i\n", nextThread);
+        //kprintf("\0");          /* Wenn das hier nicht ist bekommt Thomas UndefInstructions */
         /* kprintf("userLR: %x LR: %x\n", threadArray[nextThread].userLR, threadArray[nextThread].context.lr); */
         fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* TODO Maybe include statusbits */
         asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));
        	threadArray[nextThread].status = RUNNING;
-        asm volatile("msr sp_usr, %0":: "r" ((threadArray[nextThread].context.sp) + 13 * 4));
+        //asm volatile("msr sp_usr, %0":: "r" ((threadArray[nextThread].context.sp) + 13 * 4)); DAS HIER FICKT UNS ANSCHEINEND???
        	kprintf("\n");
 }
 

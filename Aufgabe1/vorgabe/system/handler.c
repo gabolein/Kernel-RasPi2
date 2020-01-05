@@ -23,6 +23,7 @@
 #define IDLE_THREAD 32
 #define END_THREAD 3
 #define SYSCALLS 5
+#define SLEEP 4
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -39,6 +40,7 @@ volatile int debugMode = 0;
 uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
+/* TODO */
 void (*swiHandlerArray[5])() = {
         putCharHandler,
         getCharHandler,
@@ -59,6 +61,7 @@ void toggleDebugMode(){
 int clockHandler() {
         if (*irq_basic_pending & TIMER_IRQ_PENDING) {
                 if (timerCheckInterruptSet()) {
+			adjustSleptTime();
                         if(ledStatus){
                                 yellow_off();
                                 ledStatus = 0;
@@ -135,7 +138,13 @@ void software_interrupt(void* sp){
                 if (swiID < SYSCALLS) {
                         swiHandlerArray[swiID](&rd, sp);
                         if (swiID == END_THREAD) {
-                                uint16_t nextThread = rrSchedule(currentThread, 0);
+                                uint16_t nextThread = rrSchedule(currentThread, 1);
+                                changeContext(nextThread, sp);
+                                //registerDump(&rd);
+                        }
+			if (swiID == SLEEP) {
+				saveContext(currentThread, sp);
+                                uint16_t nextThread = rrSchedule(currentThread, 1);
                                 changeContext(nextThread, sp);
                                 //registerDump(&rd);
                         }
@@ -170,7 +179,6 @@ void irq(void* sp){
         }
         if(clockHandler()){
                 uint16_t currentThread = getRunningThread();
-                kprintf("Current Running Thread: %i\n", currentThread);
                 uint16_t nextThread = rrSchedule(currentThread, 0);
                 if (currentThread != nextThread) {
                         saveContext(currentThread, sp);
