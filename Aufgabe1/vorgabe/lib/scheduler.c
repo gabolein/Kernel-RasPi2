@@ -13,17 +13,16 @@ uint16_t rrSchedule(uint16_t currentThread, uint16_t threadDied) {
         timerInterruptCount++;
         if((threadDied)
            || (TIME_SLICE_INTERRUPTS <= timerInterruptCount)
-           || currentThread == IDLE_THREAD) {
+           || currentThread == IDLE_THREAD
+           || threadArray[currentThread].status == WAITING) {
                 timerInterruptCount = 0;
                 if(currentThread == IDLE_THREAD){
                         currentThread = 0;
-                }
+                        }
                 uint8_t i = (currentThread + 1) % THREAD_ARRAY_SIZE;
-                /* return first Thread that is alive */
 
                 do {
-                        if ((threadArray[i].status == READY
-                            || threadArray[i].status == RUNNING) && threadArray[i].sleepingTime == 0) {
+                        if ((threadArray[i].status == READY || threadArray[i].status == RUNNING)) {
                                 return i;
                         }
                         i = (i + 1) % THREAD_ARRAY_SIZE;
@@ -37,12 +36,12 @@ uint16_t rrSchedule(uint16_t currentThread, uint16_t threadDied) {
 
 void adjustSleptTime(){
 	for(int i = 0; i < THREAD_ARRAY_SIZE; i++) {
-		if(threadArray[i].sleepingTime){
-			threadArray[i].sleptTime++;
-			if(threadArray[i].sleptTime >= threadArray[i].sleepingTime) {
-				threadArray[i].sleepingTime = 0;
-				threadArray[i].sleptTime = 0;
-			}
+            if(threadArray[i].status == WAITING && !threadArray[i].waitingForChar){
+                threadArray[i].sleptTime++;
+                if(threadArray[i].sleptTime >= threadArray[i].sleepingTime) {
+                        threadArray[i].sleptTime = 0;
+                        threadArray[i].status = READY;
+                }
 		}
 	}
 }

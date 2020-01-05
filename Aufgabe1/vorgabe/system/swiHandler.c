@@ -55,6 +55,7 @@ void exitHandler(struct regDump* rd, void* sp) {
 /* Expects sleeptime in r1 */
 void sleepHandler(struct regDump* rd, void* sp){
         uint32_t sleeptime = rd->r1;
-	uint16_t currentThread = getRunningThread();
-	threadArray[currentThread].sleepingTime = sleeptime;
+        uint16_t currentThread = getRunningThread();
+        threadArray[currentThread].sleepingTime = sleeptime;
+        threadArray[currentThread].status = WAITING;
 }

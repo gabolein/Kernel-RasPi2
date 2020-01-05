@@ -91,22 +91,24 @@ void killThread(uint16_t currentThread) {
         kprintf("\n\nThread %u angehalten.\n", threadArray[currentThread].threadID);
 }
 
-void saveContext(uint16_t currentThread, void* sp) { 
+void saveContext(uint16_t currentThread, void* sp) {
         struct commonRegs* cr = (struct commonRegs*) sp;
         asm volatile ("mrs %0, SPSR": "=r" (threadArray[currentThread].spsr));
         asm volatile ("mrs %0, CPSR": "=r" (threadArray[currentThread].cpsr));
         asm volatile ("mrs %0, lr_usr": "=r" (threadArray[currentThread].userLR));
         threadArray[currentThread].context = *cr;
-        threadArray[currentThread].status = READY;
+        if(threadArray[currentThread].status == RUNNING) {
+                threadArray[currentThread].status = READY;
+        }
 }
 
 void changeContext(uint16_t nextThread, void* sp){
         fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* TODO Maybe include statusbits */
         asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));
-       	threadArray[nextThread].status = RUNNING;
+        threadArray[nextThread].status = RUNNING;
         //asm volatile("msr sp_usr, %0":: "r" ((threadArray[nextThread].context.sp) + 13 * 4)); DAS HIER FICKT UNS ANSCHEINEND???
-       	kprintf("\n");
+        kprintf("\n");
 }
 
 void fillStack(volatile struct commonRegs* context, void* sp){

@@ -196,7 +196,7 @@ void data_abort(void* sp){
 		uint16_t currentThread = getRunningThread();
 		exitHandler(&rd, sp);
 		uint16_t nextThread = rrSchedule(currentThread, 1);
-                changeContext(nextThread, sp);                
+                changeContext(nextThread, sp);
 		return;
 	}
         registerDump(&rd);
