@@ -16,11 +16,14 @@ void putCharHandler(struct regDump* rd, void* sp) {
 
 /* returns char in r1 */
 void getCharHandler(struct regDump* rd, void* sp) {
-	char myChar = bufferGet();
+        char myChar = bufferGet();
         if(myChar){
                 struct commonRegs* stackStruct = (struct commonRegs*) sp;
                 stackStruct->r1 = myChar;
+                return;
         }
+        threadArray[getRunningThread()].waitingForChar = 1;
+        threadArray[getRunningThread()].status = WAITING;
 }
 
 /* Expects  funcpointer in r1, argCount in r2, args_size in r3*/
@@ -45,7 +48,7 @@ void exitHandler(struct regDump* rd, void* sp) {
         threadArray[currentThread].context.r5 = 0;
         threadArray[currentThread].status = DEAD;
         threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
-	registerDump(rd);
+        registerDump(rd);
         kprintf("\n\nThread %u was deaded as fuck.\n", threadArray[currentThread].threadID);
 }
 

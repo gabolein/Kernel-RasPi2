@@ -37,6 +37,7 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         threadArray[newThread].spsr = 0x10; /* User Mode, sonst nichts gesetzt */
         threadArray[newThread].cpsr = 0x13; /* SVC Mode */
         threadArray[newThread].userLR = (uint32_t)&exit;
+        threadArray[newThread].waitingForChar = 0;
         //Stack mit Argumenten füllen
         if(args_size){
                 /* volatile void* sp = (void*)threadArray[newThread].context.sp; */
@@ -72,6 +73,15 @@ uint16_t getRunningThread(){
         }
         kprintf("\n Error determining running Thread! \n");
         return 0;
+}
+
+int16_t threadWaitingForChar() {
+        for(uint16_t i = 0; i < AMOUNT_THREADS + 1; i++) {
+                if(threadArray[i].status == WAITING && threadArray[i].waitingForChar){
+                        return i;
+                }
+        }
+        return -1;
 }
 
 void killThread(uint16_t currentThread) {

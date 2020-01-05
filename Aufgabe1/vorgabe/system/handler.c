@@ -24,6 +24,7 @@
 #define END_THREAD 3
 #define SYSCALLS 5
 #define SLEEP 4
+#define GETCHAR 1
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -61,7 +62,7 @@ void toggleDebugMode(){
 int clockHandler() {
         if (*irq_basic_pending & TIMER_IRQ_PENDING) {
                 if (timerCheckInterruptSet()) {
-			adjustSleptTime();
+                        adjustSleptTime();
                         if(ledStatus){
                                 yellow_off();
                                 ledStatus = 0;
@@ -77,9 +78,18 @@ int clockHandler() {
         return 0;
 }
 
+/* Inserts received character into buffer or forwards it to waitingThread if possible */
 uint8_t bufferInsert(char c){
         if(charBufferLength >= BUFFER_SIZE){
                 return 1;       /* Buffer is full */
+        }
+        int16_t waitingThread = threadWaitingForChar();
+        if(waitingThread != -1){
+                /* Thread den Char geben */
+                threadArray[waitingThread].context.r1 = c;
+                threadArray[waitingThread].waitingForChar = 0;
+                threadArray[waitingThread].status = READY;
+                return 0;
         }
         charBufferLength++;
         charBuffer[charBufferLength - 1] = c;
@@ -126,7 +136,7 @@ void undefined_instruction(void* sp){
 		uint16_t currentThread = getRunningThread();
 		exitHandler(&rd, sp);
 		uint16_t nextThread = rrSchedule(currentThread, 1);
-                changeContext(nextThread, sp);                
+        changeContext(nextThread, sp);
 		return;
 	}
 	/* Kill Kernel */
@@ -145,16 +155,23 @@ void software_interrupt(void* sp){
                 uint32_t swiID = 0;
                 asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
                 if (swiID < SYSCALLS) {
-			uint16_t currentThread = getRunningThread();
+                        uint16_t currentThread = getRunningThread();
                         swiHandlerArray[swiID](&rd, sp);
                         if (swiID == END_THREAD) {
                                 uint16_t nextThread = rrSchedule(currentThread, 1);
                                 changeContext(nextThread, sp);
                         }
-			if (swiID == SLEEP) {
-				saveContext(currentThread, sp);
-                                uint16_t nextThread = rrSchedule(currentThread, 1);
+                        if (swiID == SLEEP) {
+                                saveContext(currentThread, sp);
+                                uint16_t nextThread = rrSchedule(currentThread, 0);
                                 changeContext(nextThread, sp);
+                        }
+                        if (swiID == GETCHAR) {
+                                if(threadArray[currentThread].status == WAITING) {
+                                        saveContext(currentThread, sp);
+                                        uint16_t nextThread = rrSchedule(currentThread, 0);
+                                        changeContext(nextThread, sp);
+                                }
                         }
                 }
                 return;
