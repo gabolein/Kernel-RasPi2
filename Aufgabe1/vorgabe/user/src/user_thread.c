@@ -10,7 +10,7 @@
 #define CAPITAL_LETTER_LIM 97
 
 void user_thread(void* arg) {
-        char receivedChar = *(char*)arg; /* TODO: correct argument passing, received Char always '2'?? */
+        char receivedChar = *(char*)arg;
         /* if (*receivedChar_p == 's') { */
         /*         asm volatile ("swi #69"); */
         /* } else { */

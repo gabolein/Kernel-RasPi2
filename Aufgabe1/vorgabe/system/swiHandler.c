@@ -3,7 +3,7 @@
 #include "kio.h"
 #include "handler.h"
 #include "registerDumpUtil.h"
-#include "../user/include/user_thread.h"
+#include "presentations.h"
 
 #define NULL 0
 
@@ -29,7 +29,7 @@ void newThreadHandler(struct regDump* rd, void* sp) {
         void* args = NULL;
         void (*func)(void *) = NULL;
         func = (void*)rd->r1;
-        args = rd->r2;
+        args = (void*)rd->r2;
         args_size = rd->r3;
         createThread(func, args, args_size);
 }
@@ -45,6 +45,7 @@ void exitHandler(struct regDump* rd, void* sp) {
         threadArray[currentThread].context.r5 = 0;
         threadArray[currentThread].status = DEAD;
         threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
+	registerDump(rd);
         kprintf("\n\nThread %u was deaded as fuck.\n", threadArray[currentThread].threadID);
 }
 

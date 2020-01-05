@@ -121,38 +121,46 @@ void undefined_instruction(void* sp){
         green_on();
         struct regDump rd;
         getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
+	if ((rd.spsr & 0x1F) == USER) {
+		/* End Thread */
+		uint16_t currentThread = getRunningThread();
+		exitHandler(&rd, sp);
+		uint16_t nextThread = rrSchedule(currentThread, 1);
+                changeContext(nextThread, sp);                
+		return;
+	}
+	/* Kill Kernel */
         registerDump(&rd);
-        killOrDie(&rd, sp);
+        kprintf("\n\nKernel dead.\n");
+	while(1);
         return;
 }
 void software_interrupt(void* sp){
     	struct regDump rd; /* can actually take this from context */
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
         if ((rd.spsr & 0x1F) == USER) {
-                uint16_t currentThread = getRunningThread();
-                /* adjust lr, because we are in svc mode*/
+                /* adjust lr*/
                 struct commonRegs* stackStruct = (struct commonRegs*) sp;
                 stackStruct->lr += 4;
                 uint32_t swiID = 0;
                 asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
                 if (swiID < SYSCALLS) {
+			uint16_t currentThread = getRunningThread();
                         swiHandlerArray[swiID](&rd, sp);
                         if (swiID == END_THREAD) {
                                 uint16_t nextThread = rrSchedule(currentThread, 1);
                                 changeContext(nextThread, sp);
-                                //registerDump(&rd);
                         }
 			if (swiID == SLEEP) {
 				saveContext(currentThread, sp);
                                 uint16_t nextThread = rrSchedule(currentThread, 1);
                                 changeContext(nextThread, sp);
-                                //registerDump(&rd);
                         }
                 }
                 return;
         }
         registerDump(&rd);
-        kprintf("\n\nSystem angehalten.\n");
+        kprintf("\n\nKernel dead.\n");
         while(1);
         return;
 }
@@ -160,14 +168,23 @@ void prefetch_abort(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, PREFETCH_ABORT, sp);
         registerDump(&rd);
-        killOrDie(&rd, sp);
+        //killOrDie(&rd);
         return;
 }
 void data_abort(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, DATA_ABORT, sp);
+	if ((rd.spsr & 0x1F) == USER) {
+		/* End Thread */
+		uint16_t currentThread = getRunningThread();
+		exitHandler(&rd, sp);
+		uint16_t nextThread = rrSchedule(currentThread, 1);
+                changeContext(nextThread, sp);                
+		return;
+	}
         registerDump(&rd);
-        killOrDie(&rd, sp);
+        kprintf("\n\nKernel dead.\n");
+        while(1);
         return;
 }
 
