@@ -1,3 +1,16 @@
+#include "threadUtil.h"
+#include <stdint.h>
+
+#define AMOUNT_CHARS 15
+#define COMPUTATION_LEN 300000
+
+void blockFunc() {
+        volatile uint32_t baum = 0;
+        for(int i = 0; i < COMPUTATION_LEN; i++){
+                baum += 1;      /* "Berechnung" */
+        }
+}
+
 void setEmptyString(char c_buffer[], int buf_len){
         for(int i=0; i < buf_len; i++) {
                 c_buffer[i] = '\0';
@@ -27,3 +40,4 @@ char* itoa16(unsigned int value, char* c_buffer){
         }
         return c_buffer;
 }
+

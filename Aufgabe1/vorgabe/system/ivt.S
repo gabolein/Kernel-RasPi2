@@ -29,7 +29,7 @@ _undefined_instruction:
 	ldr lr, [sp]	/* Kopiere das gesicherte LR ins LR */
 	add sp, sp, #8 /* Addressiere die gesicherten unbanked Register */
 	ldmia sp!, {r0 - r12}
-	movs pc, lr
+	subs pc, lr, #4
 _software_interrupt:
 	/* Software Interrupt nutzt normalen Registersatz */
 	stmdb   sp!, {r0 - r12}
@@ -40,7 +40,7 @@ _software_interrupt:
 	ldr lr, [sp]
 	add sp, sp, #8
 	ldmia sp!, {r0 - r12}
-	movs pc, lr
+	subs pc, lr, #4
 _prefetch_abort:
 	stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}

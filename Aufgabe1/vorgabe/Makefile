@@ -31,7 +31,7 @@
 BIN_LSG =
 
 # Ab Aufgabe 4 auf true
-KERNEL_USER_SPLIT = false
+KERNEL_USER_SPLIT = true
 
 # Hier eure Dateien hinzufügen
 # System
@@ -39,6 +39,8 @@ OBJ =  system/entry.o
 OBJ += system/ivt.o
 OBJ += system/start.o
 OBJ += system/handler.o
+OBJ += system/swiHandler.o
+OBJ += system/thread.o
 
 # Driver
 OBJ += driver/led.o
@@ -50,13 +52,11 @@ OBJ += driver/timer.o
 OBJ += lib/kio.o
 OBJ += lib/presentations.o
 OBJ += lib/tests.o
-OBJ += lib/utils.o
 OBJ += lib/registerDumpUtil.o
 OBJ += lib/regcheck.o
 OBJ += lib/regcheck_asm.o
-
-# User
-OBJ += user/src/subProgram.o
+OBJ += lib/scheduler.o
+OBJ += lib/util.o
 
 # Falls die binäre Musterlösung benutzt wird bitte auskommentieren
 # und gegebenenfalls Ordner anpassen:
@@ -110,7 +110,7 @@ LD = arm-none-eabi-ld
 OBJCOPY = arm-none-eabi-objcopy
 OBJDUMP = arm-none-eabi-objdump
 
-CFLAGS = -Wall -Wextra -ffreestanding -mcpu=cortex-a7 -O2
+CFLAGS = -Wall -Wextra -ffreestanding -mcpu=cortex-a7 -O2 -fno-tree-loop-distribute-patterns
 #CFLAGS = -ffreestanding -mcpu=cortex-a7 -O2
 CFLAGS_DEBUG = $(CFLAGS) -ggdb
 CPPFLAGS = -Iinclude

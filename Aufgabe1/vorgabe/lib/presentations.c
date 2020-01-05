@@ -23,7 +23,7 @@ void specialMessage(const char* msg){
 
 
 void registerDump(struct regDump* regDump){
-        kprintf("####################################"
+        kprintf("\n####################################"
                 "#######################################\n");
 
         switch(regDump->exType) {
@@ -151,5 +151,5 @@ void registerDump(struct regDump* regDump){
                       regDump->undefinedSp,
                       regDump->undefinedSpsr);
 
-        kprintf("\n\nSystem angehalten.\n");
+
 }

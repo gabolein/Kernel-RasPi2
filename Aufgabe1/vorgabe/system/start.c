@@ -5,28 +5,19 @@
 #include "handler.h"
 #include "kio.h"
 #include "regcheck.h"
+#include "thread.h"
 #include <stdint.h>
-#include "../user/include/subProgram.h"
+#include "../user/include/threadUtil.h"
+#include "../user/include/user_thread.h"
+
+#define NULL 0
 
 void start_kernel(void)
 {
         enableUartInterrupt();
         specialMessage("Kernel loaded! (UwU)");
         initTimer();
-
-        char receivedChar;
-        while(1) {
-                /* Anwendung */
-                if((receivedChar = bufferGet())){
-                        switch(receivedChar){
-                        case 'd': toggleDebugMode();                                break;
-                        case 'e': enterSubProgram();                                break;
-                        case 'c': register_checker();                               break;
-                        case 'a': causeDataAbort();                                 break;
-                        case 'u': causeUndefinedInstruction();                      break;
-                        case 's': asm volatile ("SWI 0x4b");                        break;
-                        default: kprintf("Received Character: %c\n", receivedChar); break;
-                        }
-                }
-        }
+        initThreadArray();
+        createThread(&spawner, NULL, 0); /* Init user thread */
+        while(1);
 }

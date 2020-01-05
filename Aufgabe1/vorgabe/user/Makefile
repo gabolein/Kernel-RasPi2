@@ -15,10 +15,12 @@
 # make clean		-- Löscht alle erzeugten Dateien.
 
 # Hier eure Dateien hinzufügen
-OBJ = 
-# Bsp für weitere:
-# OBJ += driver/uart.o
-
+OBJ = src/idleThread.o
+OBJ += src/swiInterface.o
+OBJ += src/testThread.o
+OBJ += src/threadUtil.o
+OBJ += src/user_thread.o
+OBJ += src/kioUser.o
 
 # --- Ab hier sollte nichts mehr angepasst werden müssen ;D ---
 
@@ -61,10 +63,10 @@ all: user user.bin dump
 	$(CC) $(CPPFLAGS) $(CFLAGS_DEBUG) -MMD -MP -o $@ -c $<
 
 user: $(LSCRIPT) $(OBJ)
-	$(LD) -T$(LSCRIPT) -o $@ $(OBJ) $(OBJ_LSG) $(LIBGCC)
+	$(LD) -r -T$(LSCRIPT) -o $@ $(OBJ) $(OBJ_LSG)
 
 user_debug: $(LSCRIPT) $(OBJ_DEBUG)
-	$(LD) -T$(LSCRIPT) -o $@ $(OBJ_DEBUG) $(OBJ_LSG) $(LIBGCC)
+	$(LD) -r -T$(LSCRIPT) -o $@ $(OBJ_DEBUG) $(OBJ_LSG)
 
 user.bin: user
 	$(OBJCOPY) -Obinary --set-section-flags .bss=contents,alloc,load,data $< $@
