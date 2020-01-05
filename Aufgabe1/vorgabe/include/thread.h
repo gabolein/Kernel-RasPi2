@@ -19,8 +19,9 @@ struct thcStruct{
         uint16_t threadID;
         uint32_t initialSp;
         volatile uint8_t hasRun;         /* 1 or 0 */
-	volatile uint32_t sleepingTime;
-	volatile uint32_t sleptTime;
+        volatile uint32_t sleepingTime;
+        volatile uint32_t sleptTime;
+        volatile uint8_t watitingForChar;
 };
 
 void initThreadArray();
