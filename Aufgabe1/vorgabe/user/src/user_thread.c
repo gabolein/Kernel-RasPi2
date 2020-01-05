@@ -19,7 +19,7 @@ void user_thread(void* arg) {
                 if (receivedChar < CAPITAL_LETTER_LIM) {
                 	blockFunc();
                 } else {
-                	sleep(5);
+                	sleep(5000);
                 }
         }
 }
