@@ -54,7 +54,7 @@ void endThread() {
         asm volatile ("SWI 21");
 }
 
-uint16_t getDeadThread(){
+uint16_t getDeadThread(){ /* FIX */
         for(uint16_t i = 0; i < AMOUNT_THREADS + 1; i++) {
                 if(threadArray[i].status == DEAD){
                         return i;
@@ -91,9 +91,6 @@ void saveContext(uint16_t currentThread, void* sp) {
 }
 
 void changeContext(uint16_t nextThread, void* sp){
-        //kprintf("\nChanging context to thread %i\n", nextThread);
-        //kprintf("\0");          /* Wenn das hier nicht ist bekommt Thomas UndefInstructions */
-        /* kprintf("userLR: %x LR: %x\n", threadArray[nextThread].userLR, threadArray[nextThread].context.lr); */
         fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* TODO Maybe include statusbits */
         asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));
