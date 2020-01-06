@@ -41,6 +41,7 @@ OBJ += system/start.o
 OBJ += system/handler.o
 OBJ += system/swiHandler.o
 OBJ += system/thread.o
+OBJ += system/memory.o
 
 # Driver
 OBJ += driver/led.o
