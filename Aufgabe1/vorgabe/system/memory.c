@@ -5,9 +5,11 @@
 #define SECTION_BASE_SHIFT_AMOUNT 20
 #define SECTION_ENTRY_CODE 2
 
+extern void _mmuInit();
+
 void initMMU() {
         initMMUL1Table(mmuTable);
-        activateMMU(mmuTable);
+        _mmuInit();             /* Configures and activates MMU */
 }
 
 /* Initializes the MMU L1 Table at the given address */
@@ -22,7 +24,7 @@ void initMMUL1Table(uint32_t* table) {
 }
 
 void activateMMU(uint32_t* tableStart) {
-        asm volatile ("mov r1, #0");
+        asm volatile("mov r1, #0");
         asm volatile("mov r0, %0" : "=r" (tableStart));
         asm volatile("mcr p15, 0, r1, c3, c0, 0"); /* Set Domain Access Control Register to 0 */
         asm volatile("mcr p15, 0, r0, c2, c0, 0"); /* Set Translation Table Base Register to 0 */
