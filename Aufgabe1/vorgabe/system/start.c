@@ -9,7 +9,9 @@
 #include "memory.h"
 #include <stdint.h>
 #include "../user/include/threadUtil.h"
-#include "../user/include/user_thread.h"
+//#include "../user/include/user_thread.h"
+
+extern void spawner();
 
 #define NULL 0
 

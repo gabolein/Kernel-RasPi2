@@ -3,37 +3,48 @@
 #include "kio.h"
 
 #define SECTION_BASE_SHIFT_AMOUNT 20
-#define SECTION_ENTRY_CODE 2
+#define SECTION_ENTRY_CODE 0x2
+#define MMUTABLEBASE 0xc000
 
 extern void _mmuInit();
+
+uint32_t mmu_section ( uint32_t virtual, uint32_t physical, uint32_t flags )
+{
+        uint32_t offset = virtual >> 20;
+        // plus and or are the same thing here, as MMUTABLEBASE is 14 bit aligned
+        uint32_t* entry = MMUTABLEBASE | (offset<<2);
+
+        // mask lower 20 bits of physical address then ORR flags and 0x02 for 1 MiB
+        uint32_t physval = (physical & 0xfff00000) | (flags & 0x7ffc) | 0x02;
+
+        *entry = physval;
+        return(0);
+}
+
+#define CACHEABLE 0x08
+#define BUFFERABLE 0x04
 
 void printTableAddr(uint32_t arg){
         kprintf("Adresse des Tables in Assembly: %x\n", arg);
 }
 
 void initMMU() {
-        initMMUL1Table(mmuTable);
+        //initMMUL1Table(mmuTable);
+        mmu_section(0x8000, 0x8000, CACHEABLE | BUFFERABLE);
         kprintf("Adresse des Tables in C: %x\n", mmuTable);
+        kprintf("mmu_section Eintrag 0: %x\n", mmuTable[0]);
         _mmuInit();             /* Configures and activates MMU */
 }
 
 /* Initializes the MMU L1 Table at the given address */
-void initMMUL1Table(uint32_t* table) {
+void initMMUL1Table(volatile uint32_t* table) {
         for(uint32_t i = 0; i < 4096; i++) {
                 table[i] = SECTION_ENTRY_CODE; /* Sectionentry */
-                table[i] |= (i * 4) << SECTION_BASE_SHIFT_AMOUNT; /* Basisadresse der Section */
-                table[i] |= 0b11 << 10; /* Zugriffsrechte: Vollzugriff */
-                /* kprintf("Inhalt der MMU Table an Stelle %i: %x\n", i, table[i]); */
+                table[i] |= i << 20; /* Basisadresse der Section */
+                table[i] |= 0b11 << 10; /* Zugriffsrechte: Vollzugriff LSBs */
+                table[i] &= ~(1 << 15); /* Zugriffsrechte MSB */
         }
-
-}
-
-void activateMMU(uint32_t* tableStart) {
-        asm volatile("mov r1, #0");
-        asm volatile("mov r0, %0" : "=r" (tableStart));
-        asm volatile("mcr p15, 0, r1, c3, c0, 0"); /* Set Domain Access Control Register to 0 */
-        asm volatile("mcr p15, 0, r0, c2, c0, 0"); /* Set Translation Table Base Register to 0 */
-        asm volatile("mrc p15, 0, r0, c1, c0, 0");
-        asm volatile("orr r0, r0, #0x1");
-        asm volatile("mcr p15, 0, r0, c1, c0, 0");
+        kprintf("Inhalt der MMU Table an erster Stelle: %x\n", mmuTable[0]);
+        kprintf("Inhalt der MMU Table an letzter Stelle: %x\n", mmuTable[4095]);
+        kprintf("Inhalt am zweiten Eintrag: %x\n", mmuTable[1]);
 }
