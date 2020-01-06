@@ -30,7 +30,11 @@ void initThreadArray() {
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
-        uint16_t newThread = getDeadThread();
+        int newThread = getDeadThread();
+        if (newThread == -1) {
+            kprintf("\nCan't create new thread.\n");
+            return;
+        }
         threadArray[newThread].hasRun = 0;
         threadArray[newThread].status = READY;
         threadArray[newThread].context.lr = (uint32_t)func + 4; /* +4, da im trampoline 4 subtrahiert wird */
@@ -55,24 +59,24 @@ void endThread() {
         asm volatile ("SWI 21");
 }
 
-uint16_t getDeadThread(){ /* FIX */
+int getDeadThread(){ /* FIX */
         for(uint16_t i = 0; i < AMOUNT_THREADS + 1; i++) {
                 if(threadArray[i].status == DEAD){
                         return i;
                 }
         }
         kprintf("\n Error determining dead Thread! \n");
-        return 0;
+        return -1;
 }
 
-uint16_t getRunningThread(){
+int getRunningThread(){
         for(uint16_t i = 0; i < AMOUNT_THREADS + 1; i++) {
                 if(threadArray[i].status == RUNNING){
                         return i;
                 }
         }
         kprintf("\n Error determining running Thread! \n");
-        return 0;
+        return -1;
 }
 
 int16_t threadWaitingForChar() {
@@ -85,7 +89,6 @@ int16_t threadWaitingForChar() {
 }
 
 void killThread(uint16_t currentThread) {
-        kprintf("\nICH BIN KILLTHREAD\n");
         threadArray[currentThread].status = DEAD;
         threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
         kprintf("\n\nThread %u angehalten.\n", threadArray[currentThread].threadID);
@@ -104,10 +107,9 @@ void saveContext(uint16_t currentThread, void* sp) {
 
 void changeContext(uint16_t nextThread, void* sp){
         fillStack(&(threadArray[nextThread].context), sp);
-       	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr)); /* TODO Maybe include statusbits */
+       	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr));
         asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));
         threadArray[nextThread].status = RUNNING;
-        //asm volatile("msr sp_usr, %0":: "r" ((threadArray[nextThread].context.sp) + 13 * 4)); DAS HIER FICKT UNS ANSCHEINEND???
         kprintf("\n");
 }
 
