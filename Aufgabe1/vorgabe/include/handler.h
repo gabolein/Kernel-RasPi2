@@ -8,7 +8,6 @@ extern void undefined_instruction(void*);
 extern void prefetch_abort(void*);
 extern void data_abort(void*);
 extern void fiq();
-void killOrDie(struct regDump*, void*);
 
 #endif
 

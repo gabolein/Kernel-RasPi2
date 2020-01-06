@@ -1,47 +1,15 @@
 #include "handler.h"
 #include "led.h"
-#include "hwDefines.h"
 #include "kio.h"
-#include "serial.h"
 #include "presentations.h"
 #include <stdint.h>
 #include "registerDumpUtil.h"
-#include "timer.h"
-#include "regcheck.h"
-#include "tests.h"
 #include "scheduler.h"
 #include "thread.h"
 #include "swiHandler.h"
-#include "../user/include/testThread.h"
-#include "../user/include/user_thread.h"
 
 
-#define USER 0x10
 #define NULL 0
-#define END_THREAD 3
-#define SYSCALLS 5
-#define SLEEP 4
-#define GETCHAR 1
-
-
-
-/* Flags */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Begin C Handlers */
 
 void undefined_instruction(void* sp){
         green_on();
@@ -58,7 +26,7 @@ void undefined_instruction(void* sp){
 	/* Kill Kernel */
         registerDump(&rd);
         kprintf("\n\nKernel dead.\n");
-	while(1);
+        while(1);
         return;
 }
 
@@ -72,7 +40,7 @@ void prefetch_abort(void* sp){
 void data_abort(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, DATA_ABORT, sp);
-	if ((rd.spsr & 0x1F) == USER) {
+	if ((rd.spsr & 0x1F) == USER_MODE) {
 		/* End Thread */
 		uint16_t currentThread = getRunningThread();
 		exitHandler(&rd);
@@ -91,19 +59,4 @@ void data_abort(void* sp){
 void fiq(){
         //handle das business
         return;
-}
-
-
-
-
-void killOrDie(struct regDump* rd, void* sp) {
-        if ((rd->spsr & 0x1F) == USER) {
-                uint16_t currentThread = getRunningThread();
-                killThread(currentThread);
-                uint16_t nextThread = rrSchedule(currentThread, 1);
-                changeContext(nextThread, sp);
-        } else {
-                kprintf("\n\nSystem angehalten.\n");
-                while(1);
-        }
 }
