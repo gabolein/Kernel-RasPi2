@@ -17,6 +17,7 @@ void getCharHandler(void*);
 void newThreadHandler(struct regDump*);
 void exitHandler(struct regDump*);
 void sleepHandler(struct regDump*);
-void software_interrupt(void*);
+extern void software_interrupt(void*);
+
 
 #endif //SWIHANDLER_H

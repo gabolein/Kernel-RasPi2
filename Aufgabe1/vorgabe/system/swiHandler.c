@@ -6,6 +6,7 @@
 #include "handler.h"
 #include "registerDumpUtil.h"
 #include "presentations.h"
+#include "irqHandler.h"
 
 
 #define NULL 0
