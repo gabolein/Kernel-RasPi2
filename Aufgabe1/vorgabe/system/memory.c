@@ -7,8 +7,13 @@
 
 extern void _mmuInit();
 
+void printTableAddr(uint32_t arg){
+        kprintf("Adresse des Tables in Assembly: %x\n", arg);
+}
+
 void initMMU() {
         initMMUL1Table(mmuTable);
+        kprintf("Adresse des Tables in C: %x\n", mmuTable);
         _mmuInit();             /* Configures and activates MMU */
 }
 
@@ -16,9 +21,9 @@ void initMMU() {
 void initMMUL1Table(uint32_t* table) {
         for(uint32_t i = 0; i < 4096; i++) {
                 table[i] = SECTION_ENTRY_CODE; /* Sectionentry */
-                /* table[i] |= (i * 4) << SECTION_BASE_SHIFT_AMOUNT; /\* Basisadresse der Section *\/ */
+                table[i] |= (i * 4) << SECTION_BASE_SHIFT_AMOUNT; /* Basisadresse der Section */
                 table[i] |= 0b11 << 10; /* Zugriffsrechte: Vollzugriff */
-                kprintf("Inhalt der MMU Table an Stelle %i: %x\n", i, table[i]);
+                /* kprintf("Inhalt der MMU Table an Stelle %i: %x\n", i, table[i]); */
         }
 
 }
