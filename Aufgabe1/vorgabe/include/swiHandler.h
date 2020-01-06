@@ -1,11 +1,22 @@
-#include "registerDumpUtil.h"
+
 #ifndef SWIHANDLER_H
 #define SWIHANDLER_H
 
-void putCharHandler(struct regDump*, void*);
-void getCharHandler(struct regDump*, void*);
-void newThreadHandler(struct regDump*, void*);
-void exitHandler(struct regDump*, void*);
-void sleepHandler(struct regDump*, void*);
+#include "registerDumpUtil.h"
+
+enum syscallType {
+	PUT_CHAR,
+	GET_CHAR,
+	NEW_THREAD,
+	EXIT,
+	SLEEP
+};
+
+void putCharHandler(struct regDump*);
+void getCharHandler(void*);
+void newThreadHandler(struct regDump*);
+void exitHandler(struct regDump*);
+void sleepHandler(struct regDump*);
+void software_interrupt(void*);
 
 #endif //SWIHANDLER_H

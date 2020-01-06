@@ -1,3 +1,5 @@
+#include "swiHandler.h"
+#include "scheduler.h"
 #include "serial.h"
 #include "thread.h"
 #include "kio.h"
@@ -5,17 +7,18 @@
 #include "registerDumpUtil.h"
 #include "presentations.h"
 
+
 #define NULL 0
 
 
 /* Expects char in r1 */
-void putCharHandler(struct regDump* rd, void* sp) {
+void putCharHandler(struct regDump* rd) {
         uint32_t myChar = rd->r1;
         kputChar((char)myChar);
 }
 
 /* returns char in r1 */
-void getCharHandler(struct regDump* rd, void* sp) {
+void getCharHandler(void* sp) {
         char myChar = bufferGet();
         if(myChar){
                 struct commonRegs* stackStruct = (struct commonRegs*) sp;
@@ -27,7 +30,7 @@ void getCharHandler(struct regDump* rd, void* sp) {
 }
 
 /* Expects  funcpointer in r1, argCount in r2, args_size in r3*/
-void newThreadHandler(struct regDump* rd, void* sp) {
+void newThreadHandler(struct regDump* rd) {
         uint32_t args_size = 0;
         void* args = NULL;
         void (*func)(void *) = NULL;
@@ -37,7 +40,7 @@ void newThreadHandler(struct regDump* rd, void* sp) {
         createThread(func, args, args_size);
 }
 
-void exitHandler(struct regDump* rd, void* sp) {
+void exitHandler(struct regDump* rd) {
         uint16_t currentThread = getRunningThread();
 	/* zero registers */
         threadArray[currentThread].context.r0 = 0;
@@ -53,9 +56,56 @@ void exitHandler(struct regDump* rd, void* sp) {
 }
 
 /* Expects sleeptime in r1 */
-void sleepHandler(struct regDump* rd, void* sp){
+void sleepHandler(struct regDump* rd){
         uint32_t sleeptime = rd->r1;
         uint16_t currentThread = getRunningThread();
         threadArray[currentThread].sleepingTime = sleeptime;
         threadArray[currentThread].status = WAITING;
+}
+
+void software_interrupt(void* sp){
+        struct regDump rd; /* can actually take this from context */
+        getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
+        if ((rd.spsr & 0x1F) == USER_MODE) {
+                /* adjust lr*/
+                struct commonRegs* stackStruct = (struct commonRegs*) sp;
+                stackStruct->lr += 4;
+                uint32_t swiID = 0;
+                asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
+                uint16_t currentThread = getRunningThread();
+                switch(swiID) {
+                        case PUT_CHAR: 
+                                putCharHandler(&rd);     
+                                break;
+                        case GET_CHAR: 
+                                getCharHandler(sp);
+                                if(threadArray[currentThread].status == WAITING) {
+                                        saveContext(currentThread, sp);
+                                        uint16_t nextThread = rrSchedule(currentThread, 0);
+                                        changeContext(nextThread, sp);
+                                } 
+                                break;
+                        case NEW_THREAD: 
+                                newThreadHandler(&rd);
+                                break;
+                        case EXIT: 
+                                exitHandler(&rd);
+                                uint16_t nextThreadExit = rrSchedule(currentThread, 1);
+                                changeContext(nextThreadExit, sp);
+                                break;
+                        case SLEEP:
+                                sleepHandler(&rd);
+                                saveContext(currentThread, sp);
+                                uint16_t nextThread = rrSchedule(currentThread, 0);
+                                changeContext(nextThread, sp);
+                                break;
+
+
+                }
+                return;
+        }
+        registerDump(&rd);
+        kprintf("\n\nKernel dead.\n");
+        while(1);
+        return;
 }

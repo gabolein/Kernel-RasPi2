@@ -41,14 +41,6 @@ volatile int debugMode = 0;
 uint8_t subProgramMode = 0;
 volatile uint8_t checkerMode = 0;
 
-/* TODO */
-void (*swiHandlerArray[5])() = {
-        putCharHandler,
-        getCharHandler,
-        newThreadHandler,
-        exitHandler,
-        sleepHandler
-};
 
 void toggleDebugMode(){
         debugMode = !debugMode;
@@ -134,7 +126,7 @@ void undefined_instruction(void* sp){
 	if ((rd.spsr & 0x1F) == USER) {
 		/* End Thread */
 		uint16_t currentThread = getRunningThread();
-		exitHandler(&rd, sp);
+		exitHandler(&rd);
 		uint16_t nextThread = rrSchedule(currentThread, 1);
         changeContext(nextThread, sp);
 		return;
@@ -145,42 +137,7 @@ void undefined_instruction(void* sp){
 	while(1);
         return;
 }
-void software_interrupt(void* sp){
-    	struct regDump rd; /* can actually take this from context */
-        getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
-        if ((rd.spsr & 0x1F) == USER) {
-                /* adjust lr*/
-                struct commonRegs* stackStruct = (struct commonRegs*) sp;
-                stackStruct->lr += 4;
-                uint32_t swiID = 0;
-                asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
-                if (swiID < SYSCALLS) {
-                        uint16_t currentThread = getRunningThread();
-                        swiHandlerArray[swiID](&rd, sp);
-                        if (swiID == END_THREAD) {
-                                uint16_t nextThread = rrSchedule(currentThread, 1);
-                                changeContext(nextThread, sp);
-                        }
-                        if (swiID == SLEEP) {
-                                saveContext(currentThread, sp);
-                                uint16_t nextThread = rrSchedule(currentThread, 0);
-                                changeContext(nextThread, sp);
-                        }
-                        if (swiID == GETCHAR) {
-                                if(threadArray[currentThread].status == WAITING) {
-                                        saveContext(currentThread, sp);
-                                        uint16_t nextThread = rrSchedule(currentThread, 0);
-                                        changeContext(nextThread, sp);
-                                }
-                        }
-                }
-                return;
-        }
-        registerDump(&rd);
-        kprintf("\n\nKernel dead.\n");
-        while(1);
-        return;
-}
+
 void prefetch_abort(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, PREFETCH_ABORT, sp);
@@ -194,7 +151,7 @@ void data_abort(void* sp){
 	if ((rd.spsr & 0x1F) == USER) {
 		/* End Thread */
 		uint16_t currentThread = getRunningThread();
-		exitHandler(&rd, sp);
+		exitHandler(&rd);
 		uint16_t nextThread = rrSchedule(currentThread, 1);
                 changeContext(nextThread, sp);
 		return;
