@@ -11,6 +11,7 @@
 #define END_USER_STACK          0x0FF9D
 #define THREAD_STACK_SIZE       (USER_SP-END_USER_STACK)/(AMOUNT_THREADS+1)
 #define NULL                    0
+#define INSTRUCTION 4
 
 struct thcStruct threadArray[AMOUNT_THREADS+1];
 
@@ -24,9 +25,9 @@ void initThreadArray() {
         }
         /* Init Idle Thread */
         threadArray[IDLE].status = RUNNING;
-        threadArray[IDLE].context.lr = (uint32_t)&goIdle + 4;
-        threadArray[IDLE].spsr = 0x10;
-        threadArray[IDLE].cpsr = 0x13;
+        threadArray[IDLE].context.lr = (uint32_t)&goIdle + INSTRUCTION;
+        threadArray[IDLE].spsr = USER_MODE;
+        threadArray[IDLE].cpsr = SUPERVISOR_MODE;
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
@@ -37,26 +38,21 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         }
         threadArray[newThread].hasRun = 0;
         threadArray[newThread].status = READY;
-        threadArray[newThread].context.lr = (uint32_t)func + 4; /* +4, da im trampoline 4 subtrahiert wird */
-        threadArray[newThread].spsr = 0x10; /* User Mode, sonst nichts gesetzt */
-        threadArray[newThread].cpsr = 0x13; /* SVC Mode */
+        threadArray[newThread].context.lr = (uint32_t)func + INSTRUCTION; /* +4, da im trampoline 4 subtrahiert wird */
+        threadArray[newThread].spsr = USER_MODE; /* User Mode, sonst nichts gesetzt */
+        threadArray[newThread].cpsr = SUPERVISOR_MODE; /* SVC Mode */
         threadArray[newThread].userLR = (uint32_t)&exit;
         threadArray[newThread].waitingForChar = 0;
         //Stack mit Argumenten füllen
         if(args_size){
                 /* volatile void* sp = (void*)threadArray[newThread].context.sp; */
                 volatile void* sp = (void*)threadArray[newThread].initialSp;
-                sp -= args_size * 4;
+                sp -= args_size * INSTRUCTION;
                 for(uint32_t offset = 0; offset < args_size; offset++){
-                        *(uint32_t*)(sp + offset * 4) = *(uint32_t*)(args + offset * 4); //TODO
+                        *(uint32_t*)(sp + offset * INSTRUCTION) = *(uint32_t*)(args + offset * INSTRUCTION); //TODO
                 }
                 threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben */
         }
-}
-
-void endThread() {
-        kprintf("Calling swi to end thread");
-        asm volatile ("SWI 21");
 }
 
 int getDeadThread(){ /* FIX */
@@ -99,7 +95,7 @@ void saveContext(uint16_t currentThread, void* sp) {
         asm volatile ("mrs %0, SPSR": "=r" (threadArray[currentThread].spsr));
         asm volatile ("mrs %0, CPSR": "=r" (threadArray[currentThread].cpsr));
         asm volatile ("mrs %0, lr_usr": "=r" (threadArray[currentThread].userLR));
-        threadArray[currentThread].context = *cr;
+        threadArray[currentThread].context = *cr; /* copy all common registers to thread context */
         if(threadArray[currentThread].status == RUNNING) {
                 threadArray[currentThread].status = READY;
         }

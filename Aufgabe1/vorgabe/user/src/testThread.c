@@ -1,5 +1,5 @@
 #include "testThread.h"
-#include "kioUser.h"
+#include "io.h"
 #include <stdint.h>
 
 void threadCauseSWI() {

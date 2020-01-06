@@ -10,6 +10,7 @@
 
 
 #define NULL 0
+#define INSTRUCTION 4
 
 
 /* Expects char in r1 */
@@ -70,7 +71,7 @@ void software_interrupt(void* sp){
         if ((rd.spsr & 0x1F) == USER_MODE) {
                 /* adjust lr*/
                 struct commonRegs* stackStruct = (struct commonRegs*) sp;
-                stackStruct->lr += 4;
+                stackStruct->lr += INSTRUCTION;
                 uint32_t swiID = 0;
                 asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
                 uint16_t currentThread = getRunningThread();

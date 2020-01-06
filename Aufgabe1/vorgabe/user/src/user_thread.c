@@ -1,4 +1,4 @@
-#include <kioUser.h>
+#include "io.h"
 #include <stdint.h>
 #include "swiInterface.h"
 #include "testThread.h"
@@ -8,6 +8,7 @@
 #define COMPUTATION_LEN 300000
 #define AMOUNT_CHARS 3
 #define CAPITAL_LETTER_LIM 97
+#define SLEEP_TIME 5000
 
 void user_thread(void* arg) {
         char receivedChar = *(char*)arg;
@@ -19,7 +20,7 @@ void user_thread(void* arg) {
                 if (receivedChar < CAPITAL_LETTER_LIM) {
                 	blockFunc();
                 } else {
-                	sleep(5000);
+                	sleep(SLEEP_TIME);
                 }
         }
 }

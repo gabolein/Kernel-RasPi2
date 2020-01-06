@@ -30,7 +30,6 @@ void createThread(void (*func)(void *), const void*, uint32_t);
 int getRunningThread();
 int16_t threadWaitingForChar();
 int getDeadThread();
-void endThread();
 void killThread(uint16_t);
 void saveContext(uint16_t, void*);
 void changeContext(uint16_t, void*);
