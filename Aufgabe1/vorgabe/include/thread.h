@@ -27,10 +27,9 @@ struct thcStruct{
 void initThreadArray();
 void cpyStacktoTHC();
 void createThread(void (*func)(void *), const void*, uint32_t);
-uint16_t getRunningThread();
+int getRunningThread();
 int16_t threadWaitingForChar();
-uint16_t getDeadThread();
-void endThread();
+int getDeadThread();
 void killThread(uint16_t);
 void saveContext(uint16_t, void*);
 void changeContext(uint16_t, void*);

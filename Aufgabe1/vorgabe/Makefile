@@ -40,6 +40,7 @@ OBJ += system/ivt.o
 OBJ += system/start.o
 OBJ += system/handler.o
 OBJ += system/swiHandler.o
+OBJ += system/irqHandler.o
 OBJ += system/thread.o
 OBJ += system/memory.o
 OBJ += system/mmuInit.o
