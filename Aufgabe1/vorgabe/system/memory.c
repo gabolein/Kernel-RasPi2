@@ -4,10 +4,13 @@
 
 #define SECTION_BASE_SHIFT_AMOUNT 20
 #define SECTION_ENTRY_CODE 0x2
+#define AP_LOW 10
+#define AP_HIGH 15
 #define MMUTABLEBASE 0xc000
 
 extern void _mmuInit();
 
+/* Online geklaut */
 uint32_t mmu_section ( uint32_t virtual, uint32_t physical, uint32_t flags )
 {
         uint32_t offset = virtual >> 20;
@@ -20,17 +23,17 @@ uint32_t mmu_section ( uint32_t virtual, uint32_t physical, uint32_t flags )
         *entry = physval;
         return(0);
 }
-
 #define CACHEABLE 0x08
 #define BUFFERABLE 0x04
+/* Klau Ende */
 
 void printTableAddr(uint32_t arg){
         kprintf("Adresse des Tables in Assembly: %x\n", arg);
 }
 
 void initMMU() {
-        //initMMUL1Table(mmuTable);
-        mmu_section(0x8000, 0x8000, CACHEABLE | BUFFERABLE);
+        initMMUL1Table(mmuTable);
+        //mmu_section(0x8000, 0x8000, CACHEABLE | BUFFERABLE);
         kprintf("Adresse des Tables in C: %x\n", mmuTable);
         kprintf("mmu_section Eintrag 0: %x\n", mmuTable[0]);
         _mmuInit();             /* Configures and activates MMU */
@@ -40,11 +43,10 @@ void initMMU() {
 void initMMUL1Table(volatile uint32_t* table) {
         for(uint32_t i = 0; i < 4096; i++) {
                 table[i] = SECTION_ENTRY_CODE; /* Sectionentry */
-                table[i] |= i << 20; /* Basisadresse der Section */
-                table[i] |= 0b11 << 10; /* Zugriffsrechte: Vollzugriff LSBs */
-                table[i] &= ~(1 << 15); /* Zugriffsrechte MSB */
+                table[i] |= i << SECTION_BASE_SHIFT_AMOUNT; /* Basisadresse der Section */
+                table[i] |= 0b11 << AP_LOW; /* Zugriffsrechte: Vollzugriff LSBs */
+                table[i] &= ~(1 << AP_HIGH); /* Zugriffsrechte MSB */
         }
         kprintf("Inhalt der MMU Table an erster Stelle: %x\n", mmuTable[0]);
         kprintf("Inhalt der MMU Table an letzter Stelle: %x\n", mmuTable[4095]);
-        kprintf("Inhalt am zweiten Eintrag: %x\n", mmuTable[1]);
 }
