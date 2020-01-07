@@ -47,6 +47,7 @@ void initMMUL1Table(volatile uint32_t* table) {
                 table[i] |= 0b1 << AP_LOW; /* Zugriffsrechte: Vollzugriff LSBs */
                 table[i] &= ~(1 << AP_HIGH); /* Zugriffsrechte MSB */
         }
+        table[1] = SECTION_ENTRY_CODE | 1 << SECTION_BASE_SHIFT_AMOUNT | 0b11 << AP_LOW;
         kprintf("Inhalt der MMU Table an erster Stelle: %x\n", mmuTable[0]);
         kprintf("Inhalt der MMU Table an letzter Stelle: %x\n", mmuTable[4095]);
 }
