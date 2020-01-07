@@ -7,9 +7,8 @@
 
 #define AMOUNT_THREADS          32
 #define IDLE                    AMOUNT_THREADS
-#define USER_SP                 0x20000
-#define END_USER_STACK          0x0FF9D
-#define THREAD_STACK_SIZE       (USER_SP-END_USER_STACK)/(AMOUNT_THREADS+1)
+#define USER_STACK_TOP          0x1FFFF8
+#define THREAD_STACK_SIZE       0x5050
 #define NULL                    0
 #define INSTRUCTION 4
 
@@ -19,9 +18,10 @@ void initThreadArray() {
         /* Init all threads as dead and give them a stackpointer */
         for (int i = 0; i < AMOUNT_THREADS+1; i++) {
                 threadArray[i].status = DEAD;
-                threadArray[i].context.sp = USER_SP+THREAD_STACK_SIZE*i;
+                threadArray[i].context.sp = USER_STACK_TOP-THREAD_STACK_SIZE*i; /* Stackpointer berechnen */
                 threadArray[i].initialSp = threadArray[i].context.sp;
                 threadArray[i].threadID = i;
+                kprintf("Stackpointer for Thread %i ist %x\n", i, threadArray[i].context.sp);
         }
         /* Init Idle Thread */
         threadArray[IDLE].status = RUNNING;
@@ -53,6 +53,8 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
                 }
                 threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben */
         }
+        volatile void* sp = (void*)threadArray[newThread].initialSp;
+        threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben */
 }
 
 int getDeadThread(){ /* FIX */
@@ -95,6 +97,7 @@ void saveContext(uint16_t currentThread, void* sp) {
         asm volatile ("mrs %0, SPSR": "=r" (threadArray[currentThread].spsr));
         asm volatile ("mrs %0, CPSR": "=r" (threadArray[currentThread].cpsr));
         asm volatile ("mrs %0, lr_usr": "=r" (threadArray[currentThread].userLR));
+        asm volatile ("mrs %0, sp_usr": "=r" (threadArray[currentThread].context.sp));
         threadArray[currentThread].context = *cr; /* copy all common registers to thread context */
         if(threadArray[currentThread].status == RUNNING) {
                 threadArray[currentThread].status = READY;
@@ -105,6 +108,7 @@ void changeContext(uint16_t nextThread, void* sp){
         fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr));
         asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));
+        asm volatile("msr sp_usr, %0":: "r" (threadArray[nextThread].context.sp));
         threadArray[nextThread].status = RUNNING;
         kprintf("\n");
 }

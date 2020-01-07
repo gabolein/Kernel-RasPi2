@@ -8,6 +8,16 @@
 #define AP_HIGH 15
 #define MMUTABLEBASE 0xc000
 
+#define NO_ACCESS     0b0
+#define SYSTEM_ACCESS 0b1
+#define SYSTEM_RO     0b101
+#define BOTH_RO       0b111
+#define RO            0b10
+#define FULL_ACCESS   0b11
+
+#define SET_XN 1 << 4
+#define SET_PXN 1
+
 extern void _mmuInit();
 
 /* Online geklaut */
@@ -33,9 +43,6 @@ void printTableAddr(uint32_t arg){
 
 void initMMU() {
         initMMUL1Table(mmuTable);
-        //mmu_section(0x8000, 0x8000, CACHEABLE | BUFFERABLE);
-        kprintf("Adresse des Tables in C: %x\n", mmuTable);
-        kprintf("mmu_section Eintrag 0: %x\n", mmuTable[0]);
         _mmuInit();             /* Configures and activates MMU */
 }
 
@@ -44,10 +51,14 @@ void initMMUL1Table(volatile uint32_t* table) {
         for(uint32_t i = 0; i < 4096; i++) {
                 table[i] = SECTION_ENTRY_CODE; /* Sectionentry */
                 table[i] |= i << SECTION_BASE_SHIFT_AMOUNT; /* Basisadresse der Section */
-                table[i] |= 0b1 << AP_LOW; /* Zugriffsrechte: Vollzugriff LSBs */
+                table[i] |= 0b1 << AP_LOW; /* Zugriffsrechte: Systemzugriff, User mode Tabu LSBs */
                 table[i] &= ~(1 << AP_HIGH); /* Zugriffsrechte MSB */
         }
-        table[1] = SECTION_ENTRY_CODE | 1 << SECTION_BASE_SHIFT_AMOUNT | 0b11 << AP_LOW;
+
+        table[0] = SECTION_ENTRY_CODE | SYSTEM_ACCESS << AP_LOW; // Kernel Kram
+        table[1] = SECTION_ENTRY_CODE | 1 << SECTION_BASE_SHIFT_AMOUNT | FULL_ACCESS << AP_LOW; // User Stacks
+        table[2] = SECTION_ENTRY_CODE | 2 << SECTION_BASE_SHIFT_AMOUNT | FULL_ACCESS << AP_LOW | SET_PXN; // User Kram
         kprintf("Inhalt der MMU Table an erster Stelle: %x\n", mmuTable[0]);
+        kprintf("Inhalt der MMU Table an zweiter Stelle: %x\n", mmuTable[1]);
         kprintf("Inhalt der MMU Table an letzter Stelle: %x\n", mmuTable[4095]);
 }

@@ -20,8 +20,9 @@ void start_kernel(void)
         enableUartInterrupt();
         initMMU();
         specialMessage("Kernel loaded! (UwU)");
-        initTimer();
         initThreadArray();
+        initTimer();
+
         createThread(&spawner, NULL, 0); /* Init user thread */
         while(1);
 }

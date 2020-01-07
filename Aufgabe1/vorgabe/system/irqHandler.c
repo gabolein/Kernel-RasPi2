@@ -101,15 +101,19 @@ void irq(void* sp){
                 registerDump(&rd);
         }
         if(clockHandler()){
-                uint16_t currentThread = getRunningThread();
+                int currentThread = getRunningThread();
                 uint16_t nextThread = rrSchedule(currentThread, 0);
-                if (currentThread != nextThread) {
-                        saveContext(currentThread, sp);
+                if(currentThread == -1){
                         changeContext(nextThread, sp);
+                } else {
+                        if (currentThread != nextThread) {
+                                saveContext(currentThread, sp);
+                                changeContext(nextThread, sp);
+                        }
                 }
         }
         if(uartHandler()){
-                uint16_t currentThread = getRunningThread();
+                int currentThread = getRunningThread();
                 if (currentThread == IDLE_THREAD) {
                         uint16_t nextThread = rrSchedule(currentThread, 0);
                         if (currentThread != nextThread) {
