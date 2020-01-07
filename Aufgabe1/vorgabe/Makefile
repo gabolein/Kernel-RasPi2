@@ -73,7 +73,7 @@ TFTP_PATH = /srv/tftp
 
 # Quellen
 LSCRIPT = kernel.lds
-#ULSCRIPT = user/user.lds
+ULSCRIPT = user/user.lds
 UOBJ = user/user
 UOBJ_DEBUG = $(UOBJ)_debug
 

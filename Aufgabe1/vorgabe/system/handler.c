@@ -33,8 +33,17 @@ void undefined_instruction(void* sp){
 void prefetch_abort(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, PREFETCH_ABORT, sp);
+        if ((rd.spsr & 0x1F) == USER_MODE) {
+                /* End Thread */
+                uint16_t currentThread = getRunningThread();
+                exitHandler(&rd);
+                uint16_t nextThread = rrSchedule(currentThread, 1);
+                changeContext(nextThread, sp);
+                return;
+        }
         registerDump(&rd);
-        //killOrDie(&rd);
+        kprintf("\n\nKernel dead.\n");
+        while(1);
         return;
 }
 void data_abort(void* sp){
