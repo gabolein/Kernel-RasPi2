@@ -104,6 +104,8 @@ void demonstration5(void* arg) {
                 	asm volatile("mov pc, sp");
                 	break;
 
-                default: printf("\nUndefined command. You have failed. I, now, have to die. Try again.\n");
+                default: 
+                	printf("\nUndefined command. You have failed. I, now, have to die. Try again.\n");
+                	break;
         }
 }

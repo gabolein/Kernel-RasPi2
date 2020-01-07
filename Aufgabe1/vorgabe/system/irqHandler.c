@@ -13,6 +13,12 @@
 #define UART_IRQ_PENDING (1 << 25)
 #define TIMER_IRQ_PENDING 1
 #define IDLE_THREAD 32
+#define UNASSIGNED_ADDR 0
+#define KERNEL_TEXT_ADDR 0
+#define USER_TEXT_ADDR 0
+#define MAGIC_NUMBER 69
+#define NULL (void*)0
+
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -68,7 +74,34 @@ int uartHandler() {
         if(*irq_pending_2 & UART_IRQ_PENDING){
 		char myChar = 0;
 		if(uartReceiveChar(&myChar)) {
-			bufferInsert(myChar);
+                        uint32_t* addr;
+                        uint32_t holder;
+                        switch(myChar) {
+                                case 'N':
+                                        addr = NULL;
+                                        holder = *addr;
+                                        kprintf("This is the content of the NULL pointer: %x", holder);
+                                        break;
+                                case 'P':
+                                        addr = NULL;
+                                        asm volatile("mov pc, %0":: "r" (addr));
+                                        break;
+                                case 'C':
+                                        addr = KERNEL_TEXT_ADDR;
+                                        *addr = MAGIC_NUMBER;
+                                        break;
+                                case 'U':
+                                        addr = UNASSIGNED_ADDR;
+                                        holder = *addr;
+                                        break;
+                                case 'X':
+                                        asm volatile("mrs r0, lr_usr");
+                                        asm volatile("mov pc, r0");
+                                        break;
+                                default: 
+                                        bufferInsert(myChar);
+                                        break;
+                        }
 		}
                 *uart_icr = 0;
                 return 1;
