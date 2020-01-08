@@ -38,4 +38,8 @@ _mmuInit:
     bic r0, r1
     mcr p15, 0, r0, c1, c0, 0 /* <--- MMU einschalten */
 
+    push {lr}
+    bl yellow_on
+    pop {lr}
+
 	mov pc, lr // Fertig

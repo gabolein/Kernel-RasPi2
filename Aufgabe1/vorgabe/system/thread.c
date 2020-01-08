@@ -3,14 +3,14 @@
 #include <stdint.h>
 #include "kio.h"
 #include "tests.h"
+#include "memory.h"
 #include "../user/include/idleThread.h"
 #include "../user/include/swiInterface.h"
 #include "../user/include/user_thread.h"
 
 #define AMOUNT_THREADS          32
 #define IDLE                    AMOUNT_THREADS
-#define USER_STACK_TOP          0x1FFFF8
-#define THREAD_STACK_SIZE       0x5050
+#define INITIAL_VIRTUAL_SP      0x100FFFF8
 #define NULL                    0
 #define INSTRUCTION 4
 
@@ -20,13 +20,14 @@ void initThreadArray() {
         /* Init all threads as dead and give them a stackpointer */
         for (int i = 0; i < AMOUNT_THREADS+1; i++) {
                 threadArray[i].status = DEAD;
-                threadArray[i].initialSp = USER_STACK_TOP-THREAD_STACK_SIZE*i; /* Stackpointer berechnen */
+                threadArray[i].initialSp = INITIAL_VIRTUAL_SP; /* Stackpointer berechnen */
                 threadArray[i].context.sp = threadArray[i].initialSp;
                 threadArray[i].threadID = i;
         }
 }
 
 void initIdleThread() {
+        remapUserStack(IDLE);
         threadArray[IDLE].hasRun = 0;
         threadArray[IDLE].waitingForChar = 0;
         threadArray[IDLE].spsr = USER_MODE;
@@ -43,6 +44,7 @@ void initIdleThread() {
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
+        kprintf("Mein Character ist %c", *(char*)args);
         int newThread = getDeadThread();
         if (newThread == -1) {
             kprintf("\nCan't create new thread.\n");
@@ -57,12 +59,13 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         threadArray[newThread].waitingForChar = 0;
         //Stack mit Argumenten füllen
         volatile void* sp = (void*)threadArray[newThread].initialSp;
+        remapUserStack(newThread);
         if(args_size){
-                *(char*)sp = *(char*)args;
                 sp -= args_size * INSTRUCTION;
                 for(uint32_t offset = 0; offset < args_size; offset++){
-                       *(uint32_t*)(sp + offset * INSTRUCTION) = *(uint32_t*)(args + offset * INSTRUCTION); //TODO
+                        *(uint32_t*)(sp + offset * INSTRUCTION) = *(uint32_t*)(args + offset * INSTRUCTION); //TODO
                 }
+                *(char*)sp = *(char*)args; /* TODO Maybe remove this later */
                 threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben THIS IS IMPORTANT!!! DO NOT TOUCH THIS EVER AGAIN!!1!!eins!!elf */
         }
         threadArray[newThread].context.sp = (uint32_t)sp;
@@ -116,6 +119,7 @@ void saveContext(uint16_t currentThread, void* sp) {
 }
 
 void changeContext(uint16_t nextThread, void* sp){
+        remapUserStack(nextThread);
         fillStack(&(threadArray[nextThread].context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr));
         asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));

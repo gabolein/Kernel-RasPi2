@@ -14,6 +14,7 @@
 
 void user_thread(void* arg) {
         char receivedChar = *(char*)arg;
+        printf("Ich bin ein Thread, mein Stackpointer ist %x\n", (uint32_t)arg);
         /* if (*receivedChar_p == 's') { */
         /*         asm volatile ("swi #69"); */
         /* } else { */

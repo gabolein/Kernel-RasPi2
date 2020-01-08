@@ -19,7 +19,7 @@ extern void spawner();
 void start_kernel(void)
 {
         enableUartInterrupt();
-        //initMMU();
+        initMMU();
         specialMessage("Kernel loaded! (UwU)");
         initThreadArray();
         initTimer();
