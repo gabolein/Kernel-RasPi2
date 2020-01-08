@@ -27,8 +27,6 @@ char getChar() {
 
 /* put arguments in r1-r3, call software interrupt 2*/
 void newThread(void (*func)(void *), void * args, uint32_t args_size) {
-
-        if(args_size) printf("newThread args address %x", args);
         asm volatile("mov r3, %0"::"r" (args_size));
         asm volatile("mov r2, %0"::"r" (args));
         asm volatile("mov r1, %0"::"r" (func));

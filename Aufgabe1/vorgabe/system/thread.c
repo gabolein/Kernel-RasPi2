@@ -44,7 +44,6 @@ void initIdleThread() {
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
-        kprintf("Mein Character ist %c", *(char*)args);
         char argument = *(char*)args;
         int newThread = getDeadThread();
         if (newThread == -1) {
@@ -62,7 +61,6 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         volatile void* sp = (void*)threadArray[newThread].initialSp;
         remapUserStack(newThread);
         if(args_size){
-                kprintf("Mein Character ist %c", argument);
                 sp -= args_size * INSTRUCTION;
                 /* for(uint32_t offset = 0; offset < args_size; offset++){ */
                 /*         *(uint32_t*)(sp + offset * INSTRUCTION) = *(uint32_t*)(args + offset * INSTRUCTION); //TODO */

@@ -14,11 +14,6 @@
 
 void user_thread(void* arg) {
         char receivedChar = *(char*)arg;
-        printf("Ich bin ein Thread, mein Stackpointer ist %x\n", (uint32_t)arg);
-        /* if (*receivedChar_p == 's') { */
-        /*         asm volatile ("swi #69"); */
-        /* } else { */
-
         for (int i = 0; i < AMOUNT_CHARS; i++) {
                 putChar(receivedChar);
                 if (receivedChar < CAPITAL_LETTER_LIM) {
@@ -33,7 +28,7 @@ void spawner() {
         while(1) {
                 volatile char c = getChar();
                 if (c) {
-                        volatile uint32_t number = (uint32_t) c;
+                        uint32_t number = (uint32_t) c;
                         newThread(&user_thread, &number, 1);
                 }
         }
@@ -48,8 +43,8 @@ void entertainer() {
 }
 
 void printer(void* arg) {
-        printf("hello i am the printer this is my song");
+        printf("hello i am the printer this is my song\n");
         char* string = (char*)arg;
         printf(string);
-        printf("I have sung my song. I shall die now");
+        printf("I have sung my song. I shall die now\n");
 }
