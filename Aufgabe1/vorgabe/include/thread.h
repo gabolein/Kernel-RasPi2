@@ -25,6 +25,7 @@ struct thcStruct{
 };
 
 void initThreadArray();
+void initIdleThread();
 void cpyStacktoTHC();
 void createThread(void (*func)(void *), const void*, uint32_t);
 int getRunningThread();

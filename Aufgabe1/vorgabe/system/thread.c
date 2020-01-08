@@ -2,8 +2,10 @@
 #include "registerDumpUtil.h"
 #include <stdint.h>
 #include "kio.h"
+#include "tests.h"
 #include "../user/include/idleThread.h"
 #include "../user/include/swiInterface.h"
+#include "../user/include/user_thread.h"
 
 #define AMOUNT_THREADS          32
 #define IDLE                    AMOUNT_THREADS
@@ -18,16 +20,29 @@ void initThreadArray() {
         /* Init all threads as dead and give them a stackpointer */
         for (int i = 0; i < AMOUNT_THREADS+1; i++) {
                 threadArray[i].status = DEAD;
-                threadArray[i].context.sp = USER_STACK_TOP-THREAD_STACK_SIZE*i; /* Stackpointer berechnen */
-                threadArray[i].initialSp = threadArray[i].context.sp;
+                threadArray[i].initialSp = USER_STACK_TOP-THREAD_STACK_SIZE*i; /* Stackpointer berechnen */
+                threadArray[i].context.sp = threadArray[i].initialSp;
                 threadArray[i].threadID = i;
                 kprintf("Stackpointer for Thread %i ist %x\n", i, threadArray[i].context.sp);
         }
-        /* Init Idle Thread */
+        
+}
+
+void initIdleThread() {
+        threadArray[IDLE].hasRun = 0;
+        threadArray[IDLE].waitingForChar = 0;
+        threadArray[IDLE].spsr = USER_MODE;
         threadArray[IDLE].status = RUNNING;
         threadArray[IDLE].context.lr = (uint32_t)&goIdle + INSTRUCTION;
         threadArray[IDLE].spsr = USER_MODE;
         threadArray[IDLE].cpsr = SUPERVISOR_MODE;
+        threadArray[IDLE].userLR = (uint32_t)&exit;
+        asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[IDLE].spsr));
+        asm volatile("msr sp_usr, %0":: "r" (threadArray[IDLE].context.sp));
+        asm volatile("msr lr_usr, %0":: "r" (threadArray[IDLE].userLR));
+        kprintf("\nHallo\n");
+        asm volatile("mov lr, %0":: "r" (threadArray[IDLE].context.lr));
+        asm volatile("subs pc, lr, #4");
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
@@ -55,6 +70,8 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         }
         volatile void* sp = (void*)threadArray[newThread].initialSp;
         threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben */
+        //asm volatile("swi #32");
+        kprintf("\nsp of new Thread %i: %x\n", newThread, threadArray[newThread].context.sp);
 }
 
 int getDeadThread(){ /* FIX */
@@ -73,7 +90,7 @@ int getRunningThread(){
                         return i;
                 }
         }
-        kprintf("\n Error determining running Thread! \n");
+        //kprintf("\n Error determining running Thread! \n");
         return -1;
 }
 
@@ -98,7 +115,9 @@ void saveContext(uint16_t currentThread, void* sp) {
         asm volatile ("mrs %0, CPSR": "=r" (threadArray[currentThread].cpsr));
         asm volatile ("mrs %0, lr_usr": "=r" (threadArray[currentThread].userLR));
         asm volatile ("mrs %0, sp_usr": "=r" (threadArray[currentThread].context.sp));
+        kprintf("Thread %i saving sp %x", currentThread,threadArray[currentThread].context.sp);
         threadArray[currentThread].context = *cr; /* copy all common registers to thread context */
+        kprintf("\n(Save Context)Thread %i saving pc %x", currentThread,threadArray[currentThread].context.lr);
         if(threadArray[currentThread].status == RUNNING) {
                 threadArray[currentThread].status = READY;
         }
@@ -109,8 +128,10 @@ void changeContext(uint16_t nextThread, void* sp){
        	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr));
         asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));
         asm volatile("msr sp_usr, %0":: "r" (threadArray[nextThread].context.sp));
+        kprintf("\n(change Context) Stackpointer of Thread %i : %x", nextThread, threadArray[nextThread].context.sp);
+        kprintf("\n(change Context) pc of Thread %i : %x", nextThread, threadArray[nextThread].context.lr);
         threadArray[nextThread].status = RUNNING;
-        kprintf("\n");
+        //kprintf("\n");
 }
 
 void fillStack(volatile struct commonRegs* context, void* sp){

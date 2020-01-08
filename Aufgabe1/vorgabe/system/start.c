@@ -9,7 +9,8 @@
 #include "memory.h"
 #include <stdint.h>
 #include "../user/include/threadUtil.h"
-//#include "../user/include/user_thread.h"
+#include "../user/include/idleThread.h"
+#include "../user/include/user_thread.h"
 
 extern void spawner();
 
@@ -18,11 +19,15 @@ extern void spawner();
 void start_kernel(void)
 {
         enableUartInterrupt();
-        initMMU();
+        //initMMU();
         specialMessage("Kernel loaded! (UwU)");
         initThreadArray();
         initTimer();
+        specialMessage("Timer activated");
+        initIdleThread();
+        specialMessage("Threading activated");
+        initTimer();
 
-        createThread(&spawner, NULL, 0); /* Init user thread */
+         /* Init user thread */
         while(1);
 }

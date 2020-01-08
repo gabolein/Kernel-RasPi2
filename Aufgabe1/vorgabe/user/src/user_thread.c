@@ -28,20 +28,26 @@ void user_thread(void* arg) {
 }
 
 void spawner() {
+        uint32_t sp = 0;
+        asm volatile ("mov %0, sp": "=r" (sp));
+        printf("\nspawner active \n");
+        printf("\nspawner sp: %x\n", sp);
         while(1) {
+
                 volatile char c = getChar();
                 if (c) {
                         uint32_t number = (uint32_t) c;
-                        newThread(&user_thread, &number, 1);
+                        //newThread(&user_thread, &number, 1);
+                        newThread(&entertainer, NULL, 0);
                 }
         }
 }
 
 void entertainer() {
         while(1) {
-                sleep(3000);
-                char* string = "\n Hallo Freunde!\n";
-                newThread(&printer, string, 17);
+                //sleep(3000);
+                //char* string = "\n Hallo Freunde!\n";
+                //newThread(&printer, string, 17);
         }
 }
 

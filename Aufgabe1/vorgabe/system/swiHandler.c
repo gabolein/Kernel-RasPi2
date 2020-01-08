@@ -33,11 +33,13 @@ void getCharHandler(void* sp) {
 
 /* Expects  funcpointer in r1, argCount in r2, args_size in r3*/
 void newThreadHandler(struct regDump* rd) {
+        int currentThread = getRunningThread();
         uint32_t args_size = 0;
         void* args = NULL;
         void (*func)(void *) = NULL;
         func = (void*)rd->r1;
-        args = (void*)rd->r2;
+        args = (void*)threadArray[currentThread].context.r2;
+        //args = (void*)rd->r2;
         args_size = rd->r3;
         createThread(func, args, args_size);
 }

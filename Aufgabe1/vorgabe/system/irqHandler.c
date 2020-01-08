@@ -103,14 +103,15 @@ void irq(void* sp){
         if(clockHandler()){
                 int currentThread = getRunningThread();
                 uint16_t nextThread = rrSchedule(currentThread, 0);
-                if(currentThread == -1){
+                /*if(currentThread == -1){
                         changeContext(nextThread, sp);
-                } else {
-                        if (currentThread != nextThread) {
+                } else {*/
+                        if ((currentThread != nextThread)&& currentThread != -1) {
+                                kprintf("\nChanging Context\n");
                                 saveContext(currentThread, sp);
                                 changeContext(nextThread, sp);
                         }
-                }
+                //}
         }
         if(uartHandler()){
                 int currentThread = getRunningThread();
