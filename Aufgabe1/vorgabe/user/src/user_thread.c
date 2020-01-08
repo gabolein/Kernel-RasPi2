@@ -17,6 +17,7 @@ void user_thread(void* arg) {
         /* if (*receivedChar_p == 's') { */
         /*         asm volatile ("swi #69"); */
         /* } else { */
+
         for (int i = 0; i < AMOUNT_CHARS; i++) {
                 putChar(receivedChar);
                 if (receivedChar < CAPITAL_LETTER_LIM) {
@@ -29,7 +30,6 @@ void user_thread(void* arg) {
 
 void spawner() {
         while(1) {
-                printf("\n Waiting for char\n");
                 volatile char c = getChar();
                 if (c) {
                         uint32_t number = (uint32_t) c;
@@ -42,8 +42,8 @@ void spawner() {
 void entertainer() {
         while(1) {
                 sleep(3000);
-                char* string = "\n Hallo Freunde!\n";
-                newThread(&printer, string, 17);
+                char* string = "Hallo Freunde!\n";
+                newThread(&printer, string, 15);
         }
 }
 

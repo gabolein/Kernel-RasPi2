@@ -44,10 +44,8 @@ void exit(){
 }
 
 void sleep(uint32_t sleepTime) {
-    printf("\n requesting sleeperino \n");
-	asm volatile("mov r1, %0"::"r" (sleepTime));
+    asm volatile("mov r1, %0"::"r" (sleepTime));
     asm volatile("mov r7, #4");
     asm volatile("swi #4");
 	asm volatile("mov r1, #0");
-    printf("\n sleeperino requested \n");
 }
