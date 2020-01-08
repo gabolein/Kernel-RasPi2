@@ -13,9 +13,9 @@
 #define UART_IRQ_PENDING (1 << 25)
 #define TIMER_IRQ_PENDING 1
 #define IDLE_THREAD 32
-#define UNASSIGNED_ADDR 0
-#define KERNEL_TEXT_ADDR 0
-#define USER_TEXT_ADDR 0
+#define UNASSIGNED_ADDR   (uint32_t*)0x10100000
+#define KERNEL_TEXT_ADDR (uint32_t*)0x8000
+#define USER_TEXT_ADDR (uint32_t*)0x200000
 #define MAGIC_NUMBER 69
 #define NULL (void*)0
 
@@ -60,9 +60,7 @@ char bufferGet() {
         if(charBufferLength <= 0) {
                 return 0;
         }
-
         char returnChar = charBuffer[0];
-
         for(uint32_t i = 1; i < charBufferLength; i++){
                 charBuffer[i - 1] = charBuffer[i];
         }
@@ -72,37 +70,37 @@ char bufferGet() {
 
 int uartHandler() {
         if(*irq_pending_2 & UART_IRQ_PENDING){
-		char myChar = 0;
-		if(uartReceiveChar(&myChar)) {
-                        uint32_t* addr;
-                        uint32_t holder;
+                char myChar = 0;
+                if(uartReceiveChar(&myChar)) {
+                        volatile uint32_t* addr;
+                        volatile uint32_t holder;
                         switch(myChar) {
-                                case 'N':
-                                        addr = NULL;
-                                        holder = *addr;
-                                        kprintf("This is the content of the NULL pointer: %x", holder);
-                                        break;
-                                case 'P':
-                                        addr = NULL;
-                                        asm volatile("mov pc, %0":: "r" (addr));
-                                        break;
-                                case 'C':
-                                        addr = KERNEL_TEXT_ADDR;
-                                        *addr = MAGIC_NUMBER;
-                                        break;
-                                case 'U':
-                                        addr = UNASSIGNED_ADDR;
-                                        holder = *addr;
-                                        break;
-                                case 'X':
-                                        asm volatile("mrs r0, lr_usr");
-                                        asm volatile("mov pc, r0");
-                                        break;
-                                default: 
-                                        bufferInsert(myChar);
-                                        break;
+                        case 'N':
+                                addr = NULL;
+                                holder = *addr;
+                                kprintf("This is the content of the NULL pointer: %x", holder);
+                                break;
+                        case 'P':
+                                addr = NULL;
+                                asm volatile("mov pc, %0":: "r" (addr));
+                                break;
+                        case 'C':
+                                addr = KERNEL_TEXT_ADDR;
+                                *addr = MAGIC_NUMBER;
+                                break;
+                        case 'U':
+                                addr = UNASSIGNED_ADDR;
+                                holder = *addr;
+                                break;
+                        case 'X':
+                                addr = USER_TEXT_ADDR;
+                                asm volatile("mov pc, %0":: "r" (addr));
+                                break;
+                        default:
+                                bufferInsert(myChar);
+                                break;
                         }
-		}
+                }
                 *uart_icr = 0;
                 return 1;
         }
@@ -136,14 +134,10 @@ void irq(void* sp){
         if(clockHandler()){
                 int currentThread = getRunningThread();
                 uint16_t nextThread = rrSchedule(currentThread, 0);
-                /*if(currentThread == -1){
-                        changeContext(nextThread, sp);
-                } else {*/
-                        if ((currentThread != nextThread)&& currentThread != -1) {
+                if ((currentThread != nextThread)&& currentThread != -1) {
                                 saveContext(currentThread, sp);
                                 changeContext(nextThread, sp);
-                        }
-                //}
+                }
         }
         if(uartHandler()){
                 int currentThread = getRunningThread();
