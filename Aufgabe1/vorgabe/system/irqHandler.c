@@ -107,7 +107,6 @@ void irq(void* sp){
                         changeContext(nextThread, sp);
                 } else {*/
                         if ((currentThread != nextThread)&& currentThread != -1) {
-                                kprintf("\nChanging Context\n");
                                 saveContext(currentThread, sp);
                                 changeContext(nextThread, sp);
                         }

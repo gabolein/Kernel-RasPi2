@@ -25,9 +25,5 @@ void start_kernel(void)
         initTimer();
         specialMessage("Timer activated");
         initIdleThread();
-        specialMessage("Threading activated");
-        initTimer();
-
-         /* Init user thread */
         while(1);
 }

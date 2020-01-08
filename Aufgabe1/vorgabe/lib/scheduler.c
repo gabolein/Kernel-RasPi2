@@ -2,7 +2,7 @@
 #include "thread.h"
 #include <stdint.h>
 
-#define TIME_SLICE_INTERRUPTS   1
+#define TIME_SLICE_INTERRUPTS   100
 #define THREAD_ALIVE            3
 #define THREAD_ARRAY_SIZE       32
 #define IDLE_THREAD             32
