@@ -33,9 +33,8 @@ void spawner() {
         while(1) {
                 volatile char c = getChar();
                 if (c) {
-                        uint32_t number = (uint32_t) c;
+                        volatile uint32_t number = (uint32_t) c;
                         newThread(&user_thread, &number, 1);
-                        //newThread(&entertainer, NULL, 0);
                 }
         }
 }

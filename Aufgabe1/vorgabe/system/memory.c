@@ -65,6 +65,6 @@ void initMMUL1Table(volatile uint32_t* table) {
 
 
 void remapUserStack(uint16_t threadNumber) {
-        mmuTable[256] = SECTION_ENTRY_CODE | (3 + threadNumber) << SECTION_BASE_SHIFT_AMOUNT | FULL_ACCESS << AP_LOW | SET_XN;
         asm volatile("mcr p15,0,r1,c8,c7,0"); /* Invalidate TLB Entries */
+        mmuTable[256] = SECTION_ENTRY_CODE | (3 + threadNumber) << SECTION_BASE_SHIFT_AMOUNT | FULL_ACCESS << AP_LOW | SET_XN;
 }

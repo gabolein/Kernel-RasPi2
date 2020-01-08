@@ -21,6 +21,7 @@ void start_kernel(void)
         enableUartInterrupt();
         initMMU();
         specialMessage("Kernel loaded! (UwU)");
+        remapUserStack(1);      /* TODO Maybe remove later */
         initThreadArray();
         initTimer();
         specialMessage("Timer activated");

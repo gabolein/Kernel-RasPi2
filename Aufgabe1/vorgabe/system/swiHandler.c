@@ -7,6 +7,7 @@
 #include "registerDumpUtil.h"
 #include "presentations.h"
 #include "irqHandler.h"
+#include "memory.h"
 
 
 #define NULL 0
@@ -39,6 +40,7 @@ void newThreadHandler(struct regDump* rd) {
         void (*func)(void *) = NULL;
         func = (void*)rd->r1;
         args = (void*)rd->r2;
+        kprintf("newThreadHandler (%x): argument: %c\n", args, (*(char*)args));
         args_size = rd->r3;
         createThread(func, args, args_size);
 }
@@ -77,21 +79,22 @@ void software_interrupt(void* sp){
                 asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
                 uint16_t currentThread = getRunningThread();
                 switch(swiID) {
-                        case PUT_CHAR: 
-                                putCharHandler(&rd);     
+                        case PUT_CHAR:
+                                putCharHandler(&rd);
                                 break;
-                        case GET_CHAR: 
+                        case GET_CHAR:
                                 getCharHandler(sp);
                                 if(threadArray[currentThread].status == WAITING) {
                                         saveContext(currentThread, sp);
                                         uint16_t nextThread = rrSchedule(currentThread, 0);
                                         changeContext(nextThread, sp);
-                                } 
+                                }
                                 break;
-                        case NEW_THREAD: 
+                        case NEW_THREAD:
                                 newThreadHandler(&rd);
+                                remapUserStack(currentThread);
                                 break;
-                        case EXIT: 
+                        case EXIT:
                                 exitHandler(&rd);
                                 uint16_t nextThreadExit = rrSchedule(currentThread, 1);
                                 changeContext(nextThreadExit, sp);

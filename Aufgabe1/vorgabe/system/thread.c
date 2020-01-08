@@ -45,6 +45,7 @@ void initIdleThread() {
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         kprintf("Mein Character ist %c", *(char*)args);
+        char argument = *(char*)args;
         int newThread = getDeadThread();
         if (newThread == -1) {
             kprintf("\nCan't create new thread.\n");
@@ -61,11 +62,12 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         volatile void* sp = (void*)threadArray[newThread].initialSp;
         remapUserStack(newThread);
         if(args_size){
+                kprintf("Mein Character ist %c", argument);
                 sp -= args_size * INSTRUCTION;
-                for(uint32_t offset = 0; offset < args_size; offset++){
-                        *(uint32_t*)(sp + offset * INSTRUCTION) = *(uint32_t*)(args + offset * INSTRUCTION); //TODO
-                }
-                *(char*)sp = *(char*)args; /* TODO Maybe remove this later */
+                /* for(uint32_t offset = 0; offset < args_size; offset++){ */
+                /*         *(uint32_t*)(sp + offset * INSTRUCTION) = *(uint32_t*)(args + offset * INSTRUCTION); //TODO */
+                /* } */
+                *(char*)sp = argument; /* TODO Maybe remove this later */
                 threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben THIS IS IMPORTANT!!! DO NOT TOUCH THIS EVER AGAIN!!1!!eins!!elf */
         }
         threadArray[newThread].context.sp = (uint32_t)sp;
