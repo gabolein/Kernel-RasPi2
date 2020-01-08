@@ -38,8 +38,7 @@ void newThreadHandler(struct regDump* rd) {
         void* args = NULL;
         void (*func)(void *) = NULL;
         func = (void*)rd->r1;
-        args = (void*)threadArray[currentThread].context.r2;
-        //args = (void*)rd->r2;
+        args = (void*)rd->r2;
         args_size = rd->r3;
         createThread(func, args, args_size);
 }
@@ -68,7 +67,7 @@ void sleepHandler(struct regDump* rd){
 }
 
 void software_interrupt(void* sp){
-        struct regDump rd; /* can actually take this from context */
+        struct regDump rd;
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
         if ((rd.spsr & 0x1F) == USER_MODE) {
                 /* adjust lr*/

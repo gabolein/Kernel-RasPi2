@@ -11,7 +11,7 @@ void putChar(char x) {
         	asm volatile("mov r1, %0"::"r" (charCode));
         	asm volatile("mov r7, #0");
         	asm volatile("swi #0");
-            	asm volatile("mov r1, #0");
+            asm volatile("mov r1, #0");
 	}
 }
 

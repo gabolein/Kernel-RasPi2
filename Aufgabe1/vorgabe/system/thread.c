@@ -58,16 +58,22 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
         threadArray[newThread].waitingForChar = 0;
         //Stack mit Argumenten füllen
         if(args_size){
-                /* volatile void* sp = (void*)threadArray[newThread].context.sp; */
-                volatile void* sp = (void*)threadArray[newThread].initialSp;
+                volatile void* sp = (void*)threadArray[newThread].context.sp;
+                kprintf("initial sp of thread: %x", threadArray[newThread].context.sp);
+                //volatile void* sp = (void*)threadArray[newThread].initialSp;
+                *(char*)sp = *(char*)args;
                 sp -= args_size * INSTRUCTION;
-                for(uint32_t offset = 0; offset < args_size; offset++){
+                /*for(uint32_t offset = 0; offset < args_size; offset++){
                         *(uint32_t*)(sp + offset * INSTRUCTION) = *(uint32_t*)(args + offset * INSTRUCTION); //TODO
-                }
+                }*/
+                kprintf("Content of stack start: %c", *(char*)threadArray[newThread].context.sp);
                 threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben */
         }
-        volatile void* sp = (void*)threadArray[newThread].initialSp;
-        threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben */
+
+         /*else {
+            volatile void* sp = (void*)threadArray[newThread].initialSp;
+            threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben */
+        //}
 }
 
 int getDeadThread(){ /* FIX */
@@ -123,7 +129,7 @@ void changeContext(uint16_t nextThread, void* sp){
         asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));
         asm volatile("msr sp_usr, %0":: "r" (threadArray[nextThread].context.sp));
         threadArray[nextThread].status = RUNNING;
-        kprintf("\n");
+        kprintf("\n\n Changing to thread %i \n", nextThread);
 }
 
 void fillStack(volatile struct commonRegs* context, void* sp){

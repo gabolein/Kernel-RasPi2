@@ -29,11 +29,12 @@ void user_thread(void* arg) {
 
 void spawner() {
         while(1) {
+                printf("\n Waiting for char\n");
                 volatile char c = getChar();
                 if (c) {
-                        //uint32_t number = (uint32_t) c;
-                        //newThread(&user_thread, &number, 1);
-                        newThread(&entertainer, NULL, 0);
+                        uint32_t number = (uint32_t) c;
+                        newThread(&user_thread, &number, 1);
+                        //newThread(&entertainer, NULL, 0);
                 }
         }
 }
@@ -47,6 +48,8 @@ void entertainer() {
 }
 
 void printer(void* arg) {
+        printf("hello i am the printer this is my song");
         char* string = (char*)arg;
         printf(string);
+        printf("I have sung my song. I shall die now");
 }
