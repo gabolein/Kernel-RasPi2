@@ -9,7 +9,8 @@ enum syscallType {
 	GET_CHAR,
 	NEW_THREAD,
 	EXIT,
-	SLEEP
+	SLEEP,
+	NEW_PROCESS
 };
 
 void putCharHandler(struct regDump*);

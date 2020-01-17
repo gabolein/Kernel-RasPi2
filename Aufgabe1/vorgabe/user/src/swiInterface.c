@@ -37,6 +37,19 @@ void newThread(void (*func)(void *), void * args, uint32_t args_size) {
         asm volatile("mov r3, #0");
 }
 
+/*syscall that will create Thread in new process*/
+void newProcess(void (*func)(void*), void * args, uint32_t args_size) {
+        asm volatile("mov r3, %0"::"r" (args_size));
+        asm volatile("mov r2, %0"::"r" (args));
+        asm volatile("mov r1, %0"::"r" (func));
+        asm volatile("mov r7, #5");
+        asm volatile("swi #5");
+        asm volatile("mov r1, #0");
+        asm volatile("mov r2, #0");
+        asm volatile("mov r3, #0");
+}
+
+
 /* call software interrupt 3, no exit code */
 void exit(){
         asm volatile("mov r7, #3");

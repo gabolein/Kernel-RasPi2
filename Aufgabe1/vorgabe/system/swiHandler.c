@@ -66,6 +66,17 @@ void sleepHandler(struct regDump* rd){
         threadArray[currentThread].status = WAITING;
 }
 
+void newProcessHandler(struct regDump* rd) {
+        uint32_t args_size = 0;
+        void* args = NULL;
+        void (*func)(void *) = NULL;
+        func = (void*)rd->r1;
+        args = (void*)rd->r2;
+        args_size = rd->r3;
+        uint16_t currentProcess = threadArray[getRunningThread()].pID;
+        createProcess(func, args, args_size, currentProcess); 
+}
+
 void software_interrupt(void* sp){
         struct regDump rd;
         getRegDumpStruct(&rd, SOFTWARE_INTERRUPT, sp);
@@ -103,7 +114,13 @@ void software_interrupt(void* sp){
                                 uint16_t nextThread = rrSchedule(currentThread, 0);
                                 changeContext(nextThread, sp);
                                 break;
-
+                        case NEW_PROCESS:
+                                newProcessHandler(&rd);
+                                remapUserStack(currentThread);
+                                break;
+                        default:
+                                kprintf("\nUNKNOWN SYSCALL\n");
+                                break;
 
                 }
                 return;
