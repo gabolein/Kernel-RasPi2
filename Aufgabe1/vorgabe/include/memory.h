@@ -3,12 +3,11 @@
 
 #include <stdint.h>
 
-#define L1_ALIGN (16384)
 
 void initMMU();
 void initMMUL1Table(volatile uint32_t*);
 void remapUserStack(uint16_t);
 
-__attribute__((aligned (L1_ALIGN))) volatile uint32_t mmuTable[4096];
+extern volatile uint32_t mmuTable[4096];
 
 #endif

@@ -14,7 +14,7 @@
 #define NULL                    0
 #define INSTRUCTION 4
 
-struct thcStruct threadArray[AMOUNT_THREADS+1];
+struct thcStruct threadArray[AMOUNT_THREADS+1] = {0};
 
 void initThreadArray() {
         /* Init all threads as dead and give them a stackpointer */
