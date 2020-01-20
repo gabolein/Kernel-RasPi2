@@ -58,6 +58,7 @@ void exitHandler(struct regDump* rd) {
         threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
         registerDump(rd);
         kprintf("\n\nThread %u was deaded as fuck.\n", threadArray[currentThread].threadID);
+        checkProcessAlive(currentThread);
 }
 
 /* Expects sleeptime in r1 */
