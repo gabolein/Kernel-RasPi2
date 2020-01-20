@@ -4,7 +4,7 @@
 #ifndef PROCESS
 #define PROCESS
 
-#define AMOUNT_THREADS 10
+#define AMOUNT_THREADS 7
 
 enum processStatus {
 	USED,

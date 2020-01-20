@@ -9,11 +9,13 @@
 #include "../user/include/swiInterface.h"
 #include "../user/include/user_thread.h"
 
+#define AMOUNT_THREADS          7
 #define IDLE                    AMOUNT_THREADS
 #define AMOUNT_PROCESSES        8
-#define INITIAL_VIRTUAL_SP      0x100FFFF8
+#define IDLE_THREAD_INITIAL_SP  0x14E0000
 #define NULL                    (void*)0
 #define INSTRUCTION             4
+#define USER_THREAD_FIRST_SP    0x420000
 
 struct thcStruct threadArray[AMOUNT_THREADS+1] = {0};
 struct thcStruct idleThread;
@@ -22,7 +24,7 @@ void initThreadArray(uint16_t currentProcess) {
         /* Init all threads as dead and give them a stackpointer */
         for (int i = 0; i < AMOUNT_THREADS; i++) {
                 processArray[currentProcess].threadArray[i].status = DEAD;
-                processArray[currentProcess].threadArray[i].initialSp = INITIAL_VIRTUAL_SP; /* Stackpointer berechnen */
+                processArray[currentProcess].threadArray[i].initialSp = USER_THREAD_FIRST_SP + i * 0x20000; /* Stackpointer berechnen */
                 processArray[currentProcess].threadArray[i].context.sp = threadArray[i].initialSp;
                 processArray[currentProcess].threadArray[i].threadID = i;
                 processArray[currentProcess].threadArray[i].processID = currentProcess; /* amount processes*/
@@ -30,12 +32,13 @@ void initThreadArray(uint16_t currentProcess) {
 }
 
 void initIdleThread() { /* needs rework */
-        remapUserStack(IDLE);
+        mapIdleThread();
         idleThread.hasRun = 0;
         idleThread.waitingForChar = 0;
         idleThread.spsr = USER_MODE;
         idleThread.status = RUNNING;
         idleThread.context.lr = (uint32_t)&goIdle + INSTRUCTION;
+        idleThread.context.sp =
         idleThread.spsr = USER_MODE;
         idleThread.cpsr = SUPERVISOR_MODE;
         idleThread.userLR = (uint32_t)&exit;
@@ -62,7 +65,7 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size, u
         processArray[processID].threadArray[newThread].waitingForChar = 0;
         //Stack mit Argumenten füllen
         volatile void* sp = (void*)processArray[processID].threadArray[newThread].initialSp;
-        remapUserStack(newThread);
+        remapAddressSpace(processID);
         if(args_size){
                 sp -= args_size * INSTRUCTION;
                 /* for(uint32_t offset = 0; offset < args_size; offset++){ */
@@ -123,7 +126,7 @@ void saveContext(struct thcStruct* currentThread, void* sp) {
 }
 
 void changeContext(struct thcStruct* nextThread, void* sp){
-        remapUserStack(nextThread);
+        remapAddressSpace(nextThread->processID);
         fillStack(&(nextThread->context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (nextThread->spsr));
         asm volatile("msr lr_usr, %0":: "r" (nextThread->userLR));

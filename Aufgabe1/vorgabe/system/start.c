@@ -16,6 +16,7 @@ void start_kernel(void)
 {
         enableUartInterrupt();
         initMMU();
+        mapIdleThread();
         specialMessage("Kernel loaded! (UwU)");
         initProcessArray();
         initTimer();

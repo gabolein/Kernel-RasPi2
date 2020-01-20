@@ -26,7 +26,7 @@ void initMMUL1Table(volatile uint32_t* table) {
         setTableEntry(0<<20, 0<<20, SYSTEM_RO);              /* Kernel Text, ROData */
         setTableEntry(1<<20, 1<<20, SYSTEM_ACCESS | SET_XN); /* KBSS, Data */
         setTableEntry(2<<20, 2<<20, BOTH_RO | SET_PXN);      /* UText, UROData */
-        setFaultEntry(3<<20);                                /* UData, UBSS */
+        setTableEntry(3<<20, 3<<20, BOTH_RO | SET_XN);       /* UData, UBSS (erstmal nur RO für den IDLE Thread) */
         setFaultEntry(257<<20);                              /* Für Demo */
 }
 
@@ -37,5 +37,8 @@ void remapAddressSpace(uint16_t pid) {
 }
 
 void mapIdleThread() {
-
+        /* Map the Idle Stack located at 0x14 to 0x400000 */
+        asm volatile("mcr p15,0,r1,c8,c7,0");                             /* Invalidate TLB Entries */
+        setTableEntry(3<<20, 3<<20, BOTH_RO | SET_XN);       /* UData, UBSS (erstmal nur RO für den IDLE Thread) */
+        setTableEntry(4<<20, 20<<20, FULL_ACCESS | SET_XN);  /* IDLE Stack */
 }

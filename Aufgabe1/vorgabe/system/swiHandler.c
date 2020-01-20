@@ -105,7 +105,7 @@ void software_interrupt(void* sp){
                                 break;
                         case NEW_THREAD:
                                 newThreadHandler(&rd);
-                                remapUserStack(currentThread);
+                                remapAddressSpace(currentThread->processID);
                                 break;
                         case EXIT:
                                 exitHandler(&rd);
