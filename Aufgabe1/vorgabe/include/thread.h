@@ -17,6 +17,7 @@ struct thcStruct{
         volatile uint32_t userLR;
         enum threadStatus status;
         uint16_t threadID;
+        uint16_t processID;
         uint32_t initialSp;
         volatile uint8_t hasRun;         /* 1 or 0 */
         volatile uint32_t sleepingTime;
@@ -27,7 +28,7 @@ struct thcStruct{
 void initThreadArray();
 void initIdleThread();
 void cpyStacktoTHC();
-void createThread(void (*func)(void *), const void*, uint32_t);
+void createThread(void (*func)(void *), const void*, uint32_t, uint16_t);
 int getRunningThread();
 int16_t threadWaitingForChar();
 int getDeadThread();

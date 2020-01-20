@@ -2,6 +2,7 @@
 #include "scheduler.h"
 #include "serial.h"
 #include "thread.h"
+#include "process.h"
 #include "kio.h"
 #include "handler.h"
 #include "registerDumpUtil.h"
@@ -40,7 +41,8 @@ void newThreadHandler(struct regDump* rd) {
         func = (void*)rd->r1;
         args = (void*)rd->r2;
         args_size = rd->r3;
-        createThread(func, args, args_size);
+        uint16_t currentProcess = threadArray[getRunningThread()].processID;
+        createThread(func, args, args_size, currentProcess);
 }
 
 void exitHandler(struct regDump* rd) {
@@ -73,7 +75,7 @@ void newProcessHandler(struct regDump* rd) {
         func = (void*)rd->r1;
         args = (void*)rd->r2;
         args_size = rd->r3;
-        uint16_t currentProcess = threadArray[getRunningThread()].pID;
+        uint16_t currentProcess = threadArray[getRunningThread()].processID;
         createProcess(func, args, args_size, currentProcess); 
 }
 

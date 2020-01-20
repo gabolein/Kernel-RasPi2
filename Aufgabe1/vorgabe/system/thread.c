@@ -43,7 +43,7 @@ void initIdleThread() {
         asm volatile("subs pc, lr, #4"); /* Change Context to IDLE Thread */
 }
 
-void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
+void createThread(void (*func)(void *), const void * args, uint32_t args_size, uint16_t processID) {
         char argument = *(char*)args;
         int newThread = getDeadThread();
         if (newThread == -1) {
