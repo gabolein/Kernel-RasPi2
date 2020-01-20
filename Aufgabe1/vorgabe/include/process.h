@@ -15,6 +15,7 @@ struct processStruct {
 	enum processStatus status;
 	uint16_t processID;
 	struct thcStruct threadArray[AMOUNT_THREADS];
+	uint16_t lastThread;
 };
 
 void initProcessArray();
