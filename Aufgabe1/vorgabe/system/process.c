@@ -11,12 +11,12 @@ void initProcessArray() {
 	for (uint16_t i = 0; i < AMOUNT_PROCESSES; i++){
 		processArray[i].status = UNUSED;
 		processArray[i].processID = i;
+		processArray[i].lastThread = 6; /*last thread because we increment it later in the scheduler */
 		initThreadArray(i);
 	}
 }
 
 void createProcess(void(*func)(void *), const void * args, uint32_t args_size, uint16_t processID) {
-
 	int16_t newProcess = getFreeProcess();
 	if (newProcess == -1) {
 		kprintf("\nCan't create new thread.\n");
