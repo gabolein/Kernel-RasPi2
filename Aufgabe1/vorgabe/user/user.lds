@@ -2,5 +2,6 @@ SECTIONS
 {
     .userROData             : { *(.rodata) }
     .userBSSData            : { *(.bss)    }
-    .userText               : { *(.text) }
+    .userText               : { *(.text)   }
+    .userData               : { *(.data)   }
 }
