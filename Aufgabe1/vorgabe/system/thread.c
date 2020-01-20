@@ -12,7 +12,7 @@
 #define IDLE                    AMOUNT_THREADS
 #define INITIAL_VIRTUAL_SP      0x100FFFF8
 #define NULL                    0
-#define INSTRUCTION 4
+#define INSTRUCTION             4
 
 struct thcStruct threadArray[AMOUNT_THREADS+1] = {0};
 
@@ -23,6 +23,7 @@ void initThreadArray() {
                 threadArray[i].initialSp = INITIAL_VIRTUAL_SP; /* Stackpointer berechnen */
                 threadArray[i].context.sp = threadArray[i].initialSp;
                 threadArray[i].threadID = i;
+                threadArray[i].processID = 8; /* amount processes*/
         }
 }
 
