@@ -11,6 +11,7 @@ void initProcessArray() {
 	for (uint16_t i = 0; i < AMOUNT_PROCESSES; i++){
 		processArray[i].status = UNUSED;
 		processArray[i].processID = i;
+		initThreadArray(i);
 	}
 }
 
@@ -45,12 +46,12 @@ void endProcess(uint16_t processID) {
 }
 
 /* returns 1 if process still has threads that are alive, 0 if there are not, if no threads kill process*/
-uint8_t checkProcessAlive(uint16_t processID) {
-    for(uint16_t i = 0; i < AMOUNT_PROCESSES; i++) {
-    	if(threadArray[i].processID == processID){
+uint8_t checkProcessAlive(uint16_t currentProcess) {
+    for(uint16_t i = 0; i < AMOUNT_THREADS; i++) {
+    	if(processArray[currentProcess].threadArray[i].status != DEAD){
             return 1;    
         }
     }
-    endProcess(processID);
+    endProcess(currentProcess);
     return 0;
 }

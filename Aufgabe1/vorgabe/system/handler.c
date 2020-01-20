@@ -9,7 +9,7 @@
 #include "swiHandler.h"
 
 
-#define NULL 0
+#define NULL (void*)0
 
 void undefined_instruction(void* sp){
         green_on();
@@ -17,9 +17,9 @@ void undefined_instruction(void* sp){
         getRegDumpStruct(&rd, UNDEFINED_INSTRUCTION, sp);
         if ((rd.spsr & 0x1F) == USER_MODE) {
                 /* End Thread */
-                uint16_t currentThread = getRunningThread();
+                struct thcStruct* currentThread = getRunningThread();
                 exitHandler(&rd);
-                uint16_t nextThread = rrSchedule(currentThread, 1);
+                struct thcStruct* nextThread = rrSchedule(currentThread, 1);
                 changeContext(nextThread, sp);
                 return;
         }
@@ -35,9 +35,9 @@ void prefetch_abort(void* sp){
         getRegDumpStruct(&rd, PREFETCH_ABORT, sp);
         if ((rd.spsr & 0x1F) == USER_MODE) {
                 /* End Thread */
-                uint16_t currentThread = getRunningThread();
+                struct thcStruct* currentThread = getRunningThread();
                 exitHandler(&rd);
-                uint16_t nextThread = rrSchedule(currentThread, 1);
+                struct thcStruct* nextThread = rrSchedule(currentThread, 1);
                 changeContext(nextThread, sp);
                 return;
         }
@@ -51,9 +51,9 @@ void data_abort(void* sp){
         getRegDumpStruct(&rd, DATA_ABORT, sp);
         if ((rd.spsr & 0x1F) == USER_MODE) {
                 /* End Thread */
-                uint16_t currentThread = getRunningThread();
+                struct thcStruct* currentThread = getRunningThread();
                 exitHandler(&rd);
-                uint16_t nextThread = rrSchedule(currentThread, 1);
+                struct thcStruct* nextThread = rrSchedule(currentThread, 1);
                 changeContext(nextThread, sp);
                 return;
         }

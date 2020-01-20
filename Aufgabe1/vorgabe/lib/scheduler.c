@@ -6,18 +6,20 @@
 #define THREAD_ALIVE            3
 #define THREAD_ARRAY_SIZE       32
 #define IDLE_THREAD             32
+#define NULL                    (void*)0
+
 static uint16_t timerInterruptCount = 0;
 
 /* returns index of next Thread that is up */
-uint16_t rrSchedule(int currentThread, uint16_t threadDied) {
+struct thcStruct* rrSchedule(struct thcStruct* currentThread, uint16_t threadDied) {
         timerInterruptCount++;
-        if(currentThread == -1) return IDLE_THREAD;
+        if(currentThread == NULL) return &idleThread;
         if((threadDied)
            || (TIME_SLICE_INTERRUPTS <= timerInterruptCount)
-           || currentThread == IDLE_THREAD
-           || threadArray[currentThread].status == WAITING) {
+           || currentThread == &idleThread
+           || currentThread->status == WAITING) {
                 timerInterruptCount = 0;
-                if(currentThread == IDLE_THREAD){
+                if(currentThread == &idleThread){
                         currentThread = 0;
                         }
                 uint8_t i = (currentThread + 1) % THREAD_ARRAY_SIZE;

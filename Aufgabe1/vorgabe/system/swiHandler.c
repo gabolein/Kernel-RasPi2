@@ -29,8 +29,9 @@ void getCharHandler(void* sp) {
                 stackStruct->r1 = myChar;
                 return;
         }
-        threadArray[getRunningThread()].waitingForChar = 1;
-        threadArray[getRunningThread()].status = WAITING;
+        struct thcStruct* currentThread = getRunningThread();
+        currentThread->waitingForChar = 1;
+        currentThread->status = WAITING;
 }
 
 /* Expects  funcpointer in r1, argCount in r2, args_size in r3*/
@@ -41,32 +42,32 @@ void newThreadHandler(struct regDump* rd) {
         func = (void*)rd->r1;
         args = (void*)rd->r2;
         args_size = rd->r3;
-        uint16_t currentProcess = threadArray[getRunningThread()].processID;
+        uint16_t currentProcess = getRunningThread()->processID;
         createThread(func, args, args_size, currentProcess);
 }
 
 void exitHandler(struct regDump* rd) {
-        uint16_t currentThread = getRunningThread();
+        struct thcStruct* currentThread = getRunningThread();
 	/* zero registers */
-        threadArray[currentThread].context.r0 = 0;
-        threadArray[currentThread].context.r1 = 0;
-        threadArray[currentThread].context.r2 = 0;
-        threadArray[currentThread].context.r3 = 0;
-        threadArray[currentThread].context.r4 = 0;
-        threadArray[currentThread].context.r5 = 0;
-        threadArray[currentThread].status = DEAD;
-        threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
+        currentThread->context.r0 = 0;
+        currentThread->context.r1 = 0;
+        currentThread->context.r2 = 0;
+        currentThread->context.r3 = 0;
+        currentThread->context.r4 = 0;
+        currentThread->context.r5 = 0;
+        currentThread->status = DEAD;
+        currentThread->context.sp = currentThread->initialSp;
         registerDump(rd);
-        kprintf("\n\nThread %u was deaded as fuck.\n", threadArray[currentThread].threadID);
-        checkProcessAlive(currentThread);
+        kprintf("\n\nThread %u was deaded as fuck.\n", currentThread->threadID);
+        checkProcessAlive(currentThread->processID);
 }
 
 /* Expects sleeptime in r1 */
 void sleepHandler(struct regDump* rd){
         uint32_t sleeptime = rd->r1;
-        uint16_t currentThread = getRunningThread();
-        threadArray[currentThread].sleepingTime = sleeptime;
-        threadArray[currentThread].status = WAITING;
+        struct thcStruct* currentThread = getRunningThread();
+        currentThread->sleepingTime = sleeptime;
+        currentThread->status = WAITING;
 }
 
 void newProcessHandler(struct regDump* rd) {
@@ -76,7 +77,7 @@ void newProcessHandler(struct regDump* rd) {
         func = (void*)rd->r1;
         args = (void*)rd->r2;
         args_size = rd->r3;
-        uint16_t currentProcess = threadArray[getRunningThread()].processID;
+        uint16_t currentProcess = getRunningThread()->processID;
         createProcess(func, args, args_size, currentProcess); 
 }
 
@@ -89,16 +90,16 @@ void software_interrupt(void* sp){
                 stackStruct->lr += INSTRUCTION;
                 uint32_t swiID = 0;
                 asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
-                uint16_t currentThread = getRunningThread();
+                struct thcStruct* currentThread = getRunningThread();
                 switch(swiID) {
                         case PUT_CHAR:
                                 putCharHandler(&rd);
                                 break;
                         case GET_CHAR:
                                 getCharHandler(sp);
-                                if(threadArray[currentThread].status == WAITING) {
+                                if(currentThread->status == WAITING) {
                                         saveContext(currentThread, sp);
-                                        uint16_t nextThread = rrSchedule(currentThread, 0);
+                                        struct thcStruct* nextThread = rrSchedule(currentThread, 0);
                                         changeContext(nextThread, sp);
                                 }
                                 break;
@@ -108,13 +109,13 @@ void software_interrupt(void* sp){
                                 break;
                         case EXIT:
                                 exitHandler(&rd);
-                                uint16_t nextThreadExit = rrSchedule(currentThread, 1);
+                                struct thcStruct* nextThreadExit = rrSchedule(currentThread, 1);
                                 changeContext(nextThreadExit, sp);
                                 break;
                         case SLEEP:
                                 sleepHandler(&rd);
                                 saveContext(currentThread, sp);
-                                uint16_t nextThread = rrSchedule(currentThread, 0);
+                                struct thcStruct* nextThread = rrSchedule(currentThread, 0);
                                 changeContext(nextThread, sp);
                                 break;
                         case NEW_PROCESS:

@@ -21,7 +21,6 @@ void start_kernel(void)
         specialMessage("Kernel loaded! (UwU)");
         remapUserStack(1);
         initProcessArray();
-        initThreadArray();
         initTimer();
         initIdleThread();
         while(1);

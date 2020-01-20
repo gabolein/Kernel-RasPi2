@@ -1,7 +1,10 @@
 #include <stdint.h>
+#include "thread.h"
 
 #ifndef PROCESS
 #define PROCESS
+
+#define AMOUNT_THREADS 10
 
 enum processStatus {
 	USED,
@@ -11,6 +14,7 @@ enum processStatus {
 struct processStruct {
 	enum processStatus status;
 	uint16_t processID;
+	struct thcStruct threadArray[AMOUNT_THREADS];
 };
 
 void initProcessArray();
