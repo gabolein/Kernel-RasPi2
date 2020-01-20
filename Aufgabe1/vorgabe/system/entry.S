@@ -48,7 +48,7 @@ _bsprak:
 	msr	sp_fiq, r0
 
     /* Adresse der IVT in r0 laden */
-	ldr	 r0, =_ivt
+	ldr	    r0, =_ivt
 	mcr 	p15, 0, r0, c12, c0, 0
 
 	cpsie	i, #0x13
