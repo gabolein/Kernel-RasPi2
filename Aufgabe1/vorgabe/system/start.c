@@ -12,14 +12,11 @@
 
 extern void spawner();
 
-#define NULL 0
-
 void start_kernel(void)
 {
         enableUartInterrupt();
         initMMU();
         specialMessage("Kernel loaded! (UwU)");
-        remapUserStack(1);
         initProcessArray();
         initTimer();
         initIdleThread();
