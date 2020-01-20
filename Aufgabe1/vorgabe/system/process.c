@@ -8,8 +8,10 @@
 struct processStruct processArray[AMOUNT_PROCESSES] = {0};
 
 void initProcessArray() {
-	for (int i = 0; i < AMOUNT_PROCESSES; i++){
-
+	for (uint16_t i = 0; i < AMOUNT_PROCESSES; i++){
+		processArray[i].status = UNUSED;
+		processArray[i].processID = i;
+		initThreadArray(i);
 	}
 }
 
@@ -21,6 +23,7 @@ void createProcess(void(*func)(void *), const void * args, uint32_t args_size, u
         return;
 	}
 	cpyData(processID, newProcess);
+	processArray[processID].status = USED;
 	createThread(func, args, args_size, newProcess);
 }
 
@@ -38,6 +41,17 @@ int16_t getFreeProcess() {
 	return -1;
 }
 
-void endProcess() {
-	
+void endProcess(uint16_t processID) {
+	processArray[processID].status = UNUSED;
+}
+
+/* returns 1 if process still has threads that are alive, 0 if there are not, if no threads kill process*/
+uint8_t checkProcessAlive(uint16_t currentProcess) {
+    for(uint16_t i = 0; i < AMOUNT_THREADS; i++) {
+    	if(processArray[currentProcess].threadArray[i].status != DEAD){
+            return 1;    
+        }
+    }
+    endProcess(currentProcess);
+    return 0;
 }

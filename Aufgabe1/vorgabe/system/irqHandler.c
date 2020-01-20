@@ -42,12 +42,12 @@ uint8_t bufferInsert(char c){
         if(charBufferLength >= BUFFER_SIZE){
                 return 1;       /* Buffer is full */
         }
-        int16_t waitingThread = threadWaitingForChar();
-        if(waitingThread != -1){
+        struct thcStruct* waitingThread = threadWaitingForChar();
+        if(waitingThread != NULL){
                 /* Thread den Char geben */
-                threadArray[waitingThread].context.r1 = c;
-                threadArray[waitingThread].waitingForChar = 0;
-                threadArray[waitingThread].status = READY;
+                waitingThread->context.r1 = c;
+                waitingThread->waitingForChar = 0;
+                waitingThread->status = READY;
                 return 0;
         }
         charBufferLength++;
@@ -135,17 +135,17 @@ void irq(void* sp){
                 registerDump(&rd);
         }
         if(clockHandler()){
-                int currentThread = getRunningThread();
-                uint16_t nextThread = rrSchedule(currentThread, 0);
-                if ((currentThread != nextThread)&& currentThread != -1) {
+                struct thcStruct* currentThread = getRunningThread();
+                struct thcStruct* nextThread = rrSchedule(currentThread, 0);
+                if ((currentThread != nextThread)&& currentThread != NULL) {
                                 saveContext(currentThread, sp);
                                 changeContext(nextThread, sp);
                 }
         }
         if(uartHandler()){
-                int currentThread = getRunningThread();
-                if (currentThread == IDLE_THREAD) {
-                        uint16_t nextThread = rrSchedule(currentThread, 0);
+                struct thcStruct* currentThread = getRunningThread();
+                if (currentThread == &idleThread) {
+                        struct thcStruct* nextThread = rrSchedule(currentThread, 0);
                         if (currentThread != nextThread) {
                                 saveContext(currentThread, sp);
                                 changeContext(nextThread, sp);
