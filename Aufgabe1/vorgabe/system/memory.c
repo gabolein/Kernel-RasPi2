@@ -11,7 +11,6 @@ extern void _mmuInit();
 void initMMU() {
         initMMUL1Table(mmuTable);
         _mmuInit();             /* Configures and activates MMU */
-        kprintf("I'm at the end of initMMU\n");
 }
 
 void setTableEntry(uint32_t virtAddr, uint32_t physAddr, uint32_t flags){
@@ -38,7 +37,6 @@ void initMMUL1Table() {
         }
 
         setFaultEntry(257<<20);                              /* Für Demo */
-        kprintf("I'm still alive\n");
 }
 
 void remapAddressSpace(uint16_t pid) {

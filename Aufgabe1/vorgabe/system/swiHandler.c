@@ -72,16 +72,12 @@ void sleepHandler(struct regDump* rd){
 }
 
 void newProcessHandler(struct regDump* rd) {
-        kprintf("\nnewProcessHandler\n");
-        /*causeDataAbort();*/
         uint32_t args_size = 0;
         void* args = NULL;
         void (*func)(void *) = NULL;
         func = (void*)rd->r1;
         args = (void*)rd->r2;
         args_size = rd->r3;
-        kprintf("addr func: %x\n", func);
-        kprintf("addr spawner: %x\n", &spawner);
         uint16_t currentProcess = getRunningThread()->processID;
         createProcess(func, args, args_size, currentProcess);
 }
@@ -106,6 +102,7 @@ void software_interrupt(void* sp){
                                         saveContext(currentThread, sp);
                                         struct thcStruct* nextThread = rrSchedule(currentThread, 0);
                                         changeContext(nextThread, sp);
+                                        kprintf("Letzte Zeile von GET_CHAR\n");
                                 }
                                 break;
                         case NEW_THREAD:

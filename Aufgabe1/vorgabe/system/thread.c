@@ -32,7 +32,6 @@ void initThreadArray(uint16_t currentProcess) {
         }
 }
 
-/* KAPUTT */
 static void copyIdleDataBlock(){
         map1on1();
         uint32_t* sourceAddr = (uint32_t*)(0x300000);
@@ -61,11 +60,8 @@ void initIdleThread() { /* needs rework */
         asm volatile("msr SPSR_cxsf, %0":: "r" (idleThread.spsr));
         asm volatile("msr sp_usr, %0":: "r" (idleThread.context.sp));
         asm volatile("msr lr_usr, %0":: "r" (idleThread.userLR));
-
-        kprintf("vor context change zu idle\n");
-        //initTimer();
         asm volatile("mov lr, %0":: "r" (idleThread.context.lr));
-        asm volatile("cpsie i");
+        /* asm volatile("cpsie i");*/
         asm volatile("subs pc, lr, #4"); /* Change Context to IDLE Thread */
 }
 
@@ -96,7 +92,7 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size, u
                                                                      THIS IS IMPORTANT!!! DO NOT TOUCH THIS EVER AGAIN!!1!!eins!!elf */
         }
         processArray[processID].threadArray[newThread].context.sp = (uint32_t)sp;
-        kprintf("sp of newly created thread: %x\n", sp);
+        kprintf("sp of newly created thread (TID: %i,%i): %x\n", processID, newThread, sp);
 }
 
 int getDeadThread(uint16_t processID){ /* FIX */
@@ -110,9 +106,9 @@ int getDeadThread(uint16_t processID){ /* FIX */
 
 struct thcStruct* getRunningThread(){ /* run over all processes */
         for(uint16_t i = 0; i < AMOUNT_PROCESSES; i++){
-                for(uint16_t j = 0; i < AMOUNT_THREADS; i++) {
+                for(uint16_t j = 0; j < AMOUNT_THREADS; j++) {
                         if(processArray[i].threadArray[j].status == RUNNING) {
-                                return &processArray[i].threadArray[j];
+                                return &(processArray[i].threadArray[j]);
                         }
                 }
         }
@@ -126,9 +122,9 @@ struct thcStruct* getRunningThread(){ /* run over all processes */
 struct thcStruct* threadWaitingForChar() {
         for(uint16_t i = 0; i < AMOUNT_PROCESSES; i++) {
                 for(uint16_t j = 0; i < AMOUNT_THREADS; i++) {
-                        if(processArray[i].threadArray[j].status == WAITING 
-                                && processArray[i].threadArray[j].waitingForChar) {
-                                return &processArray[i].threadArray[j];
+                        if((processArray[i].threadArray[j].status == WAITING)
+                           && (processArray[i].threadArray[j].waitingForChar)) {
+                                return &(processArray[i].threadArray[j]);
                         }
                 }
         }

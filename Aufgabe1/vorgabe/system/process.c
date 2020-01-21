@@ -9,7 +9,6 @@
 struct processStruct processArray[AMOUNT_PROCESSES] = {0};
 
 void initProcessArray() {
-        kprintf("initProcessArray\n");
         for (uint16_t i = 0; i < AMOUNT_PROCESSES; i++){
                 processArray[i].status = UNUSED;
                 processArray[i].processID = i;
@@ -19,10 +18,9 @@ void initProcessArray() {
 }
 
 void createProcess(void(*func)(void *), const void * args, uint32_t args_size, uint16_t processID) {
-        kprintf("in createProcess\n");
         int16_t newProcess = getFreeProcess();
         if (newProcess == -1) {
-                kprintf("\nCan't create new thread.\n");
+                kprintf("\nCan't create new process.\n");
                 return;
         }
         kprintf("Process %i created \n", newProcess);
