@@ -26,7 +26,7 @@ void setFaultEntry(uint32_t virtAddr){
 void initMMUL1Table(volatile uint32_t* table) {
 
         for(uint32_t i = 0; i < 4096; i++) {
-                table[i] = SECTION_ENTRY_CODE | i << SECTION_BASE_SHIFT_AMOUNT | SYSTEM_ACCESS | SET_XN; /* Sectionentry */
+		setTableEntry(i<<20, i<<20, SYSTEM_ACCESS | SET_XN);
         }
 
         setTableEntry(0<<20, 0<<20, SYSTEM_ACCESS);              /* Kernel Text, ROData */

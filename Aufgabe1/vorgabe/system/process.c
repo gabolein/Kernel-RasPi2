@@ -23,7 +23,7 @@ void createProcess(void(*func)(void *), const void * args, uint32_t args_size, u
         return;
 	}
 	cpyData(processID, newProcess);
-	processArray[processID].status = USED;
+	processArray[newProcess].status = USED;
 	createThread(func, args, args_size, newProcess);
 }
 
@@ -41,8 +41,11 @@ int16_t getFreeProcess() {
 	return -1;
 }
 
+/* assumes all the threads are dead*/
 void endProcess(uint16_t processID) {
 	processArray[processID].status = UNUSED;
+	processArray[processID].lastThread = 6;
+
 }
 
 /* returns 1 if process still has threads that are alive, 0 if there are not, if no threads kill process*/
