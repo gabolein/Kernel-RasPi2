@@ -46,6 +46,7 @@ static void copyIdleDataBlock(){
 }
 
 void initIdleThread() { /* needs rework */
+        asm volatile("cpsid i");
         copyIdleDataBlock();
         remapAddressSpace(IDLE_PID);
         idleThread.processID = 8; /* IDLE Thread hat immer PID 8 */
@@ -63,8 +64,9 @@ void initIdleThread() { /* needs rework */
         asm volatile("msr lr_usr, %0":: "r" (idleThread.userLR));
 
         kprintf("vor context change zu idle\n");
-        /* initTimer(); */
+        //initTimer();
         asm volatile("mov lr, %0":: "r" (idleThread.context.lr));
+        asm volatile("cpsie i");
         asm volatile("subs pc, lr, #4"); /* Change Context to IDLE Thread */
 }
 
@@ -152,7 +154,7 @@ void changeContext(struct thcStruct* nextThread, void* sp){
         asm volatile("msr lr_usr, %0":: "r" (nextThread->userLR));
         asm volatile("msr sp_usr, %0":: "r" (nextThread->context.sp));
         nextThread->status = RUNNING;
-        /* kprintf("\n\n Changing to thread %i \n", nextThread); */
+        kprintf("\n\n Changing to thread %i,%i \n", nextThread->processID, nextThread->threadID);
 }
 
 void fillStack(volatile struct commonRegs* context, void* sp){

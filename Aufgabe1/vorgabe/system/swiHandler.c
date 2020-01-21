@@ -9,9 +9,10 @@
 #include "presentations.h"
 #include "irqHandler.h"
 #include "memory.h"
+#include "../user/include/user_thread.h"
 
 
-#define NULL 0
+#define NULL (void*)0
 #define INSTRUCTION 4
 
 
@@ -71,13 +72,16 @@ void sleepHandler(struct regDump* rd){
 }
 
 void newProcessHandler(struct regDump* rd) {
-        kprintf("newProcessHandler\n");
+        kprintf("\nnewProcessHandler\n");
+        /*causeDataAbort();*/
         uint32_t args_size = 0;
         void* args = NULL;
         void (*func)(void *) = NULL;
         func = (void*)rd->r1;
         args = (void*)rd->r2;
         args_size = rd->r3;
+        kprintf("addr func: %x\n", func);
+        kprintf("addr spawner: %x\n", &spawner);
         uint16_t currentProcess = getRunningThread()->processID;
         createProcess(func, args, args_size, currentProcess);
 }
@@ -122,7 +126,6 @@ void software_interrupt(void* sp){
                         case NEW_PROCESS:
                                 newProcessHandler(&rd);
                                 remapAddressSpace(currentThread->processID);
-                                kprintf("Ich bin im SWI Handler NEW_PROCESS\n");
                                 break;
                         default:
                                 kprintf("\nUNKNOWN SYSCALL\n");

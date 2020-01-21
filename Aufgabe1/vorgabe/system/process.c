@@ -25,10 +25,8 @@ void createProcess(void(*func)(void *), const void * args, uint32_t args_size, u
                 kprintf("\nCan't create new thread.\n");
                 return;
         }
-        if(newProcess != 8){
-                kprintf("Process %i created \n", newProcess);
-                processArray[newProcess].status = USED;
-        }
+        kprintf("Process %i created \n", newProcess);
+        processArray[newProcess].status = USED;
         cpyData(processID, newProcess);
         createThread(func, args, args_size, newProcess);
 }

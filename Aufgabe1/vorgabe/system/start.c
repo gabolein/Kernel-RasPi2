@@ -19,7 +19,7 @@ void start_kernel(void)
         initMMU();
         specialMessage("Kernel loaded! (UwU)");
         initProcessArray();
-        /* initTimer(); */
+        initTimer();
         initIdleThread();
         while(1);
 }
