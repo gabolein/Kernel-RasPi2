@@ -11,6 +11,7 @@ extern void _mmuInit();
 void initMMU() {
         initMMUL1Table(mmuTable);
         _mmuInit();             /* Configures and activates MMU */
+        kprintf("I'm at the end of initMMU\n");
 }
 
 void setTableEntry(uint32_t virtAddr, uint32_t physAddr, uint32_t flags){
@@ -23,11 +24,18 @@ void setFaultEntry(uint32_t virtAddr){
 
 /* Initializes the MMU L1 Table at the given address */
 void initMMUL1Table(volatile uint32_t* table) {
-        setTableEntry(0<<20, 0<<20, SYSTEM_RO);              /* Kernel Text, ROData */
+
+        for(uint32_t i = 0; i < 4096; i++) {
+                table[i] = SECTION_ENTRY_CODE | i << SECTION_BASE_SHIFT_AMOUNT | SYSTEM_ACCESS | SET_XN; /* Sectionentry */
+        }
+
+        setTableEntry(0<<20, 0<<20, SYSTEM_ACCESS);              /* Kernel Text, ROData */
         setTableEntry(1<<20, 1<<20, SYSTEM_ACCESS | SET_XN); /* KBSS, Data */
         setTableEntry(2<<20, 2<<20, BOTH_RO | SET_PXN);      /* UText, UROData */
         setTableEntry(3<<20, 3<<20, BOTH_RO | SET_XN);       /* UData, UBSS (erstmal nur RO für den IDLE Thread) */
+
         setFaultEntry(257<<20);                              /* Für Demo */
+        kprintf("I'm still alive\n");
 }
 
 void remapAddressSpace(uint16_t pid) {

@@ -78,7 +78,7 @@ void newProcessHandler(struct regDump* rd) {
         args = (void*)rd->r2;
         args_size = rd->r3;
         uint16_t currentProcess = getRunningThread()->processID;
-        createProcess(func, args, args_size, currentProcess); 
+        createProcess(func, args, args_size, currentProcess);
 }
 
 void software_interrupt(void* sp){
@@ -120,7 +120,7 @@ void software_interrupt(void* sp){
                                 break;
                         case NEW_PROCESS:
                                 newProcessHandler(&rd);
-                                remapUserStack(currentThread);
+                                remapAddressSpace(currentThread->processID);
                                 break;
                         default:
                                 kprintf("\nUNKNOWN SYSCALL\n");

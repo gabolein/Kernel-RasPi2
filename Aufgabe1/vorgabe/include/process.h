@@ -7,15 +7,15 @@
 #define AMOUNT_THREADS 7
 
 enum processStatus {
-	USED,
-	UNUSED
+        USED,
+        UNUSED
 };
 
 struct processStruct {
-	enum processStatus status;
-	uint16_t processID;
-	struct thcStruct threadArray[AMOUNT_THREADS];
-	uint16_t lastThread;
+        enum processStatus status;
+        uint16_t processID;
+        struct thcStruct threadArray[AMOUNT_THREADS];
+        uint16_t lastThread;
 };
 
 void initProcessArray();
