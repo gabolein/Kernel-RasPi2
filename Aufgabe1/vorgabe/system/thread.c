@@ -126,7 +126,11 @@ void saveContext(struct thcStruct* currentThread, void* sp) {
 }
 
 void changeContext(struct thcStruct* nextThread, void* sp){
-        remapAddressSpace(nextThread->processID);
+        if (nextThread == &idleThread) {
+                mapIdleThread();
+        } else {
+                remapAddressSpace(nextThread->processID);
+        }
         fillStack(&(nextThread->context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (nextThread->spsr));
         asm volatile("msr lr_usr, %0":: "r" (nextThread->userLR));
