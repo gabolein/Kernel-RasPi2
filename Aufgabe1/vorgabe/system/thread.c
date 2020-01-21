@@ -19,7 +19,6 @@
 #define INSTRUCTION             4
 #define USER_THREAD_FIRST_SP    0x420000
 
-struct thcStruct threadArray[AMOUNT_THREADS+1] = {0};
 struct thcStruct idleThread;
 
 void initThreadArray(uint16_t currentProcess) {
@@ -27,7 +26,7 @@ void initThreadArray(uint16_t currentProcess) {
         for (int i = 0; i < AMOUNT_THREADS; i++) {
                 processArray[currentProcess].threadArray[i].status = DEAD;
                 processArray[currentProcess].threadArray[i].initialSp = USER_THREAD_FIRST_SP + i * 0x20000; /* Stackpointer berechnen */
-                processArray[currentProcess].threadArray[i].context.sp = threadArray[i].initialSp;
+                processArray[currentProcess].threadArray[i].context.sp = processArray[currentProcess].threadArray[i].initialSp;
                 processArray[currentProcess].threadArray[i].threadID = i;
                 processArray[currentProcess].threadArray[i].processID = currentProcess; /* amount processes*/
         }
@@ -93,10 +92,11 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size, u
                 /*         *(uint32_t*)(sp + offset * INSTRUCTION) = *(uint32_t*)(args + offset * INSTRUCTION); //TODO */
                 /* } */
                 *(char*)sp = argument; /* TODO Maybe remove this later */
-                threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben
+                processArray[processID].threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben
                                                                      THIS IS IMPORTANT!!! DO NOT TOUCH THIS EVER AGAIN!!1!!eins!!elf */
         }
-        threadArray[newThread].context.sp = (uint32_t)sp;
+        processArray[processID].threadArray[newThread].context.sp = (uint32_t)sp;
+        kprintf("sp of newly created thread: %x\n", sp);
 }
 
 int getDeadThread(uint16_t processID){ /* FIX */
@@ -136,12 +136,14 @@ struct thcStruct* threadWaitingForChar() {
 }
 
 void saveContext(struct thcStruct* currentThread, void* sp) {
+        kprintf("saving Context of thread %i,%i\n", currentThread->processID, currentThread->threadID);
         struct commonRegs* cr = (struct commonRegs*) sp;
         asm volatile ("mrs %0, SPSR": "=r" (currentThread->spsr));
         asm volatile ("mrs %0, CPSR": "=r" (currentThread->cpsr));
         asm volatile ("mrs %0, lr_usr": "=r" (currentThread->userLR));
         currentThread->context = *cr; /* copy all common registers to thread context */
         asm volatile ("mrs %0, sp_usr": "=r" (currentThread->context.sp));
+        kprintf("save context, content of sp: %x\n", currentThread->context.sp);
         if(currentThread->status == RUNNING) {
                 currentThread->status = READY;
         }
@@ -152,6 +154,7 @@ void changeContext(struct thcStruct* nextThread, void* sp){
         fillStack(&(nextThread->context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (nextThread->spsr));
         asm volatile("msr lr_usr, %0":: "r" (nextThread->userLR));
+        kprintf("change context, content of sp: %x\n", nextThread->context.sp);
         asm volatile("msr sp_usr, %0":: "r" (nextThread->context.sp));
         nextThread->status = RUNNING;
         kprintf("\n\n Changing to thread %i,%i \n", nextThread->processID, nextThread->threadID);

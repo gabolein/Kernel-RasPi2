@@ -59,6 +59,7 @@ void printer(void* arg) {
 }
 
 void demonstration5(void* arg) {
+        printf("ICh bin die Demo mit arg %c\n", *(char*)arg);
         volatile uint32_t* addr;
         volatile uint32_t holder;
         switch(*(char*)arg) {
