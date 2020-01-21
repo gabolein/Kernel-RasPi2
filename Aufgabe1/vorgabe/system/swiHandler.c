@@ -71,6 +71,7 @@ void sleepHandler(struct regDump* rd){
 }
 
 void newProcessHandler(struct regDump* rd) {
+        kprintf("newProcessHandler\n");
         uint32_t args_size = 0;
         void* args = NULL;
         void (*func)(void *) = NULL;
@@ -91,6 +92,7 @@ void software_interrupt(void* sp){
                 uint32_t swiID = 0;
                 asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
                 struct thcStruct* currentThread = getRunningThread();
+                kprintf("in swi handler, swiID = %i", swiID);
                 switch(swiID) {
                         case PUT_CHAR:
                                 putCharHandler(&rd);
@@ -121,6 +123,7 @@ void software_interrupt(void* sp){
                         case NEW_PROCESS:
                                 newProcessHandler(&rd);
                                 remapAddressSpace(currentThread->processID);
+                                kprintf("Ich bin im SWI Handler NEW_PROCESS\n");
                                 break;
                         default:
                                 kprintf("\nUNKNOWN SYSCALL\n");

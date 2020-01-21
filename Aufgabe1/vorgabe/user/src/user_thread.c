@@ -34,6 +34,7 @@ void user_thread(void* arg) {
 }
 
 void spawner() {
+        printf("Ich bin der Spawner \n");
         while(1) {
                 volatile char c = getChar();
                 if (c) {

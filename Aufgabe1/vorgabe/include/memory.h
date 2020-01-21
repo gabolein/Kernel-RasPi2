@@ -23,8 +23,8 @@ void initMMUL1Table();
 void remapAddressSpace(uint16_t);
 void setTableEntry(uint32_t, uint32_t, uint32_t);
 void setFaultEntry(uint32_t);
-void mapIdleThread();
-
+void map1on1();
+void copyUserBlock(uint16_t, uint16_t);
 
 extern volatile uint32_t mmuTable[4096];
 

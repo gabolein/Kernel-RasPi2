@@ -1,3 +1,4 @@
+
 #include "presentations.h"
 #include "serial.h"
 #include "tests.h"
@@ -16,7 +17,6 @@ void start_kernel(void)
 {
         enableUartInterrupt();
         initMMU();
-        kputChar('B');
         specialMessage("Kernel loaded! (UwU)");
         initProcessArray();
         initTimer();

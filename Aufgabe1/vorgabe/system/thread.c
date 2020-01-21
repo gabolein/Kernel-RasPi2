@@ -10,9 +10,9 @@
 #include "../user/include/user_thread.h"
 
 #define AMOUNT_THREADS          7
-#define IDLE                    AMOUNT_THREADS
+#define IDLE_PID                8
 #define AMOUNT_PROCESSES        8
-#define IDLE_THREAD_INITIAL_SP  0x14E0000
+#define IDLE_THREAD_INITIAL_SP  0x4E0000
 #define NULL                    (void*)0
 #define INSTRUCTION             4
 #define USER_THREAD_FIRST_SP    0x420000
@@ -32,13 +32,14 @@ void initThreadArray(uint16_t currentProcess) {
 }
 
 void initIdleThread() { /* needs rework */
-        mapIdleThread();
+        remapAddressSpace(IDLE_PID);
+        idleThread.processID = 8; /* IDLE Thread hat immer PID 8 */
         idleThread.hasRun = 0;
         idleThread.waitingForChar = 0;
         idleThread.spsr = USER_MODE;
         idleThread.status = RUNNING;
         idleThread.context.lr = (uint32_t)&goIdle + INSTRUCTION;
-        idleThread.context.sp =
+        idleThread.context.sp = IDLE_THREAD_INITIAL_SP;
         idleThread.spsr = USER_MODE;
         idleThread.cpsr = SUPERVISOR_MODE;
         idleThread.userLR = (uint32_t)&exit;
@@ -46,21 +47,24 @@ void initIdleThread() { /* needs rework */
         asm volatile("msr sp_usr, %0":: "r" (idleThread.context.sp));
         asm volatile("msr lr_usr, %0":: "r" (idleThread.userLR));
         asm volatile("mov lr, %0":: "r" (idleThread.context.lr));
+        kprintf("vor context change zu idle\n");
         asm volatile("subs pc, lr, #4"); /* Change Context to IDLE Thread */
+        kprintf("nach context change zu idle\n");
+
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size, uint16_t processID) {
         char argument = *(char*)args;
         int newThread = getDeadThread(processID);
         if (newThread == -1) {
-            kprintf("\nCan't create new thread.\n");
-            return;
+                kprintf("\nCan't create new thread.\n");
+                return;
         }
         processArray[processID].threadArray[newThread].hasRun = 0;
         processArray[processID].threadArray[newThread].status = READY;
         processArray[processID].threadArray[newThread].context.lr = (uint32_t)func + INSTRUCTION; /* +4, da im trampoline 4 subtrahiert wird */
-        processArray[processID].threadArray[newThread].spsr = USER_MODE; /* User Mode, sonst nichts gesetzt */
-        processArray[processID].threadArray[newThread].cpsr = SUPERVISOR_MODE; /* SVC Mode */
+        processArray[processID].threadArray[newThread].spsr = USER_MODE;                          /* User Mode, sonst nichts gesetzt */
+        processArray[processID].threadArray[newThread].cpsr = SUPERVISOR_MODE;                    /* SVC Mode */
         processArray[processID].threadArray[newThread].userLR = (uint32_t)&exit;
         processArray[processID].threadArray[newThread].waitingForChar = 0;
         //Stack mit Argumenten füllen
@@ -72,7 +76,8 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size, u
                 /*         *(uint32_t*)(sp + offset * INSTRUCTION) = *(uint32_t*)(args + offset * INSTRUCTION); //TODO */
                 /* } */
                 *(char*)sp = argument; /* TODO Maybe remove this later */
-                threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben THIS IS IMPORTANT!!! DO NOT TOUCH THIS EVER AGAIN!!1!!eins!!elf */
+                threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben
+                                                                     THIS IS IMPORTANT!!! DO NOT TOUCH THIS EVER AGAIN!!1!!eins!!elf */
         }
         threadArray[newThread].context.sp = (uint32_t)sp;
 }

@@ -137,6 +137,8 @@ void irq(void* sp){
         if(clockHandler()){
                 struct thcStruct* currentThread = getRunningThread();
                 struct thcStruct* nextThread = rrSchedule(currentThread, 0);
+                kprintf("cockHandler getRunningThread: pid: %i, tid: %i\n", currentThread->processID, currentThread->threadID);
+                kprintf("cockHandler rrSchedule: pid: %i, tid: %i\n", nextThread->processID, nextThread->threadID);
                 if ((currentThread != nextThread)&& currentThread != NULL) {
                                 saveContext(currentThread, sp);
                                 changeContext(nextThread, sp);

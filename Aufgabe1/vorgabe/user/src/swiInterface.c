@@ -6,13 +6,14 @@
 
 /* put given character into r1, then call software interrupt 0*/
 void putChar(char x) {
-	volatile uint32_t charCode = x;
-	if(charCode){
-        	asm volatile("mov r1, %0"::"r" (charCode));
-        	asm volatile("mov r7, #0");
-        	asm volatile("swi #0");
-            asm volatile("mov r1, #0");
-	}
+        printf("inPutChar\n");  /*  */
+        volatile uint32_t charCode = x;
+        if(charCode){
+                asm volatile("mov r1, %0"::"r" (charCode));
+                asm volatile("mov r7, #0");
+                asm volatile("swi #0");
+                asm volatile("mov r1, #0");
+        }
 }
 
 /* calls software interrupt 1, then returns content of r1*/
@@ -39,6 +40,7 @@ void newThread(void (*func)(void *), void * args, uint32_t args_size) {
 
 /*syscall that will create Thread in new process*/
 void newProcess(void (*func)(void*), void * args, uint32_t args_size) {
+        printf("inNewProcess(user)\n");
         asm volatile("mov r3, %0"::"r" (args_size));
         asm volatile("mov r2, %0"::"r" (args));
         asm volatile("mov r1, %0"::"r" (func));

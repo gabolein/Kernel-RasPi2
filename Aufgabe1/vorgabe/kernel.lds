@@ -8,7 +8,7 @@ MEMORY
 SECTIONS
 {
     .kInit                 : { *(.init)                     } > KERNEL_TEXT
-   	.kText                 : { *(.text .rodata)             } > KERNEL_TEXT
+   	.kText                 : { *(.text .rodata*)            } > KERNEL_TEXT
     .kData 0x100000        : { *(.bss .data)                } > KERNEL_DATA
 
     .uText 0x200000        : { *(.userText) *(.userROData)  }

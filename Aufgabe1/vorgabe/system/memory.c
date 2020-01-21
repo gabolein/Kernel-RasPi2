@@ -29,10 +29,13 @@ void initMMUL1Table() {
                 setTableEntry(i<<20, i<<20, SYSTEM_ACCESS | SET_XN);
         }
 
-        setTableEntry(0<<20, 0<<20, SYSTEM_ACCESS);              /* Kernel Text, ROData */
+        setTableEntry(0<<20, 0<<20, SYSTEM_ACCESS);              /* Kernel Text, ROData MUSS */
         setTableEntry(1<<20, 1<<20, SYSTEM_ACCESS | SET_XN); /* KBSS, Data */
         setTableEntry(2<<20, 2<<20, BOTH_RO | SET_PXN);      /* UText, UROData */
         setTableEntry(3<<20, 3<<20, BOTH_RO | SET_XN);       /* UData, UBSS (erstmal nur RO für den IDLE Thread) */
+        for(int i = 4; i < 21; i++){
+                setTableEntry(i<<20,i<<20, SYSTEM_ACCESS | SET_XN);
+        }
 
         setFaultEntry(257<<20);                              /* Für Demo */
         kprintf("I'm still alive\n");
@@ -44,9 +47,18 @@ void remapAddressSpace(uint16_t pid) {
         setTableEntry(4<<20, (5 + pid * 2)<<20, FULL_ACCESS | SET_XN);    /* Stacks */
 }
 
-void mapIdleThread() {
-        /* Map the Idle Stack located at 0x14 to 0x400000 */
-        asm volatile("mcr p15,0,r1,c8,c7,0");                             /* Invalidate TLB Entries */
-        setTableEntry(3<<20, 3<<20, BOTH_RO | SET_XN);       /* UData, UBSS (erstmal nur RO für den IDLE Thread) */
-        setTableEntry(4<<20, 20<<20, FULL_ACCESS | SET_XN);  /* IDLE Stack */
+void map1on1() {
+        setTableEntry(4<<20, 4<<20, SYSTEM_ACCESS | SET_XN); /* P1 Data und UData werden 1:1 gemappt,
+                                                                alle anderen sollten schon 1:1 sein */
+        setTableEntry(3<<20, 3<<20, SYSTEM_RO | SET_XN);
+}
+
+void copyUserBlock(uint16_t sourcePID, uint16_t targetPID){
+        uint32_t* sourceAddr = (uint32_t*)(0x400000 + sourcePID * 0x200000);
+        uint32_t* targetAddr = (uint32_t*)(0x400000 + targetPID * 0x200000);
+        for(uint32_t currAddr = 0x0; currAddr < 0x100000; currAddr += 4){
+                sourceAddr += currAddr;
+                targetAddr += currAddr;
+                *targetAddr = *sourceAddr;
+        }
 }
