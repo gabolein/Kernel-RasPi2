@@ -9,13 +9,6 @@
 void goIdle() {
         printf("ich bin der idle thread \n");
         newProcess(&spawner, NULL, 0);
-        printf("nach newProcess (goIdle) \n\n");
-        printf("ich bin der idle thread \n");
-        newProcess(&spawner, NULL, 0);
-        printf("nach newProcess (goIdle) \n\n");
-        printf("ich bin der idle thread \n");
-        newProcess(&spawner, NULL, 0);
-        printf("nach newProcess (goIdle) \n\n");
         while(1){
         	//printf("\ncyyyyka blyeeet\n");
         }

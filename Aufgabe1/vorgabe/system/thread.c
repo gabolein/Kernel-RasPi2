@@ -143,7 +143,6 @@ void saveContext(struct thcStruct* currentThread, void* sp) {
         asm volatile ("mrs %0, lr_usr": "=r" (currentThread->userLR));
         currentThread->context = *cr; /* copy all common registers to thread context */
         asm volatile ("mrs %0, sp_usr": "=r" (currentThread->context.sp));
-        kprintf("save context, content of sp: %x\n", currentThread->context.sp);
         if(currentThread->status == RUNNING) {
                 currentThread->status = READY;
         }
@@ -154,7 +153,6 @@ void changeContext(struct thcStruct* nextThread, void* sp){
         fillStack(&(nextThread->context), sp);
        	asm volatile("msr SPSR_cxsf, %0":: "r" (nextThread->spsr));
         asm volatile("msr lr_usr, %0":: "r" (nextThread->userLR));
-        kprintf("change context, content of sp: %x\n", nextThread->context.sp);
         asm volatile("msr sp_usr, %0":: "r" (nextThread->context.sp));
         nextThread->status = RUNNING;
         kprintf("\n\n Changing to thread %i,%i \n", nextThread->processID, nextThread->threadID);
