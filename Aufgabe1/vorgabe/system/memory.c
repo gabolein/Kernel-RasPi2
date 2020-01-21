@@ -42,7 +42,11 @@ void initMMUL1Table() {
 }
 
 void remapAddressSpace(uint16_t pid) {
-        asm volatile("mcr p15,0,r1,c8,c7,0");                             /* Invalidate TLB Entries */
+        if (pid == 8) {
+                mapIdleThread;
+                return;
+        }
+        asm volatile("mcr p15,0,r1,c8,c7,0");                          /* Invalidate TLB Entries */
         setTableEntry(3<<20, (4 + pid * 2)<<20, FULL_ACCESS | SET_XN);    /* Data */
         setTableEntry(4<<20, (5 + pid * 2)<<20, FULL_ACCESS | SET_XN);    /* Stacks */
 }
