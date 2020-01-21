@@ -7,6 +7,6 @@
 #define NULL 0
 
 void goIdle() {
-        newThread(&spawner, NULL, 0);
+        newProcess(&spawner, NULL, 0);
         while(1);
 }
