@@ -19,7 +19,7 @@
 
 
 void initMMU();
-void initMMUL1Table(volatile uint32_t*);
+void initMMUL1Table();
 void remapAddressSpace(uint16_t);
 void setTableEntry(uint32_t, uint32_t, uint32_t);
 void setFaultEntry(uint32_t);
