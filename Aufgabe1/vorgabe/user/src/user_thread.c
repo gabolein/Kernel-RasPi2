@@ -21,6 +21,9 @@
 #define UART_BASE_ADDR (0x7E201000 - 0x3F000000)
 #define UART_DR        ((uint32_t *) UART_BASE_ADDR)
 
+static uint32_t deineMudda = MAGIC_NUMBER;
+
+
 void user_thread(void* arg) {
         char receivedChar = *(char*)arg;
         for (int i = 0; i < AMOUNT_CHARS; i++) {
@@ -33,23 +36,59 @@ void user_thread(void* arg) {
         }
 }
 
+/* void test(void* arg){ */
+/*         char* myChar = (char*)arg; */
+/*         asm volatile("push {%0}" :: "r" (*myChar)); */
+/*         sleep(300); */
+/*         char meinChar = 0; */
+/*         asm volatile("pop {%0}" : "+r" (meinChar)); */
+/*         printf("meinChar ist: %c\n", meinChar); */
+/* } */
+
+void spawnDatShit(){
+        printf("spawnDatshit: %u\n", deineMudda);
+        sleep(300);
+        /* newThread(&test, &A, 1); */
+        /* newThread(&test, &B, 1); */
+        printf("spawnDatshit: %u\n", deineMudda);
+}
+
 void spawner() {
-        printf("Ich bin der Spawner \n");
+        printf("Ich bin der Spawner: %u \n", deineMudda);
         while(1) {
                 volatile char c = getChar();
                 if (c) {
                         uint32_t number = (uint32_t) c;
-                        newThread(&demonstration5, &number, 1);
+                        /* newThread(&demonstration5, &number, 1); */
+                        newProcess(&spawnDatShit, NULL, 0);
+                        deineMudda = 5;
+                        /* newProcess(&spawnDatShit, NULL, 0); */
                 }
         }
 }
 
 void entertainer() {
-        while(1) {
-                sleep(3000);
-                char* string = "Hallo Freunde!\n";
-                newThread(&printer, string, 15);
-        }
+
+        asm volatile("mov r0, #123");
+        asm volatile("push {r0}");
+        asm volatile("mov r0, #0");
+        sleep(300);
+        uint32_t holdup = 0;
+        uint32_t sp = 0;
+        asm volatile("mov %0, sp": "+r" (sp));
+        asm volatile("mov %0, r0": "+r" (holdup));
+        printf("Mein Stackpointer ist: %x\n", sp);
+        printf("R0 enthält (vor pop): %u\n", holdup);
+        asm volatile("pop {r0}");
+        asm volatile("mov %0, r0": "+r" (holdup));
+        printf("R0 enthält (nach pop): %u\n", holdup);
+
+        /* while(1) { */
+
+        /*         sleep(3000); */
+        /*         char* string = "Hallo Freunde!\n"; */
+        /*         newThread(&printer, string, 15); */
+        /* } */
 }
 
 void printer(void* arg) {

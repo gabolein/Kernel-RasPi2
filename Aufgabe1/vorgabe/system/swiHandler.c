@@ -58,8 +58,8 @@ void exitHandler(struct regDump* rd) {
         currentThread->context.r5 = 0;
         currentThread->status = DEAD;
         currentThread->context.sp = currentThread->initialSp;
-        registerDump(rd);
-        kprintf("\n\nThread %u was deaded as fuck.\n", currentThread->threadID);
+        /* registerDump(rd); */
+        kprintf("\n\nThread %u,%u was deaded as fuck.\n", currentThread->processID, currentThread->threadID);
         checkProcessAlive(currentThread->processID);
 }
 
