@@ -8,6 +8,8 @@
 #include "../user/include/idleThread.h"
 #include "../user/include/swiInterface.h"
 #include "../user/include/user_thread.h"
+#include "timer.h"
+
 
 #define AMOUNT_THREADS          7
 #define IDLE_PID                8
@@ -31,7 +33,20 @@ void initThreadArray(uint16_t currentProcess) {
         }
 }
 
+/* KAPUTT */
+static void copyIdleDataBlock(){
+        map1on1();
+        uint32_t* sourceAddr = (uint32_t*)(0x300000);
+        uint32_t* targetAddr = (uint32_t*)(0x1400000);
+        for(uint32_t currAddr = 0x0; currAddr < 0x100000; currAddr += 4){
+                *targetAddr = *sourceAddr;
+                sourceAddr += 1;
+                targetAddr += 1;
+        }
+}
+
 void initIdleThread() { /* needs rework */
+        copyIdleDataBlock();
         remapAddressSpace(IDLE_PID);
         idleThread.processID = 8; /* IDLE Thread hat immer PID 8 */
         idleThread.hasRun = 0;
@@ -46,11 +61,11 @@ void initIdleThread() { /* needs rework */
         asm volatile("msr SPSR_cxsf, %0":: "r" (idleThread.spsr));
         asm volatile("msr sp_usr, %0":: "r" (idleThread.context.sp));
         asm volatile("msr lr_usr, %0":: "r" (idleThread.userLR));
-        asm volatile("mov lr, %0":: "r" (idleThread.context.lr));
-        kprintf("vor context change zu idle\n");
-        asm volatile("subs pc, lr, #4"); /* Change Context to IDLE Thread */
-        kprintf("nach context change zu idle\n");
 
+        kprintf("vor context change zu idle\n");
+        /* initTimer(); */
+        asm volatile("mov lr, %0":: "r" (idleThread.context.lr));
+        asm volatile("subs pc, lr, #4"); /* Change Context to IDLE Thread */
 }
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size, uint16_t processID) {

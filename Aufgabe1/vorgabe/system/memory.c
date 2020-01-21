@@ -56,9 +56,9 @@ void map1on1() {
 void copyUserBlock(uint16_t sourcePID, uint16_t targetPID){
         uint32_t* sourceAddr = (uint32_t*)(0x400000 + sourcePID * 0x200000);
         uint32_t* targetAddr = (uint32_t*)(0x400000 + targetPID * 0x200000);
-        for(uint32_t currAddr = 0x0; currAddr < 0x100000; currAddr += 4){
-                sourceAddr += currAddr;
-                targetAddr += currAddr;
+        for(uint32_t currAddr = 0x0; currAddr < 0x100000; currAddr += 0x4){
                 *targetAddr = *sourceAddr;
+                sourceAddr += 1;
+                targetAddr += 1;
         }
 }

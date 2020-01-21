@@ -92,7 +92,6 @@ void software_interrupt(void* sp){
                 uint32_t swiID = 0;
                 asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
                 struct thcStruct* currentThread = getRunningThread();
-                kprintf("in swi handler, swiID = %i", swiID);
                 switch(swiID) {
                         case PUT_CHAR:
                                 putCharHandler(&rd);
