@@ -73,6 +73,7 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size, u
                 kprintf("\nCan't create new thread.\n");
                 return;
         }
+        processArray[processID].threadArray[newThread].context.r1 = newThread;
         processArray[processID].threadArray[newThread].hasRun = 0;
         processArray[processID].threadArray[newThread].status = READY;
         processArray[processID].threadArray[newThread].context.lr = (uint32_t)func + INSTRUCTION; /* +4, da im trampoline 4 subtrahiert wird */
