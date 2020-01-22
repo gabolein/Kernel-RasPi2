@@ -30,14 +30,14 @@ void initMMUL1Table() {
                 setTableEntry(i << PHYSICAL_ADDR_SHIFT, i << PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS | SET_XN);
         }
 
-        setTableEntry(0 << PHYSICAL_ADDR_SHIFT, 0 << PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS);          /* Kernel Text, ROData MUSS */
-        setTableEntry(1 << PHYSICAL_ADDR_SHIFT, 1 << PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS | SET_XN); /* KBSS, Data */
-        setTableEntry(2 << PHYSICAL_ADDR_SHIFT, 2 << PHYSICAL_ADDR_SHIFT, BOTH_RO | SET_PXN);      /* UText, UROData */
-        setTableEntry(3 << PHYSICAL_ADDR_SHIFT, 3 << PHYSICAL_ADDR_SHIFT, BOTH_RO | SET_XN);       /* UData, UBSS (erstmal nur RO für den IDLE Thread) */
+        setTableEntry(0 << PHYSICAL_ADDR_SHIFT, 0 << PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS);          /* Kernel Text */
+        setTableEntry(1 << PHYSICAL_ADDR_SHIFT, 1 << PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS | SET_XN); /* KBSS, Data, ROData */
+        setTableEntry(2 << PHYSICAL_ADDR_SHIFT, 2 << PHYSICAL_ADDR_SHIFT, BOTH_RO       | SET_PXN);/* UText */
+        setTableEntry(3 << PHYSICAL_ADDR_SHIFT, 3 << PHYSICAL_ADDR_SHIFT, BOTH_RO       | SET_XN); /* UData, UBSS, UROData */
         for(int i = FIRST_USER_DATA_MB; i <= LAST_USER_DATA_MB; i++){
                 setTableEntry(i << PHYSICAL_ADDR_SHIFT, i << PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS | SET_XN);
         }
-        setFaultEntry(257<<PHYSICAL_ADDR_SHIFT);                              /* Für Demo von Abgabe 5 */
+        setFaultEntry(257<<PHYSICAL_ADDR_SHIFT);                                                   /* Für Demo von Abgabe 5 */
 }
 
 void remapAddressSpace(uint16_t pid) {
@@ -46,9 +46,8 @@ void remapAddressSpace(uint16_t pid) {
 }
 
 void map1on1() {
-        setTableEntry(4<<20, 4<<20, SYSTEM_ACCESS | SET_XN); /* P1 Data und UData werden 1:1 gemappt,
-                                                                alle anderen sollten schon 1:1 sein */
-        setTableEntry(3<<20, 3<<20, SYSTEM_RO | SET_XN);
+        setTableEntry(4<<20, 4<<20, SYSTEM_ACCESS | SET_XN); /* P1 Data und UData werden 1:1 gemappt */
+        setTableEntry(3<<20, 3<<20, SYSTEM_RO     | SET_XN);
 }
 
 void copyUserBlock(uint16_t sourcePID, uint16_t targetPID){
