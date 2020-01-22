@@ -102,7 +102,6 @@ void software_interrupt(void* sp){
                                         saveContext(currentThread, sp);
                                         struct thcStruct* nextThread = rrSchedule(currentThread, 0);
                                         changeContext(nextThread, sp);
-                                        kprintf("Letzte Zeile von GET_CHAR\n");
                                 }
                                 break;
                         case NEW_THREAD:

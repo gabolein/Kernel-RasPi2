@@ -7,7 +7,6 @@
 #define NULL 0
 
 void goIdle() {
-        printf("ich bin der idle thread \n");
         newProcess(&spawner, NULL, 0);
         while(1){
         	//printf("\ncyyyyka blyeeet\n");

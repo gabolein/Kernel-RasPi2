@@ -68,7 +68,6 @@ void initIdleThread() { /* needs rework */
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size, uint16_t processID) {
         char argument = *(char*)args;
-        kprintf("In createThread: empfangener Char: %c\n", argument);
         int newThread = getDeadThread(processID);
         if (newThread == -1) {
                 kprintf("\nCan't create new thread.\n");
@@ -94,10 +93,9 @@ void createThread(void (*func)(void *), const void * args, uint32_t args_size, u
                                                                      THIS IS IMPORTANT!!! DO NOT TOUCH THIS EVER AGAIN!!1!!eins!!elf */
         }
         processArray[processID].threadArray[newThread].context.sp = (uint32_t)sp;
-        kprintf("sp of newly created thread (TID: %i,%i): %x\n", processID, newThread, sp);
 }
 
-int getDeadThread(uint16_t processID){ /* FIX */
+int getDeadThread(uint16_t processID){
         for(uint16_t i = 0; i < AMOUNT_THREADS; i++) {
                 if(processArray[processID].threadArray[i].status == DEAD){
                         return i;
@@ -134,7 +132,6 @@ struct thcStruct* threadWaitingForChar() {
 }
 
 void saveContext(struct thcStruct* currentThread, void* sp) {
-        kprintf("saving Context of thread %i,%i\n", currentThread->processID, currentThread->threadID);
         struct commonRegs* cr = (struct commonRegs*) sp;
         asm volatile ("mrs %0, SPSR": "=r" (currentThread->spsr));
         asm volatile ("mrs %0, CPSR": "=r" (currentThread->cpsr));
@@ -153,7 +150,6 @@ void changeContext(struct thcStruct* nextThread, void* sp){
         asm volatile("msr lr_usr, %0":: "r" (nextThread->userLR));
         asm volatile("msr sp_usr, %0":: "r" (nextThread->context.sp));
         nextThread->status = RUNNING;
-        kprintf("\n\n Changing to thread %i,%i \n", nextThread->processID, nextThread->threadID);
 }
 
 void fillStack(volatile struct commonRegs* context, void* sp){
