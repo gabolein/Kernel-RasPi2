@@ -63,11 +63,11 @@ void demonstration6(void* arg){
         char* myChar = (char*)arg;
         charStorage = *myChar;
         newThread(&demonstration6Thread, NULL, 0);
+        sleep(100);             /*  */
+        newThread(&demonstration6Thread, NULL, 0);
         sleep(100);
-        //newThread(&demonstration6Thread, NULL, 0);
-        sleep(100);
-        uint32_t localCounter = 0;
-        while(localCounter < COUNTER_LIMIT){
+        volatile uint32_t localCounter = 0;
+        while(globalCounter < COUNTER_LIMIT){
                 globalCounter++;
                 localCounter++;
                 printf("%c:%u (%u:%u)\n", charStorage, globalCounter, threadID, localCounter);
@@ -78,8 +78,8 @@ void demonstration6(void* arg){
 void demonstration6Thread(){
         uint16_t threadID = 0;
         asm volatile("mov %0, r1": "+r" (threadID));
-        uint32_t localCounter = 0;
-        while(localCounter < COUNTER_LIMIT){
+        volatile uint32_t localCounter = 0;
+        while(globalCounter < COUNTER_LIMIT){
                 globalCounter++;
                 localCounter++;
                 printf("%c:%u (%u:%u)\n", charStorage, globalCounter, threadID, localCounter);
