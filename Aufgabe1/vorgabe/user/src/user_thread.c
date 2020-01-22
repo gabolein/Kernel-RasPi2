@@ -17,11 +17,13 @@
 #define UNASSIGNED_ADDR   (uint32_t*)0x10100000
 #define MAGIC_NUMBER 69
 #define NULL (void*)0
+#define COUNTER_LIMIT 10
 
 #define UART_BASE_ADDR (0x7E201000 - 0x3F000000)
 #define UART_DR        ((uint32_t *) UART_BASE_ADDR)
 
-static uint32_t deineMudda = MAGIC_NUMBER;
+static volatile char charStorage = 0;
+static volatile uint32_t globalCounter = 0;
 
 
 void user_thread(void* arg) {
@@ -45,25 +47,39 @@ void user_thread(void* arg) {
 /*         printf("meinChar ist: %c\n", meinChar); */
 /* } */
 
-void spawnDatShit(){
-        printf("spawnDatshit: %u\n", deineMudda);
-        sleep(300);
-        /* newThread(&test, &A, 1); */
-        /* newThread(&test, &B, 1); */
-        printf("spawnDatshit: %u\n", deineMudda);
-}
-
 void spawner() {
-        printf("Ich bin der Spawner: %u \n", deineMudda);
         while(1) {
                 volatile char c = getChar();
                 if (c) {
                         uint32_t number = (uint32_t) c;
-                        /* newThread(&demonstration5, &number, 1); */
-                        newProcess(&spawnDatShit, NULL, 0);
-                        deineMudda = 5;
-                        /* newProcess(&spawnDatShit, NULL, 0); */
+                        newProcess(&demonstration6, &number, 1);
                 }
+        }
+}
+
+void demonstration6(void* arg){
+        char* myChar = (char*)arg;
+        charStorage = *myChar;
+        newThread(&demonstration6Thread, NULL, 0);
+        sleep(100);
+        newThread(&demonstration6Thread, NULL, 0);
+        sleep(100);
+        uint32_t localCounter = 0;
+        while(globalCounter < COUNTER_LIMIT){
+                globalCounter++;
+                localCounter++;
+                printf("%c:%u (ID:%u)\n", charStorage, globalCounter, localCounter);
+                sleep(100);
+        }
+}
+
+void demonstration6Thread(){
+        uint32_t localCounter = 0;
+        while(globalCounter < COUNTER_LIMIT){
+                globalCounter++;
+                localCounter++;
+                printf("%c:%u (ID:%u)\n", charStorage, globalCounter, localCounter);
+                sleep(100);
         }
 }
 

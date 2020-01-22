@@ -19,7 +19,7 @@
 #define INSTRUCTION             4
 #define USER_THREAD_FIRST_SP    0x420000
 
-struct thcStruct idleThread;
+struct thcStruct idleThread = {0};
 
 void initThreadArray(uint16_t currentProcess) {
         /* Init all threads as dead and give them a stackpointer */

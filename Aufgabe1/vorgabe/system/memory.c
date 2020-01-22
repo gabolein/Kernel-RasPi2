@@ -14,6 +14,7 @@ void initMMU() {
 }
 
 void setTableEntry(uint32_t virtAddr, uint32_t physAddr, uint32_t flags){
+        asm volatile("mcr p15,0,r1,c8,c7,0");                          /* Invalidate TLB Entries */
         mmuTable[virtAddr >> 20] = (physAddr & SECTION_BASE_BITMASK) | (flags & (~SECTION_BASE_BITMASK)) | SECTION_ENTRY_CODE;
 }
 
@@ -40,7 +41,7 @@ void initMMUL1Table() {
 }
 
 void remapAddressSpace(uint16_t pid) {
-        asm volatile("mcr p15,0,r1,c8,c7,0");                          /* Invalidate TLB Entries */
+        /* asm volatile("mcr p15,0,r1,c8,c7,0");                          /\* Invalidate TLB Entries *\/ */
         setTableEntry(3<<20, (4 + pid * 2)<<20, FULL_ACCESS | SET_XN);    /* Data */
         setTableEntry(4<<20, (5 + pid * 2)<<20, FULL_ACCESS | SET_XN);    /* Stacks */
 }
