@@ -13,7 +13,6 @@
  */
 __attribute__((format(printf, 1, 2)))
 void kprintf(const char* format, ...) {
-
         va_list arg;
         va_start(arg, format);
 
@@ -26,62 +25,59 @@ void kprintf(const char* format, ...) {
         for (const char* traverse = format; *traverse != '\0'; traverse++) {
                 if (*traverse == '%') {
                         traverse++; // move to next character, we dont wanna print the '%'
-
                         switch(*traverse) {
-
-                                case '%' :
-                                        kputChar('%');
-                                        break;
-                                case 'c' :
-                                        char_rep = va_arg(arg, int);
-                                        kputChar(char_rep);
-                                        break;
-                                case 's' :
-                                        str = va_arg(arg, const char*);
-                                        kprintf(str);
-                                        break;
-                                case 'x' :
-                                        u_int_num = va_arg(arg, unsigned int);
-                                        {
-                                                char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
-                                                kprintf(kitoa16(u_int_num, c_buffer));
+                        case '%' :
+                                kputChar('%');
+                                break;
+                        case 'c' :
+                                char_rep = va_arg(arg, int);
+                                kputChar(char_rep);
+                                break;
+                        case 's' :
+                                str = va_arg(arg, const char*);
+                                kprintf(str);
+                                break;
+                        case 'x' :
+                                u_int_num = va_arg(arg, unsigned int);
+                                {
+                                        char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
+                                        kprintf(kitoa16(u_int_num, c_buffer));
+                                }
+                                break;
+                        case 'i' :
+                                int_num = va_arg(arg, int);
+                                if(int_num == MIN_INT) { // edge case (zweier komplement who?)
+                                        kprintf("-21474836478");
+                                } else {
+                                        if (int_num < 0) { // if negative, print '-' and treat like unsigned int
+                                                kputChar('-');
+                                                int_num *= -1;
                                         }
-                                        break;
-                                case 'i' :
-                                        int_num = va_arg(arg, int);
-                                        if(int_num == MIN_INT) { // edge case (zweier komplement who?)
-                                                kprintf("-21474836478");
-                                        } else {
-                                                if (int_num < 0) { // if negative, print '-' and treat like unsigned int
-                                                        kputChar('-');
-                                                        int_num *= -1;
-                                                }
-                                                {
-                                                        char c_buffer[DEC_BUFFER_SIZE] = "";
-                                                        kprintf(kitoa10(int_num, c_buffer));
-                                                }
-                                        }
-                                        break;
-                                case 'u' :
-                                        u_int_num = va_arg(arg, unsigned int);
                                         {
                                                 char c_buffer[DEC_BUFFER_SIZE] = "";
-                                                kprintf(kitoa10(u_int_num, c_buffer));
+                                                kprintf(kitoa10(int_num, c_buffer));
                                         }
-                                        break;
-                                case 'p' :
-                                        address = va_arg(arg, uint32_t); // pointer -> 32Bit address
-                                        {
-                                                char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
-                                                kprintf(kitoa16(address, c_buffer));
-                                        }
-                                        break;
-                                default: // if unknown definer, behave like printf
-                                        kputChar('%');
-                                        kputChar(*traverse);
-                                        break;
+                                }
+                                break;
+                        case 'u' :
+                                u_int_num = va_arg(arg, unsigned int);
+                                {
+                                        char c_buffer[DEC_BUFFER_SIZE] = "";
+                                        kprintf(kitoa10(u_int_num, c_buffer));
+                                }
+                                break;
+                        case 'p' :
+                                address = va_arg(arg, uint32_t); // pointer -> 32Bit address
+                                {
+                                        char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
+                                        kprintf(kitoa16(address, c_buffer));
+                                }
+                                break;
+                        default: // if unknown definer, behave like printf
+                                kputChar('%');
+                                kputChar(*traverse);
+                                break;
                         }
-
                 } else {
                         kputChar(*traverse);
                 }

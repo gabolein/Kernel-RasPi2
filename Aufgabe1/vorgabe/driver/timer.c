@@ -6,7 +6,7 @@
 #define BASIC_IRQ_TIMER_ENABLE 1
 #define BIG_COUNTER (1 << 1) /* 23 Bit */
 #define TIMER_ENABLE (1 << 7)
-#define TIMER_FREQUENCY 100 /* about 1 interrupt per second */
+#define TIMER_FREQUENCY 100 /* f = 1/100 s */
 #define TIMER_INTERRUPT_STATUS 1
 
 #define TIMER_PRE_DIV_VALUE 250000

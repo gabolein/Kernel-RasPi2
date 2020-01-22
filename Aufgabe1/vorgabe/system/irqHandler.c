@@ -8,17 +8,16 @@
 #include "scheduler.h"
 #include "led.h"
 
-
-#define BUFFER_SIZE 100
-#define UART_IRQ_PENDING (1 << 25)
-#define TIMER_IRQ_PENDING 1
-#define IDLE_THREAD 32
-#define UNASSIGNED_ADDR   (uint32_t*)0x10100000
-#define KERNEL_TEXT_ADDR (uint32_t*)0x8000
-#define USER_TEXT_ADDR (uint32_t*)0x200000
-#define MAGIC_NUMBER 69
-#define NULL (void*)0
-
+#define BUFFER_SIZE         100
+#define UART_IRQ_PENDING    (1 << 25)
+#define TIMER_IRQ_PENDING   1
+#define IDLE_THREAD         32
+#define UNASSIGNED_ADDR     (uint32_t*)0x10100000
+#define KERNEL_TEXT_ADDR    (uint32_t*)0x8000
+#define USER_TEXT_ADDR      (uint32_t*)0x200000
+#define MAGIC_NUMBER        69
+#define NULL                (void*)0
+#define THREAD_NOT_DED      0
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -56,7 +55,6 @@ uint8_t bufferInsert(char c){
 }
 
 char bufferGet() {
-
         if(charBufferLength <= 0) {
                 return 0;
         }
@@ -108,16 +106,16 @@ void irq(void* sp){
         }
         if(clockHandler()){
                 struct thcStruct* currentThread = getRunningThread();
-                struct thcStruct* nextThread = rrSchedule(currentThread, 0);
+                struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_NOT_DED);
                 if ((currentThread != nextThread)&& currentThread != NULL) {
-                                saveContext(currentThread, sp);
-                                changeContext(nextThread, sp);
+                        saveContext(currentThread, sp);
+                        changeContext(nextThread, sp);
                 }
         }
         if(uartHandler()){
                 struct thcStruct* currentThread = getRunningThread();
                 if (currentThread == &idleThread) {
-                        struct thcStruct* nextThread = rrSchedule(currentThread, 0);
+                        struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_NOT_DED);
                         if (currentThread != nextThread) {
                                 saveContext(currentThread, sp);
                                 changeContext(nextThread, sp);

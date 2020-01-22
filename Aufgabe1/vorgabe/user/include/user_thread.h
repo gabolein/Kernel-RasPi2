@@ -10,4 +10,4 @@ void demonstration6(void*);
 void demonstration6Thread();
 
 
-#endif //USER_THREAD_H
+#endif  /* USER_THREAD_H */

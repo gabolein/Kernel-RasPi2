@@ -5,7 +5,6 @@
 #include "threadUtil.h"
 #include "user_thread.h"
 
-
 #define COMPUTATION_LEN 300000
 #define AMOUNT_CHARS 3
 #define CAPITAL_LETTER_LIM 97
@@ -24,7 +23,6 @@
 
 static volatile char charStorage = 0;
 static volatile uint32_t globalCounter = 0;
-
 
 void user_thread(void* arg) {
         char receivedChar = *(char*)arg;
@@ -76,38 +74,9 @@ void demonstration6Thread(){
         }
 }
 
-void entertainer() {
-
-        asm volatile("mov r0, #123");
-        asm volatile("push {r0}");
-        asm volatile("mov r0, #0");
-        /* sleep(300); */
-        uint32_t holdup = 0;
-        uint32_t sp = 0;
-        asm volatile("mov %0, sp": "+r" (sp));
-        asm volatile("mov %0, r0": "+r" (holdup));
-        printf("Mein Stackpointer ist: %x\n", sp);
-        printf("R0 enthält (vor pop): %u\n", holdup);
-        asm volatile("pop {r0}");
-        asm volatile("mov %0, r0": "+r" (holdup));
-        printf("R0 enthält (nach pop): %u\n", holdup);
-
-        /* while(1) { */
-
-        /*         sleep(3000); */
-        /*         char* string = "Hallo Freunde!\n"; */
-        /*         newThread(&printer, string, 15); */
-        /* } */
-}
-
-void printer(void* arg) {
-        printf("hello i am the printer this is my song\n");
-        char* string = (char*)arg;
-        printf(string);
-}
 
 void demonstration5(void* arg) {
-        printf("ICh bin die Demo mit arg %c\n", *(char*)arg);
+        printf("Ich bin die Demo mit arg %c\n", *(char*)arg);
         volatile uint32_t* addr;
         volatile uint32_t holder;
         switch(*(char*)arg) {

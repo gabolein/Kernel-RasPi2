@@ -4,16 +4,15 @@
 #include "thread.h"
 #include "process.h"
 #include "kio.h"
-#include "handler.h"
 #include "registerDumpUtil.h"
 #include "presentations.h"
 #include "irqHandler.h"
 #include "memory.h"
-#include "../user/include/user_thread.h"
 
-
-#define NULL (void*)0
-#define INSTRUCTION 4
+#define NULL           (void*)0
+#define INSTRUCTION    4
+#define THREAD_DIED    1
+#define THREAD_NOT_DED 0
 
 
 /* Expects char in r1 */
@@ -47,9 +46,9 @@ void newThreadHandler(struct regDump* rd) {
         createThread(func, args, args_size, currentProcess);
 }
 
-void exitHandler(struct regDump* rd) {
+void exitHandler() {
         struct thcStruct* currentThread = getRunningThread();
-	/* zero registers */
+        /* zero registers */
         currentThread->context.r0 = 0;
         currentThread->context.r1 = 0;
         currentThread->context.r2 = 0;
@@ -58,7 +57,6 @@ void exitHandler(struct regDump* rd) {
         currentThread->context.r5 = 0;
         currentThread->status = DEAD;
         currentThread->context.sp = currentThread->initialSp;
-        /* registerDump(rd); */
         kprintf("\n\nThread %u,%u was deaded as fuck.\n", currentThread->processID, currentThread->threadID);
         checkProcessAlive(currentThread->processID);
 }
@@ -93,40 +91,39 @@ void software_interrupt(void* sp){
                 asm volatile("mov %0, r7": "=r" (swiID)); /* get syscall number */
                 struct thcStruct* currentThread = getRunningThread();
                 switch(swiID) {
-                        case PUT_CHAR:
-                                putCharHandler(&rd);
-                                break;
-                        case GET_CHAR:
-                                getCharHandler(sp);
-                                if(currentThread->status == WAITING) {
-                                        saveContext(currentThread, sp);
-                                        struct thcStruct* nextThread = rrSchedule(currentThread, 0);
-                                        changeContext(nextThread, sp);
-                                }
-                                break;
-                        case NEW_THREAD:
-                                newThreadHandler(&rd);
-                                remapAddressSpace(currentThread->processID);
-                                break;
-                        case EXIT:
-                                exitHandler(&rd);
-                                struct thcStruct* nextThreadExit = rrSchedule(currentThread, 1);
-                                changeContext(nextThreadExit, sp);
-                                break;
-                        case SLEEP:
-                                sleepHandler(&rd);
+                case PUT_CHAR:
+                        putCharHandler(&rd);
+                        break;
+                case GET_CHAR:
+                        getCharHandler(sp);
+                        if(currentThread->status == WAITING) {
                                 saveContext(currentThread, sp);
-                                struct thcStruct* nextThread = rrSchedule(currentThread, 0);
+                                struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_NOT_DED);
                                 changeContext(nextThread, sp);
-                                break;
-                        case NEW_PROCESS:
-                                newProcessHandler(&rd);
-                                remapAddressSpace(currentThread->processID);
-                                break;
-                        default:
-                                kprintf("\nUNKNOWN SYSCALL\n");
-                                break;
-
+                        }
+                        break;
+                case NEW_THREAD:
+                        newThreadHandler(&rd);
+                        remapAddressSpace(currentThread->processID);
+                        break;
+                case EXIT:
+                        exitHandler();
+                        struct thcStruct* nextThreadExit = rrSchedule(currentThread, THREAD_DIED);
+                        changeContext(nextThreadExit, sp);
+                        break;
+                case SLEEP:
+                        sleepHandler(&rd);
+                        saveContext(currentThread, sp);
+                        struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_NOT_DED);
+                        changeContext(nextThread, sp);
+                        break;
+                case NEW_PROCESS:
+                        newProcessHandler(&rd);
+                        remapAddressSpace(currentThread->processID);
+                        break;
+                default:
+                        kprintf("\nUNKNOWN SYSCALL\n");
+                        break;
                 }
                 return;
         }

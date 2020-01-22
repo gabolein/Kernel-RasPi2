@@ -4,11 +4,9 @@
 #include "swiInterface.h"
 #include <stdint.h>
 
-#define NULL 0
+#define NULL ((void*)0)
 
 void goIdle() {
         newProcess(&spawner, NULL, 0);
-        while(1){
-        	//printf("\ncyyyyka blyeeet\n");
-        }
+        while(1);
 }

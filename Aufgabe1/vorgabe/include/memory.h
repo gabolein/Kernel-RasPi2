@@ -17,6 +17,7 @@
 #define SET_XN (1 << 4)
 #define SET_PXN 1
 
+#define MMU_TABLE_ENTRIES 4096
 
 void initMMU();
 void initMMUL1Table();
@@ -26,8 +27,7 @@ void setFaultEntry(uint32_t);
 void map1on1();
 void copyUserBlock(uint16_t, uint16_t);
 
-extern volatile uint32_t mmuTable[4096];
-
-
+extern volatile uint32_t mmuTable[MMU_TABLE_ENTRIES];
+extern void _mmuInit();
 
 #endif

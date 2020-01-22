@@ -1,8 +1,8 @@
 #include "testThread.h"
-#include "io.h"
 #include <stdint.h>
 
 void threadCauseSWI() {
+        asm volatile ("swi #123");
 }
 
 #pragma GCC diagnostic ignored "-Wunused-variable"

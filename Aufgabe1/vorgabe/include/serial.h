@@ -1,3 +1,6 @@
+#ifndef SERIAL_H
+#define SERIAL_H
+
 #include <stdint.h>
 
 void initUart();
@@ -7,5 +10,4 @@ uint8_t uartBusy();
 uint8_t uartReceiveChar(char*);
 void enableUartInterrupt();
 
-
-
+#endif  /* SERIAL_H */

@@ -1,8 +1,9 @@
-#include <stdint.h>
-#include "thread.h"
 
 #ifndef PROCESS
 #define PROCESS
+
+#include <stdint.h>
+#include "thread.h"
 
 #define AMOUNT_THREADS 7
 

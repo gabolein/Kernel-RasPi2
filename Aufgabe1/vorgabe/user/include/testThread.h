@@ -5,4 +5,4 @@ void threadCauseSWI();
 void threadCauseDataAbort();
 void threadCauseUndefinedInstruction();
 
-#endif //TEST_THREAD_H
+#endif  /* TEST_THREAD_H */

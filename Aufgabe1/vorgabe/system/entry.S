@@ -1,5 +1,5 @@
 
-		.globl _reset
+	.globl _reset
 _reset:
 	b	0x0
 

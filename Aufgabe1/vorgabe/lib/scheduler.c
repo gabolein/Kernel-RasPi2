@@ -7,25 +7,25 @@
 #define TIME_SLICE_INTERRUPTS   100
 #define THREAD_ALIVE            3
 #define THREAD_ARRAY_SIZE       7
-#define PROCESS_ARRAY_SIZE	8
+#define PROCESS_ARRAY_SIZE	    8
 #define IDLE_THREAD             32
 #define NULL                    (void*)0
+#define LAST_PROCESS             7
 
 static uint16_t timerInterruptCount = 0;
 
-
 void adjustSleptTime(){
-	for(uint16_t i = 0; i < PROCESS_ARRAY_SIZE; i++) {
-            for(uint16_t j = 0; j < THREAD_ARRAY_SIZE; j++) {
-                    if(processArray[i].threadArray[j]. status == WAITING && !processArray[i].threadArray[j].waitingForChar){
-                            processArray[i].threadArray[j].sleptTime++;
-                            if(processArray[i].threadArray[j].sleptTime >= processArray[i].threadArray[j].sleepingTime) {
-                                    processArray[i].threadArray[j].sleptTime = 0;
-                                    processArray[i].threadArray[j].status = READY;
-                            }
-                    }
-            }
-	}
+        for(uint16_t i = 0; i < PROCESS_ARRAY_SIZE; i++) {
+                for(uint16_t j = 0; j < THREAD_ARRAY_SIZE; j++) {
+                        if(processArray[i].threadArray[j]. status == WAITING && !processArray[i].threadArray[j].waitingForChar){
+                                processArray[i].threadArray[j].sleptTime++;
+                                if(processArray[i].threadArray[j].sleptTime >= processArray[i].threadArray[j].sleepingTime) {
+                                        processArray[i].threadArray[j].sleptTime = 0;
+                                        processArray[i].threadArray[j].status = READY;
+                                }
+                        }
+                }
+        }
 }
 
 struct thcStruct* rrSchedule(struct thcStruct* currentThread, uint16_t threadDied) {
@@ -39,7 +39,7 @@ struct thcStruct* rrSchedule(struct thcStruct* currentThread, uint16_t threadDie
            || currentThread->status == WAITING) {
                 timerInterruptCount = 0;
                 if(currentThread == &idleThread){
-                        currentThread = &(processArray[7].threadArray[0]); /* if coming from idlethread, start looking for new Thread at 0 */
+                        currentThread = &(processArray[LAST_PROCESS].threadArray[0]); /* if coming from idlethread, start looking for new Thread at 0 */
                 }
                 uint8_t i = (currentThread->processID + 1) % PROCESS_ARRAY_SIZE; /* iterate over processes by starting after the current one */
                 do {

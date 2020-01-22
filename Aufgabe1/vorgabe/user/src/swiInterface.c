@@ -43,14 +43,7 @@ void newProcess(void (*func)(void*), void * args, uint32_t args_size) {
         asm volatile("mov r2, %0"::"r" (args));
         asm volatile("mov r1, %0"::"r" (func));
         asm volatile("mov r7, #5");
-        //uint32_t usr_lr = 0;
-        //asm volatile("mov %0, lr":"+r" (usr_lr));
-        //printf("usr_lr before swi: %x\n", usr_lr);
         asm volatile("swi #5");
-        //asm volatile("mov lr, %0"::"r" (usr_lr));
-        //asm volatile("mov %0, lr":"+r" (usr_lr));
-        //printf("usr_lr after swi: %x\n", usr_lr);
-        //printf("etwas1\n");
         asm volatile("mov r1, #0");
         asm volatile("mov r2, #0");
         asm volatile("mov r3, #0");
@@ -64,8 +57,8 @@ void exit(){
 }
 
 void sleep(uint32_t sleepTime) {
-    asm volatile("mov r1, %0"::"r" (sleepTime));
-    asm volatile("mov r7, #4");
-    asm volatile("swi #4");
-	asm volatile("mov r1, #0");
+        asm volatile("mov r1, %0"::"r" (sleepTime));
+        asm volatile("mov r7, #4");
+        asm volatile("swi #4");
+        asm volatile("mov r1, #0");
 }

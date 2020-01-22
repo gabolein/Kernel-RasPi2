@@ -8,8 +8,8 @@
 #include "thread.h"
 #include "swiHandler.h"
 
-
-#define NULL (void*)0
+#define NULL            (void*)0
+#define THREAD_DIED     1
 
 void undefined_instruction(void* sp){
         green_on();
@@ -19,7 +19,7 @@ void undefined_instruction(void* sp){
                 /* End Thread */
                 struct thcStruct* currentThread = getRunningThread();
                 exitHandler(&rd);
-                struct thcStruct* nextThread = rrSchedule(currentThread, 1);
+                struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_DIED);
                 changeContext(nextThread, sp);
                 return;
         }
@@ -37,7 +37,7 @@ void prefetch_abort(void* sp){
                 /* End Thread */
                 struct thcStruct* currentThread = getRunningThread();
                 exitHandler(&rd);
-                struct thcStruct* nextThread = rrSchedule(currentThread, 1);
+                struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_DIED);
                 changeContext(nextThread, sp);
                 return;
         }
@@ -53,7 +53,7 @@ void data_abort(void* sp){
                 /* End Thread */
                 struct thcStruct* currentThread = getRunningThread();
                 exitHandler(&rd);
-                struct thcStruct* nextThread = rrSchedule(currentThread, 1);
+                struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_DIED);
                 changeContext(nextThread, sp);
                 return;
         }
