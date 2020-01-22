@@ -74,35 +74,7 @@ int uartHandler() {
                 if(uartReceiveChar(&myChar)) {
                         volatile uint32_t* addr;
                         volatile uint32_t holder;
-                        switch(myChar) {
-                        case 'N':
-                                /* TODO Compiler packt hier eine UDF rein, da eine NULL dereferenziert wird */
-                                /* muss gefixt werden */
-                                addr = NULL;
-                                holder = *addr;
-                                kprintf("This is the content of the NULL pointer: %x", holder);
-                                break;
-                        case 'P':
-                                addr = NULL;
-                                asm volatile("mov pc, %0":: "r" (addr));
-                                break;
-                        case 'C':
-                                /* TODO Text und Data trennen */
-                                addr = KERNEL_TEXT_ADDR;
-                                *addr = MAGIC_NUMBER;
-                                break;
-                        case 'U':
-                                addr = UNASSIGNED_ADDR;
-                                holder = *addr;
-                                break;
-                        case 'X':
-                                addr = USER_TEXT_ADDR;
-                                asm volatile("mov pc, %0":: "r" (addr));
-                                break;
-                        default:
-                                bufferInsert(myChar);
-                                break;
-                        }
+                        bufferInsert(myChar);
                 }
                 *uart_icr = 0;
                 return 1;
