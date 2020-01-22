@@ -25,8 +25,12 @@ void createProcess(void(*func)(void *), const void * args, uint32_t args_size, u
         }
         kprintf("Process %i created \n", newProcess);
         processArray[newProcess].status = USED;
+        /* Copy argument to Stack of Thread 0 (currently hardcoded to 1 byte) */
+        char argumentCopy = *(char*)args;
+
+
         cpyData(processID, newProcess);
-        createThread(func, args, args_size, newProcess);
+        createThread(func, &argumentCopy, args_size, newProcess);
 }
 
 void cpyData(uint16_t processID, uint16_t newProcess) {

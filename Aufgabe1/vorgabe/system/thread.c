@@ -68,6 +68,7 @@ void initIdleThread() { /* needs rework */
 
 void createThread(void (*func)(void *), const void * args, uint32_t args_size, uint16_t processID) {
         char argument = *(char*)args;
+        kprintf("In createThread: empfangener Char: %c\n", argument);
         int newThread = getDeadThread(processID);
         if (newThread == -1) {
                 kprintf("\nCan't create new thread.\n");
