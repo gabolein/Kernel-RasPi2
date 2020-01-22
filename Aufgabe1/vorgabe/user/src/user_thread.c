@@ -38,15 +38,6 @@ void user_thread(void* arg) {
         }
 }
 
-/* void test(void* arg){ */
-/*         char* myChar = (char*)arg; */
-/*         asm volatile("push {%0}" :: "r" (*myChar)); */
-/*         sleep(300); */
-/*         char meinChar = 0; */
-/*         asm volatile("pop {%0}" : "+r" (meinChar)); */
-/*         printf("meinChar ist: %c\n", meinChar); */
-/* } */
-
 void spawner() {
         while(1) {
                 volatile char c = getChar();
@@ -63,15 +54,13 @@ void demonstration6(void* arg){
         char* myChar = (char*)arg;
         charStorage = *myChar;
         newThread(&demonstration6Thread, NULL, 0);
-        sleep(100);             /*  */
         newThread(&demonstration6Thread, NULL, 0);
-        sleep(100);
         volatile uint32_t localCounter = 0;
         while(globalCounter < COUNTER_LIMIT){
                 globalCounter++;
                 localCounter++;
                 printf("%c:%u (%u:%u)\n", charStorage, globalCounter, threadID, localCounter);
-                sleep(100);
+                sleep(1);
         }
 }
 
@@ -83,7 +72,7 @@ void demonstration6Thread(){
                 globalCounter++;
                 localCounter++;
                 printf("%c:%u (%u:%u)\n", charStorage, globalCounter, threadID, localCounter);
-                sleep(100);
+                sleep(1);
         }
 }
 
@@ -92,7 +81,7 @@ void entertainer() {
         asm volatile("mov r0, #123");
         asm volatile("push {r0}");
         asm volatile("mov r0, #0");
-        sleep(300);
+        /* sleep(300); */
         uint32_t holdup = 0;
         uint32_t sp = 0;
         asm volatile("mov %0, sp": "+r" (sp));
