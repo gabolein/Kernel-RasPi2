@@ -27,6 +27,7 @@ void initThreadArray(uint16_t currentProcess) {
                 processArray[currentProcess].threadArray[i].status = DEAD;
                 processArray[currentProcess].threadArray[i].initialSp = USER_THREAD_FIRST_SP + i * 0x20000; /* Stackpointer berechnen */
                 processArray[currentProcess].threadArray[i].context.sp = processArray[currentProcess].threadArray[i].initialSp;
+                processArray[currentProcess].threadArray[i].context.r1 = i; /* Neu erstellte Threads finden in r1 ihre ID vor */
                 processArray[currentProcess].threadArray[i].threadID = i;
                 processArray[currentProcess].threadArray[i].processID = currentProcess; /* amount processes*/
         }

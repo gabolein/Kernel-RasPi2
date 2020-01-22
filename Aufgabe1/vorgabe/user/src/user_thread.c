@@ -58,6 +58,8 @@ void spawner() {
 }
 
 void demonstration6(void* arg){
+        uint16_t threadID = 0;
+        asm volatile("mov %0, r1": "+r" (threadID));
         char* myChar = (char*)arg;
         charStorage = *myChar;
         newThread(&demonstration6Thread, NULL, 0);
@@ -68,17 +70,19 @@ void demonstration6(void* arg){
         while(globalCounter < COUNTER_LIMIT){
                 globalCounter++;
                 localCounter++;
-                printf("%c:%u (ID:%u)\n", charStorage, globalCounter, localCounter);
+                printf("%c:%u (%u:%u)\n", charStorage, globalCounter, threadID, localCounter);
                 sleep(100);
         }
 }
 
 void demonstration6Thread(){
+        uint16_t threadID = 0;
+        asm volatile("mov %0, r1": "+r" (threadID));
         uint32_t localCounter = 0;
         while(globalCounter < COUNTER_LIMIT){
                 globalCounter++;
                 localCounter++;
-                printf("%c:%u (ID:%u)\n", charStorage, globalCounter, localCounter);
+                printf("%c:%u (%u:%u)\n", charStorage, globalCounter, threadID, localCounter);
                 sleep(100);
         }
 }
