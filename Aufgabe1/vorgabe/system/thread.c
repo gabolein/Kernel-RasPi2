@@ -1,131 +1,162 @@
 #include "thread.h"
+#include "process.h"
 #include "registerDumpUtil.h"
 #include <stdint.h>
 #include "kio.h"
 #include "tests.h"
 #include "memory.h"
-#include "../user/include/idleThread.h"
-#include "../user/include/swiInterface.h"
-#include "../user/include/user_thread.h"
+#include "timer.h"
 
-#define AMOUNT_THREADS          32
-#define IDLE                    AMOUNT_THREADS
-#define INITIAL_VIRTUAL_SP      0x100FFFF8
-#define NULL                    0
-#define INSTRUCTION 4
+#define AMOUNT_THREADS          7
+#define IDLE_PID                8
+#define AMOUNT_PROCESSES        8
+#define IDLE_THREAD_INITIAL_SP  0x4E0000
+#define NULL                    (void*)0
+#define INSTRUCTION             4
+#define USER_THREAD_FIRST_SP    0x420000
+#define USER_THREAD_STACK_LEN   0x20000
+#define ERROR                   -1
+#define WORD                    4
+#define USER_DATA_BASE          0x300000
+#define IDLE_DATA_BASE          0x1400000
+#define IDLE_THREAD_ID          8
 
-struct thcStruct threadArray[AMOUNT_THREADS+1];
+struct thcStruct idleThread = {0};
 
-void initThreadArray() {
+/* User function names */
+extern void exit();
+extern void goIdle();
+
+void initThreadArray(uint16_t currentProcess) {
         /* Init all threads as dead and give them a stackpointer */
-        for (int i = 0; i < AMOUNT_THREADS+1; i++) {
-                threadArray[i].status = DEAD;
-                threadArray[i].initialSp = INITIAL_VIRTUAL_SP; /* Stackpointer berechnen */
-                threadArray[i].context.sp = threadArray[i].initialSp;
-                threadArray[i].threadID = i;
+        for (int i = 0; i < AMOUNT_THREADS; i++) {
+                processArray[currentProcess].threadArray[i].status     = DEAD;
+                processArray[currentProcess].threadArray[i].initialSp  = USER_THREAD_FIRST_SP + i * USER_THREAD_STACK_LEN; /* Stackpointer berechnen */
+                processArray[currentProcess].threadArray[i].context.sp = processArray[currentProcess].threadArray[i].initialSp;
+                processArray[currentProcess].threadArray[i].context.r1 = i; /* Neu erstellte Threads finden in r1 ihre ID vor */
+                processArray[currentProcess].threadArray[i].threadID   = i;
+                processArray[currentProcess].threadArray[i].processID  = currentProcess; /* amount processes*/
         }
 }
 
-void initIdleThread() {
-        remapUserStack(IDLE);
-        threadArray[IDLE].hasRun = 0;
-        threadArray[IDLE].waitingForChar = 0;
-        threadArray[IDLE].spsr = USER_MODE;
-        threadArray[IDLE].status = RUNNING;
-        threadArray[IDLE].context.lr = (uint32_t)&goIdle + INSTRUCTION;
-        threadArray[IDLE].spsr = USER_MODE;
-        threadArray[IDLE].cpsr = SUPERVISOR_MODE;
-        threadArray[IDLE].userLR = (uint32_t)&exit;
-        asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[IDLE].spsr));
-        asm volatile("msr sp_usr, %0":: "r" (threadArray[IDLE].context.sp));
-        asm volatile("msr lr_usr, %0":: "r" (threadArray[IDLE].userLR));
-        asm volatile("mov lr, %0":: "r" (threadArray[IDLE].context.lr));
+static void copyIdleDataBlock(){
+        map1on1();
+        uint32_t* sourceAddr = (uint32_t*)(USER_DATA_BASE);
+        uint32_t* targetAddr = (uint32_t*)(IDLE_DATA_BASE);
+        /* Iteriere über 1 MB und kopiere wortweise */
+        for(uint32_t currAddr = 0x0; currAddr < 0x100000; currAddr += WORD){
+                *targetAddr = *sourceAddr;
+                sourceAddr += 1;
+                targetAddr += 1;
+        }
+}
+
+void initIdleThread() { /* needs rework */
+        asm volatile("cpsid i"); /* Make sure we won't get timer interrupts */
+        copyIdleDataBlock();
+        remapAddressSpace(IDLE_PID);
+        idleThread.processID      = IDLE_THREAD_ID; /* IDLE Thread hat immer PID 8 */
+        idleThread.hasRun         = 0;
+        idleThread.waitingForChar = 0;
+        idleThread.spsr           = USER_MODE;
+        idleThread.status         = RUNNING;
+        idleThread.context.lr     = (uint32_t)&goIdle + INSTRUCTION;
+        idleThread.context.sp     = IDLE_THREAD_INITIAL_SP;
+        idleThread.spsr           = USER_MODE;
+        idleThread.cpsr           = SUPERVISOR_MODE;
+        idleThread.userLR         = (uint32_t)&exit;
+        asm volatile("msr SPSR_cxsf, %0" :: "r" (idleThread.spsr));
+        asm volatile("msr sp_usr, %0"    :: "r" (idleThread.context.sp));
+        asm volatile("msr lr_usr, %0"    :: "r" (idleThread.userLR));
+        asm volatile("mov lr, %0"        :: "r" (idleThread.context.lr));
         asm volatile("subs pc, lr, #4"); /* Change Context to IDLE Thread */
 }
 
-void createThread(void (*func)(void *), const void * args, uint32_t args_size) {
+void createThread(void (*func)(void *), const void * args, uint32_t args_size, uint16_t processID) {
         char argument = *(char*)args;
-        int newThread = getDeadThread();
-        if (newThread == -1) {
-            kprintf("\nCan't create new thread.\n");
-            return;
+        int newThread = getDeadThread(processID);
+        if (newThread == ERROR) {
+                kprintf("\nCan't create new thread.\n");
+                return;
         }
-        threadArray[newThread].hasRun = 0;
-        threadArray[newThread].status = READY;
-        threadArray[newThread].context.lr = (uint32_t)func + INSTRUCTION; /* +4, da im trampoline 4 subtrahiert wird */
-        threadArray[newThread].spsr = USER_MODE; /* User Mode, sonst nichts gesetzt */
-        threadArray[newThread].cpsr = SUPERVISOR_MODE; /* SVC Mode */
-        threadArray[newThread].userLR = (uint32_t)&exit;
-        threadArray[newThread].waitingForChar = 0;
-        //Stack mit Argumenten füllen
-        volatile void* sp = (void*)threadArray[newThread].initialSp;
-        remapUserStack(newThread);
+        processArray[processID].threadArray[newThread].context.r1     = newThread;
+        processArray[processID].threadArray[newThread].hasRun         = 0;
+        processArray[processID].threadArray[newThread].status         = READY;
+        processArray[processID].threadArray[newThread].context.lr     = (uint32_t)func + INSTRUCTION; /* +4, da im trampoline 4
+                                                                                                     subtrahiert wird */
+        processArray[processID].threadArray[newThread].spsr           = USER_MODE;                          /* User Mode, sonst
+                                                                                                               nichts gesetzt */
+        processArray[processID].threadArray[newThread].cpsr           = SUPERVISOR_MODE;                    /* SVC Mode */
+        processArray[processID].threadArray[newThread].userLR         = (uint32_t)&exit;
+        processArray[processID].threadArray[newThread].waitingForChar = 0;
+
+        /* Stack mit Argumenten füllen */
+        volatile void* sp = (void*)processArray[processID].threadArray[newThread].initialSp;
+        remapAddressSpace(processID);
         if(args_size){
                 sp -= args_size * INSTRUCTION;
-                /* for(uint32_t offset = 0; offset < args_size; offset++){ */
-                /*         *(uint32_t*)(sp + offset * INSTRUCTION) = *(uint32_t*)(args + offset * INSTRUCTION); //TODO */
-                /* } */
-                *(char*)sp = argument; /* TODO Maybe remove this later */
-                threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben THIS IS IMPORTANT!!! DO NOT TOUCH THIS EVER AGAIN!!1!!eins!!elf */
+                *(char*)sp = argument;
+                processArray[processID].threadArray[newThread].context.r0 = (uint32_t)sp; /* SP als erstes Argument an Threadfunktion übergeben
+                                                                                             THIS IS IMPORTANT!!! DO NOT TOUCH THIS EVER AGAIN!!1!!eins!!elf */
         }
-        threadArray[newThread].context.sp = (uint32_t)sp;
+        processArray[processID].threadArray[newThread].context.sp = (uint32_t)sp;
 }
 
-int getDeadThread(){ /* FIX */
-        for(uint16_t i = 0; i < AMOUNT_THREADS + 1; i++) {
-                if(threadArray[i].status == DEAD){
-                        return i;
-                }
-        }
-        kprintf("\n Error determining dead Thread! \n");
-        return -1;
-}
-
-int getRunningThread(){
-        for(uint16_t i = 0; i < AMOUNT_THREADS + 1; i++) {
-                if(threadArray[i].status == RUNNING){
-                        return i;
-                }
-        }
-        //kprintf("\n Error determining running Thread! \n");
-        return -1;
-}
-
-int16_t threadWaitingForChar() {
-        for(uint16_t i = 0; i < AMOUNT_THREADS + 1; i++) {
-                if(threadArray[i].status == WAITING && threadArray[i].waitingForChar){
+int getDeadThread(uint16_t processID){
+        for(uint16_t i = 0; i < AMOUNT_THREADS; i++) {
+                if(processArray[processID].threadArray[i].status == DEAD){
                         return i;
                 }
         }
         return -1;
 }
 
-void killThread(uint16_t currentThread) {
-        threadArray[currentThread].status = DEAD;
-        threadArray[currentThread].context.sp = threadArray[currentThread].initialSp;
-        kprintf("\n\nThread %u angehalten.\n", threadArray[currentThread].threadID);
+struct thcStruct* getRunningThread(){ /* run over all processes */
+        for(uint16_t i = 0; i < AMOUNT_PROCESSES; i++){
+                for(uint16_t j = 0; j < AMOUNT_THREADS; j++) {
+                        if(processArray[i].threadArray[j].status == RUNNING) {
+                                return &(processArray[i].threadArray[j]);
+                        }
+                }
+        }
+        if(idleThread.status == RUNNING) {
+                return &idleThread;
+        }
+        kprintf("\n Error determining running Thread! \n");
+        return NULL;
 }
 
-void saveContext(uint16_t currentThread, void* sp) {
+struct thcStruct* threadWaitingForChar() {
+        for(uint16_t i = 0; i < AMOUNT_PROCESSES; i++) {
+                for(uint16_t j = 0; i < AMOUNT_THREADS; i++) {
+                        if((processArray[i].threadArray[j].status == WAITING)
+                           && (processArray[i].threadArray[j].waitingForChar)) {
+                                return &(processArray[i].threadArray[j]);
+                        }
+                }
+        }
+        return NULL;
+}
+
+void saveContext(struct thcStruct* currentThread, void* sp) {
         struct commonRegs* cr = (struct commonRegs*) sp;
-        asm volatile ("mrs %0, SPSR": "=r" (threadArray[currentThread].spsr));
-        asm volatile ("mrs %0, CPSR": "=r" (threadArray[currentThread].cpsr));
-        asm volatile ("mrs %0, lr_usr": "=r" (threadArray[currentThread].userLR));
-        threadArray[currentThread].context = *cr; /* copy all common registers to thread context */
-        asm volatile ("mrs %0, sp_usr": "=r" (threadArray[currentThread].context.sp));
-        if(threadArray[currentThread].status == RUNNING) {
-                threadArray[currentThread].status = READY;
+        asm volatile ("mrs %0, SPSR"   : "=r" (currentThread->spsr));
+        asm volatile ("mrs %0, CPSR"   : "=r" (currentThread->cpsr));
+        asm volatile ("mrs %0, lr_usr" : "=r" (currentThread->userLR));
+        currentThread->context = *cr; /* copy all common registers to thread context */
+        asm volatile ("mrs %0, sp_usr" : "=r" (currentThread->context.sp));
+        if(currentThread->status == RUNNING) {
+                currentThread->status = READY;
         }
 }
 
-void changeContext(uint16_t nextThread, void* sp){
-        remapUserStack(nextThread);
-        fillStack(&(threadArray[nextThread].context), sp);
-       	asm volatile("msr SPSR_cxsf, %0":: "r" (threadArray[nextThread].spsr));
-        asm volatile("msr lr_usr, %0":: "r" (threadArray[nextThread].userLR));
-        asm volatile("msr sp_usr, %0":: "r" (threadArray[nextThread].context.sp));
-        threadArray[nextThread].status = RUNNING;
-        /* kprintf("\n\n Changing to thread %i \n", nextThread); */
+void changeContext(struct thcStruct* nextThread, void* sp){
+        remapAddressSpace(nextThread->processID);
+        fillStack(&(nextThread->context), sp);
+       	asm volatile("msr SPSR_cxsf, %0" :: "r" (nextThread->spsr));
+        asm volatile("msr lr_usr, %0"    :: "r" (nextThread->userLR));
+        asm volatile("msr sp_usr, %0"    :: "r" (nextThread->context.sp));
+        nextThread->status = RUNNING;
 }
 
 void fillStack(volatile struct commonRegs* context, void* sp){

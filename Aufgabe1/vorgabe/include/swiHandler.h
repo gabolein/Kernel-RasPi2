@@ -1,4 +1,3 @@
-
 #ifndef SWIHANDLER_H
 #define SWIHANDLER_H
 
@@ -9,15 +8,16 @@ enum syscallType {
 	GET_CHAR,
 	NEW_THREAD,
 	EXIT,
-	SLEEP
+	SLEEP,
+	NEW_PROCESS
 };
 
 void putCharHandler(struct regDump*);
 void getCharHandler(void*);
 void newThreadHandler(struct regDump*);
-void exitHandler(struct regDump*);
+void exitHandler();
 void sleepHandler(struct regDump*);
 extern void software_interrupt(void*);
 
 
-#endif //SWIHANDLER_H
+#endif /* SWIHANDLER_H */

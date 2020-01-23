@@ -1,10 +1,10 @@
-#include <stdint.h>
-#include "registerDumpUtil.h"
-
 #ifndef _PRESENTATIONS_H
 #define _PRESENTATIONS_H
 
-void inputPresentation(char receivedChar);
+#include <stdint.h>
+#include "registerDumpUtil.h"
+
+void inputPresentation(char);
 void specialMessage(const char*);
 void registerDump(struct regDump*);
 

@@ -1,8 +1,9 @@
+#ifndef THREAD_H
+#define THREAD_H
+
 #include "registerDumpUtil.h"
 #include <stdint.h>
 
-#ifndef THREAD_H
-#define THREAD_H
 enum threadStatus {
         WAITING     = 0,// Wartet auf irgendwas
         DEAD        = 1,// Ist tot
@@ -17,6 +18,7 @@ struct thcStruct{
         volatile uint32_t userLR;
         enum threadStatus status;
         uint16_t threadID;
+        uint16_t processID;
         uint32_t initialSp;
         volatile uint8_t hasRun;         /* 1 or 0 */
         volatile uint32_t sleepingTime;
@@ -24,17 +26,15 @@ struct thcStruct{
         volatile uint8_t waitingForChar;
 };
 
-void initThreadArray();
+void initThreadArray(uint16_t);
 void initIdleThread();
-void cpyStacktoTHC();
-void createThread(void (*func)(void *), const void*, uint32_t);
-int getRunningThread();
-int16_t threadWaitingForChar();
-int getDeadThread();
-void killThread(uint16_t);
-void saveContext(uint16_t, void*);
-void changeContext(uint16_t, void*);
+void createThread(void (*)(void *), const void*, uint32_t, uint16_t);
+struct thcStruct* getRunningThread();
+struct thcStruct* threadWaitingForChar();
+int getDeadThread(uint16_t processID);
+void saveContext(struct thcStruct*, void*);
+void changeContext(struct thcStruct*, void*);
 void fillStack(volatile struct commonRegs*, void*);
-extern struct thcStruct threadArray[];
+extern struct thcStruct idleThread;
 
 #endif //THREAD_H

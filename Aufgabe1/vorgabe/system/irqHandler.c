@@ -8,17 +8,16 @@
 #include "scheduler.h"
 #include "led.h"
 
-
-#define BUFFER_SIZE 100
-#define UART_IRQ_PENDING (1 << 25)
-#define TIMER_IRQ_PENDING 1
-#define IDLE_THREAD 32
-#define UNASSIGNED_ADDR   (uint32_t*)0x10100000
-#define KERNEL_TEXT_ADDR (uint32_t*)0x8000
-#define USER_TEXT_ADDR (uint32_t*)0x200000
-#define MAGIC_NUMBER 69
-#define NULL (void*)0
-
+#define BUFFER_SIZE         100
+#define UART_IRQ_PENDING    (1 << 25)
+#define TIMER_IRQ_PENDING   1
+#define IDLE_THREAD         32
+#define UNASSIGNED_ADDR     (uint32_t*)0x10100000
+#define KERNEL_TEXT_ADDR    (uint32_t*)0x8000
+#define USER_TEXT_ADDR      (uint32_t*)0x200000
+#define MAGIC_NUMBER        69
+#define NULL                (void*)0
+#define THREAD_NOT_DED      0
 
 /* Register Defs */
 static volatile uint32_t* uart_icr  = UART_ICR;
@@ -42,12 +41,12 @@ uint8_t bufferInsert(char c){
         if(charBufferLength >= BUFFER_SIZE){
                 return 1;       /* Buffer is full */
         }
-        int16_t waitingThread = threadWaitingForChar();
-        if(waitingThread != -1){
+        struct thcStruct* waitingThread = threadWaitingForChar();
+        if(waitingThread != NULL){
                 /* Thread den Char geben */
-                threadArray[waitingThread].context.r1 = c;
-                threadArray[waitingThread].waitingForChar = 0;
-                threadArray[waitingThread].status = READY;
+                waitingThread->context.r1 = c;
+                waitingThread->waitingForChar = 0;
+                waitingThread->status = READY;
                 return 0;
         }
         charBufferLength++;
@@ -56,7 +55,6 @@ uint8_t bufferInsert(char c){
 }
 
 char bufferGet() {
-
         if(charBufferLength <= 0) {
                 return 0;
         }
@@ -74,32 +72,7 @@ int uartHandler() {
                 if(uartReceiveChar(&myChar)) {
                         volatile uint32_t* addr;
                         volatile uint32_t holder;
-                        switch(myChar) {
-                        case 'N':
-                                addr = NULL;
-                                holder = *addr;
-                                kprintf("This is the content of the NULL pointer: %x", holder);
-                                break;
-                        case 'P':
-                                addr = NULL;
-                                asm volatile("mov pc, %0":: "r" (addr));
-                                break;
-                        case 'C':
-                                addr = KERNEL_TEXT_ADDR;
-                                *addr = MAGIC_NUMBER;
-                                break;
-                        case 'U':
-                                addr = UNASSIGNED_ADDR;
-                                holder = *addr;
-                                break;
-                        case 'X':
-                                addr = USER_TEXT_ADDR;
-                                asm volatile("mov pc, %0":: "r" (addr));
-                                break;
-                        default:
-                                bufferInsert(myChar);
-                                break;
-                        }
+                        bufferInsert(myChar);
                 }
                 *uart_icr = 0;
                 return 1;
@@ -132,17 +105,17 @@ void irq(void* sp){
                 registerDump(&rd);
         }
         if(clockHandler()){
-                int currentThread = getRunningThread();
-                uint16_t nextThread = rrSchedule(currentThread, 0);
-                if ((currentThread != nextThread)&& currentThread != -1) {
-                                saveContext(currentThread, sp);
-                                changeContext(nextThread, sp);
+                struct thcStruct* currentThread = getRunningThread();
+                struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_NOT_DED);
+                if ((currentThread != nextThread)&& currentThread != NULL) {
+                        saveContext(currentThread, sp);
+                        changeContext(nextThread, sp);
                 }
         }
         if(uartHandler()){
-                int currentThread = getRunningThread();
-                if (currentThread == IDLE_THREAD) {
-                        uint16_t nextThread = rrSchedule(currentThread, 0);
+                struct thcStruct* currentThread = getRunningThread();
+                if (currentThread == &idleThread) {
+                        struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_NOT_DED);
                         if (currentThread != nextThread) {
                                 saveContext(currentThread, sp);
                                 changeContext(nextThread, sp);

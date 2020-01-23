@@ -42,11 +42,15 @@ _software_interrupt:
 	ldmia sp!, {r0 - r12}
 	subs pc, lr, #4
 _prefetch_abort:
-	stmdb   sp!, {r0 - r12}
+    stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}
 	mov r0, sp
 	bl	prefetch_abort
-	b .Lend
+	add sp, sp, #4
+	ldr lr, [sp]
+	add sp, sp, #8
+	ldmia sp!, {r0 - r12}
+	subs pc, lr, #4
 _data_abort:
 	stmdb   sp!, {r0 - r12}
 	stmdb   sp!, {r13 - r15}

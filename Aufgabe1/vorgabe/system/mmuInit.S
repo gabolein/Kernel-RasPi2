@@ -14,19 +14,9 @@ _mmuInit:
 	movt r0, #:upper16:mmuTable
     mcr p15, 0, r0, c2, c0, 0   /* <--- Table Adresse setzen*/
     /* ---------- */
-
-    /* Setze das Domain Control Register auf 11 für alle Domains (Manager Mode) */
-    /*
-    mrc p15, 0, r0, c3, c0, 0
-    .equ ones, 0xFFFFFFFF
-    movw r1, #:lower16:ones
-	movt r1, #:upper16:ones
-    orr r0, r0, r1
-    */
     mov r0, #0x1 //Client Mode für Domain 0
     mcr p15, 0, r0, c3, c0, 0 /* <--- Domains konfigurieren */
 	/* ---------- */
-
     /* TTB Control Register auf 16 KB setzen */
 	mov r0, #0x0 /* Neu */
     mcr p15, 0, r0, c2, c0, 2 /* <--- Auf 16 KB Mode setzen  */

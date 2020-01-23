@@ -3,4 +3,4 @@
 
 void goIdle();
 
-#endif //IDLETHREAD_H
+#endif  /* IDLETHREAD_H */

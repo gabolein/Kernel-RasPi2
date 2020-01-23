@@ -22,62 +22,59 @@ void printf(const char* format, ...) {
         for (const char* traverse = format; *traverse != '\0'; traverse++) {
                 if (*traverse == '%') {
                         traverse++; // move to next character, we dont wanna print the '%'
-
                         switch(*traverse) {
-
-                                case '%' :
-                                        putChar('%');
-                                        break;
-                                case 'c' :
-                                        char_rep = va_arg(arg, int);
-                                        putChar(char_rep);
-                                        break;
-                                case 's' :
-                                        str = va_arg(arg, const char*);
-                                        printf(str);
-                                        break;
-                                case 'x' :
-                                        u_int_num = va_arg(arg, unsigned int);
-                                        {
+                        case '%' :
+                                putChar('%');
+                                break;
+                        case 'c' :
+                                char_rep = va_arg(arg, int);
+                                putChar(char_rep);
+                                break;
+                        case 's' :
+                                str = va_arg(arg, const char*);
+                                printf(str);
+                                break;
+                        case 'x' :
+                                u_int_num = va_arg(arg, unsigned int);
+                                {
                                         char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
                                         printf(itoa16(u_int_num, c_buffer));
+                                }
+                                break;
+                        case 'i' :
+                                int_num = va_arg(arg, int);
+                                if(int_num == MIN_INT) { // edge case (zweier komplement who?)
+                                        printf("-21474836478");
+                                } else {
+                                        if (int_num < 0) { // if negative, print '-' and treat like unsigned int
+                                                putChar('-');
+                                                int_num *= -1;
                                         }
-                                        break;
-                                case 'i' :
-                                        int_num = va_arg(arg, int);
-                                        if(int_num == MIN_INT) { // edge case (zweier komplement who?)
-                                                printf("-21474836478");
-                                        } else {
-                                                if (int_num < 0) { // if negative, print '-' and treat like unsigned int
-                                                        putChar('-');
-                                                        int_num *= -1;
-                                                }
-                                                {
+                                        {
                                                 char c_buffer[DEC_BUFFER_SIZE] = "";
                                                 printf(itoa10(int_num, c_buffer));
-                                                }
                                         }
-                                        break;
-                                case 'u' :
-                                        u_int_num = va_arg(arg, unsigned int);
-                                        {
+                                }
+                                break;
+                        case 'u' :
+                                u_int_num = va_arg(arg, unsigned int);
+                                {
                                         char c_buffer[DEC_BUFFER_SIZE] = "";
                                         printf(itoa10(u_int_num, c_buffer));
-                                        }
-                                        break;
-                                case 'p' :
-                                        address = va_arg(arg, uint32_t); // pointer -> 32Bit address
-                                        {
+                                }
+                                break;
+                        case 'p' :
+                                address = va_arg(arg, uint32_t); // pointer -> 32Bit address
+                                {
                                         char c_buffer[HEX_BUFFER_SIZE] = "0x00000000";
                                         printf(itoa16(address, c_buffer));
-                                        }
-                                        break;
-                                default: // if unknown definer, behave like printf
-                                        putChar('%');
-                                        putChar(*traverse);
-                                        break;
+                                }
+                                break;
+                        default: // if unknown definer, behave like printf
+                                putChar('%');
+                                putChar(*traverse);
+                                break;
                         }
-
                 } else {
                         putChar(*traverse);
                 }

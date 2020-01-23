@@ -2,40 +2,61 @@
 #include "memory.h"
 #include "kio.h"
 
-#define SECTION_BASE_SHIFT_AMOUNT 20
-#define SECTION_ENTRY_CODE 0x2
-#define AP_LOW 10
-#define AP_HIGH 15
+#define L1_ALIGN            (16384)
+#define PHYSICAL_ADDR_SHIFT 20
+#define LAST_USER_DATA_MB   21
+#define FIRST_USER_DATA_MB  4
+#define WORD                4
 
-#define NO_ACCESS     0b0
-#define SYSTEM_ACCESS 0b1
-#define SYSTEM_RO     0b101
-#define BOTH_RO       0b111
-#define RO            0b10
-#define FULL_ACCESS   0b11
-
-#define SET_XN 1 << 4
-#define SET_PXN 1
-
-extern void _mmuInit();
+__attribute__((aligned (L1_ALIGN))) volatile uint32_t mmuTable[MMU_TABLE_ENTRIES] = {0};
 
 void initMMU() {
         initMMUL1Table(mmuTable);
         _mmuInit();             /* Configures and activates MMU */
 }
 
-/* Initializes the MMU L1 Table at the given address */
-void initMMUL1Table(volatile uint32_t* table) {
-        for(uint32_t i = 0; i < 4096; i++) {
-                table[i] = SECTION_ENTRY_CODE | i << SECTION_BASE_SHIFT_AMOUNT | SYSTEM_ACCESS << AP_LOW | SET_XN; /* Sectionentry */
-        }
-        mmuTable[257] = 0;
-        table[0] = SECTION_ENTRY_CODE | 0 << SECTION_BASE_SHIFT_AMOUNT | SYSTEM_ACCESS << AP_LOW; /* Kernel Stuff */
-        table[2] = SECTION_ENTRY_CODE | 2 << SECTION_BASE_SHIFT_AMOUNT | FULL_ACCESS << AP_LOW | SET_PXN; /* User Stuff  */
+void setTableEntry(uint32_t virtAddr, uint32_t physAddr, uint32_t flags){
+        asm volatile("mcr p15,0,r1,c8,c7,0");                          /* Invalidate TLB Entries */
+        mmuTable[virtAddr >> PHYSICAL_ADDR_SHIFT] = (physAddr & SECTION_BASE_BITMASK) | (flags & (~SECTION_BASE_BITMASK)) | SECTION_ENTRY_CODE;
 }
 
+void setFaultEntry(uint32_t virtAddr){
+        mmuTable[virtAddr >> PHYSICAL_ADDR_SHIFT] = 0;
+}
 
-void remapUserStack(uint16_t threadNumber) {
-        asm volatile("mcr p15,0,r1,c8,c7,0"); /* Invalidate TLB Entries */
-        mmuTable[256] = SECTION_ENTRY_CODE | (3 + threadNumber) << SECTION_BASE_SHIFT_AMOUNT | FULL_ACCESS << AP_LOW | SET_XN;
+/* Initializes the MMU L1 Table at the given address */
+void initMMUL1Table() {
+        for(uint32_t i = 0; i < MMU_TABLE_ENTRIES; i++) {
+                setTableEntry(i << PHYSICAL_ADDR_SHIFT, i << PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS | SET_XN);
+        }
+
+        setTableEntry(0 << PHYSICAL_ADDR_SHIFT, 0 << PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS);          /* Kernel Text */
+        setTableEntry(1 << PHYSICAL_ADDR_SHIFT, 1 << PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS | SET_XN); /* KBSS, Data, ROData */
+        setTableEntry(2 << PHYSICAL_ADDR_SHIFT, 2 << PHYSICAL_ADDR_SHIFT, BOTH_RO       | SET_PXN);/* UText */
+        setTableEntry(3 << PHYSICAL_ADDR_SHIFT, 3 << PHYSICAL_ADDR_SHIFT, BOTH_RO       | SET_XN); /* UData, UBSS, UROData */
+        for(int i = FIRST_USER_DATA_MB; i <= LAST_USER_DATA_MB; i++){
+                setTableEntry(i << PHYSICAL_ADDR_SHIFT, i << PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS | SET_XN);
+        }
+        setFaultEntry(257<<PHYSICAL_ADDR_SHIFT);                                                   /* Für Demo von Abgabe 5 */
+}
+
+void remapAddressSpace(uint16_t pid) {
+        setTableEntry(3<<20, (4 + pid * 2)<<20, FULL_ACCESS | SET_XN);    /* Data */
+        setTableEntry(4<<20, (5 + pid * 2)<<20, FULL_ACCESS | SET_XN);    /* Stacks */
+}
+
+void map1on1() {
+        setTableEntry(4<<20, 4<<20, SYSTEM_ACCESS | SET_XN); /* P1 Data und UData werden 1:1 gemappt */
+        setTableEntry(3<<20, 3<<20, SYSTEM_RO     | SET_XN);
+}
+
+void copyUserBlock(uint16_t sourcePID, uint16_t targetPID){
+        uint32_t* sourceAddr = (uint32_t*)((FIRST_USER_DATA_MB << PHYSICAL_ADDR_SHIFT) + sourcePID * (2 << PHYSICAL_ADDR_SHIFT));
+        uint32_t* targetAddr = (uint32_t*)((FIRST_USER_DATA_MB << PHYSICAL_ADDR_SHIFT) + targetPID * (2 << PHYSICAL_ADDR_SHIFT));
+        /* Iteriere über 1 MB und kopiere wortweise */
+        for(uint32_t currAddr = 0x0; currAddr < (0x100000); currAddr += WORD){
+                *targetAddr = *sourceAddr;
+                sourceAddr += 1;
+                targetAddr += 1;
+        }
 }

@@ -2,7 +2,6 @@
 #include "kio.h"
 #include <stdint.h>
 
-
 #pragma GCC diagnostic ignored "-Wunused-variable"
 void causeDataAbort() {
         volatile int b = *((uint32_t*)0x1);

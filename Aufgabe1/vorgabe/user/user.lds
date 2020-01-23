@@ -1,5 +1,7 @@
 SECTIONS
 {
-    .user 0x200000  : { *(.text) }
+    .userROData             : { *(.rodata*) }
+    .userBSSData            : { *(.bss)     }
+    .userText               : { *(.text)    }
+    .userData               : { *(.data)    }
 }
-
