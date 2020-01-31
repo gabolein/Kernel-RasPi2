@@ -21,6 +21,7 @@ OBJ += src/testThread.o
 OBJ += src/threadUtil.o
 OBJ += src/user_thread.o
 OBJ += src/io.o
+OBJ += src/allocator.o
 
 # --- Ab hier sollte nichts mehr angepasst werden müssen ;D ---
 
