@@ -21,7 +21,7 @@ void* malloc(size_t nbytes) {
 	nbytes = round2Word(nbytes);
 	struct block* currentBlock = firstEmpty;
 	struct block* previousBlock = NULL;
-	do {
+	while (currentBlock != NULL) {
 		if (currentBlock->size >= nbytes) { /* adjust links of lists */
 			if (currentBlock == firstEmpty) {
 				firstEmpty = currentBlock->next;
@@ -34,18 +34,16 @@ void* malloc(size_t nbytes) {
 					currentBlock->next = NULL;
 				}
 			}
+		/* clear free bit */
+		currentBlock->size &= ~0x2;
 		return (void*)&currentBlock->next; /* next unused by fullblocks -> we can use the block from here */ 
 		} else {
 			currentBlock = currentBlock->next;
 			previousBlock = currentBlock;
 		}
-	} while (currentBlock->next != NULL);
+	}
 	return NULL;
 }
-
-
-		
-		
 
 void insertBlock(struct block* currentBlock, struct block* previousBlock, uint32_t nbytes) {
 	struct block* newBlock = (struct block*)((uint32_t*)currentBlock + nbytes/4); /* create new free Block with available space */
@@ -61,5 +59,49 @@ void insertBlock(struct block* currentBlock, struct block* previousBlock, uint32
 
 	if (previousBlock != NULL) { /* link the previous free block to the new block */
 		previousBlock->next = newBlock;
+	}
+}
+
+
+void free(void* ptr) {
+	struct block* block2Free = (struct block*)((uint32_t*) ptr - 2); /*get address of block info */
+	struct block* predecessor = (struct block*)((uint32_t*)block2Free - block2Free->prevSize); /*get predecessor*/
+	struct block* successor = (struct block*)((uint32_t*)block2Free + block2Free->size);/*get successor*/
+	/*set own free bit*/
+	block2Free->size |= 0x2;
+
+	if ((predecessor->size & 0x2) == 0x2) { /* if free bit is set */
+		/* merge with predecessor */
+		predecessor->size = predecessor->size + block2Free->size + 3; /*add also size of block info*/
+		block2Free = predecessor;
+		successor->prevSize = block2Free->size;
+	}
+	if ((successor->size & 0x2) == 0x2) {
+		/*merge with successor*/
+		block2Free->size = block2Free->size + successor->size + 3;
+		struct block* newSucc = (struct block*)((uint32_t)block2Free + block2Free->size);
+		newSucc->prevSize = block2Free->size;
+	}
+
+	insertFreeList(block2Free);
+}
+
+/* Adjusts the firstEmpty pointer if needed, inserts the freed block in the list of free blocks*/
+void insertFreeList(struct block* block2Free){
+	if (firstEmpty != NULL && firstEmpty > block2Free) {
+		block2Free->next = firstEmpty;
+		firstEmpty = block2Free;
+	} else {
+		struct block* currentBlock = firstEmpty;
+		while (currentBlock != NULL) {
+			if (currentBlock < block2Free && (currentBlock->next == NULL || currentBlock->next > block2Free)) {
+				block2Free->next = currentBlock->next;
+				currentBlock->next = block2Free;
+				return;
+			}
+			currentBlock = currentBlock->next;
+		}
+		firstEmpty = block2Free;
+		block2Free->next = NULL;
 	}
 }
