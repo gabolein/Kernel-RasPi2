@@ -3,6 +3,9 @@
 #include <stdint.h>
 
 #define NULL (void*)0
+#define HEAP_START 0
+#define HEAP_SIZE 0
+#define BLOCK_INFO_SIZE 3
 
 struct block* firstEmpty;
 
@@ -47,7 +50,7 @@ void* malloc(size_t nbytes) {
 
 void insertBlock(struct block* currentBlock, struct block* previousBlock, uint32_t nbytes) {
 	struct block* newBlock = (struct block*)((uint32_t*)currentBlock + nbytes/4); /* create new free Block with available space */
-	newBlock->size = currentBlock->size - nbytes; /* set new size */
+	newBlock->size = currentBlock->size - nbytes - BLOCK_INFO_SIZE; /* set new size */
 	currentBlock->size = nbytes;				
 	newBlock->prevSize = currentBlock->size; /*set size of predecessor */
 	newBlock->next = currentBlock->next; /* inherit the successor*/
@@ -72,13 +75,13 @@ void free(void* ptr) {
 
 	if ((predecessor->size & 0x2) == 0x2) { /* if free bit is set */
 		/* merge with predecessor */
-		predecessor->size = predecessor->size + block2Free->size + 3; /*add also size of block info*/
+		predecessor->size = predecessor->size + block2Free->size + BLOCK_INFO_SIZE; /*add also size of block info*/
 		block2Free = predecessor;
 		successor->prevSize = block2Free->size;
 	}
 	if ((successor->size & 0x2) == 0x2) {
 		/*merge with successor*/
-		block2Free->size = block2Free->size + successor->size + 3;
+		block2Free->size = block2Free->size + successor->size + BLOCK_INFO_SIZE;
 		struct block* newSucc = (struct block*)((uint32_t)block2Free + block2Free->size);
 		newSucc->prevSize = block2Free->size;
 	}
@@ -104,4 +107,12 @@ void insertFreeList(struct block* block2Free){
 		firstEmpty = block2Free;
 		block2Free->next = NULL;
 	}
+}
+
+void initialiseHeap() {
+	struct block* firstBlock = (struct block*) HEAP_START;
+	firstBlock->size = HEAP_SIZE - BLOCK_INFO_SIZE;
+	firstBlock->size |= 0x2;
+	firstBlock->prevSize = 0;
+	firstBlock->next = NULL;
 }
