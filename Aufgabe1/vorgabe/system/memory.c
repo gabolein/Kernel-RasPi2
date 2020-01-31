@@ -7,6 +7,7 @@
 #define LAST_USER_DATA_MB   21
 #define FIRST_USER_DATA_MB  4
 #define WORD                4
+#define HEAPS_START_MB      22
 
 __attribute__((aligned (L1_ALIGN))) volatile uint32_t mmuTable[MMU_TABLE_ENTRIES] = {0};
 
@@ -24,7 +25,7 @@ void setFaultEntry(uint32_t virtAddr){
         mmuTable[virtAddr >> PHYSICAL_ADDR_SHIFT] = 0;
 }
 
-/* Initializes the MMU L1 Table at the given address */
+/* Initializes the MMU L1 Table */
 void initMMUL1Table() {
         for(uint32_t i = 0; i < MMU_TABLE_ENTRIES; i++) {
                 setTableEntry(i << PHYSICAL_ADDR_SHIFT, i << PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS | SET_XN);
@@ -41,13 +42,15 @@ void initMMUL1Table() {
 }
 
 void remapAddressSpace(uint16_t pid) {
-        setTableEntry(3<<20, (4 + pid * 2)<<20, FULL_ACCESS | SET_XN);    /* Data */
-        setTableEntry(4<<20, (5 + pid * 2)<<20, FULL_ACCESS | SET_XN);    /* Stacks */
+        setTableEntry(3<<PHYSICAL_ADDR_SHIFT, (4 + pid * 2)         <<PHYSICAL_ADDR_SHIFT, FULL_ACCESS | SET_XN); /* Data */
+        setTableEntry(4<<PHYSICAL_ADDR_SHIFT, (5 + pid * 2)         <<PHYSICAL_ADDR_SHIFT, FULL_ACCESS | SET_XN); /* Stacks */
+        setTableEntry(5<<PHYSICAL_ADDR_SHIFT, (HEAPS_START_MB + pid)<<PHYSICAL_ADDR_SHIFT, FULL_ACCESS | SET_XN); /* Heaps */
 }
 
 void map1on1() {
-        setTableEntry(4<<20, 4<<20, SYSTEM_ACCESS | SET_XN); /* P1 Data und UData werden 1:1 gemappt */
-        setTableEntry(3<<20, 3<<20, SYSTEM_RO     | SET_XN);
+        setTableEntry(4<<PHYSICAL_ADDR_SHIFT, 4<<PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS | SET_XN); /* Data Stacks und Heap werden 1:1 gemappt */
+        setTableEntry(3<<PHYSICAL_ADDR_SHIFT, 3<<PHYSICAL_ADDR_SHIFT, SYSTEM_RO     | SET_XN);
+        setTableEntry(5<<PHYSICAL_ADDR_SHIFT, 5<<PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS | SET_XN);
 }
 
 void copyUserBlock(uint16_t sourcePID, uint16_t targetPID){
