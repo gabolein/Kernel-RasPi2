@@ -11,7 +11,7 @@ uint32_t round2Word(uint32_t);
 void insertBlock(struct block*, struct block*, uint32_t);
 void free(void*);
 void insertFreeList(struct block*);
-
-
+void initialiseHeap();
+void printHeap();
 
 #endif  /* ALLOCATOR_H */

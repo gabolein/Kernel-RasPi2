@@ -70,8 +70,6 @@ int uartHandler() {
         if(*irq_pending_2 & UART_IRQ_PENDING){
                 char myChar = 0;
                 if(uartReceiveChar(&myChar)) {
-                        volatile uint32_t* addr;
-                        volatile uint32_t holder;
                         bufferInsert(myChar);
                 }
                 *uart_icr = 0;

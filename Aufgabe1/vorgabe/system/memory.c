@@ -53,6 +53,11 @@ void map1on1() {
         setTableEntry(5<<PHYSICAL_ADDR_SHIFT, 5<<PHYSICAL_ADDR_SHIFT, SYSTEM_ACCESS | SET_XN);
 }
 
+/* expects map1on1 */
+void nullHeap(uint16_t pid) {
+        *((uint32_t*)((HEAPS_START_MB + pid) << PHYSICAL_ADDR_SHIFT)) = 0;
+}
+
 void copyUserBlock(uint16_t sourcePID, uint16_t targetPID){
         uint32_t* sourceAddr = (uint32_t*)((FIRST_USER_DATA_MB << PHYSICAL_ADDR_SHIFT) + sourcePID * (2 << PHYSICAL_ADDR_SHIFT));
         uint32_t* targetAddr = (uint32_t*)((FIRST_USER_DATA_MB << PHYSICAL_ADDR_SHIFT) + targetPID * (2 << PHYSICAL_ADDR_SHIFT));

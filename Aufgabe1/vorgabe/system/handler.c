@@ -11,6 +11,8 @@
 #define NULL            (void*)0
 #define THREAD_DIED     1
 
+#define DEBUG
+
 void undefined_instruction(void* sp){
         green_on();
         struct regDump rd;
@@ -21,6 +23,9 @@ void undefined_instruction(void* sp){
                 exitHandler(&rd);
                 struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_DIED);
                 changeContext(nextThread, sp);
+                #ifdef DEBUG
+                registerDump(&rd);
+                #endif
                 return;
         }
         /* Kill Kernel */
@@ -39,6 +44,9 @@ void prefetch_abort(void* sp){
                 exitHandler(&rd);
                 struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_DIED);
                 changeContext(nextThread, sp);
+                #ifdef DEBUG
+                registerDump(&rd);
+                #endif
                 return;
         }
         registerDump(&rd);
@@ -55,6 +63,9 @@ void data_abort(void* sp){
                 exitHandler(&rd);
                 struct thcStruct* nextThread = rrSchedule(currentThread, THREAD_DIED);
                 changeContext(nextThread, sp);
+                #ifdef DEBUG
+                registerDump(&rd);
+                #endif
                 return;
         }
         registerDump(&rd);

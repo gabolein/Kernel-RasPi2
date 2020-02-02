@@ -4,6 +4,7 @@
 #include "testThread.h"
 #include "threadUtil.h"
 #include "user_thread.h"
+#include "allocator.h"
 
 #define COMPUTATION_LEN 300000
 #define AMOUNT_CHARS 3
@@ -38,11 +39,17 @@ void user_thread(void* arg) {
 
 void spawner() {
         while(1) {
-                volatile char c = getChar();
-                if (c) {
-                        uint32_t number = (uint32_t) c;
-                        newProcess(&demonstration6, &number, 1);
-                }
+                /* volatile char c = getChar(); */
+                /* if (c) { */
+                /*         uint32_t number = (uint32_t) c; */
+                /*         newProcess(&demonstration6, &number, 1); */
+                /* } */
+                sleep(200);
+                printHeap();
+                int* myPtr = malloc(0x80000);
+                printHeap();
+                free(myPtr);
+                printHeap();
         }
 }
 

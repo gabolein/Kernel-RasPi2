@@ -26,6 +26,7 @@ void setTableEntry(uint32_t, uint32_t, uint32_t);
 void setFaultEntry(uint32_t);
 void map1on1();
 void copyUserBlock(uint16_t, uint16_t);
+void nullHeap(uint16_t);
 
 extern volatile uint32_t mmuTable[MMU_TABLE_ENTRIES];
 extern void _mmuInit();
