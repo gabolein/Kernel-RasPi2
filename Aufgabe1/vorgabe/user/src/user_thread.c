@@ -39,17 +39,31 @@ void user_thread(void* arg) {
 
 void spawner() {
         while(1) {
-                /* volatile char c = getChar(); */
-                /* if (c) { */
-                /*         uint32_t number = (uint32_t) c; */
-                /*         newProcess(&demonstration6, &number, 1); */
-                /* } */
-                sleep(200);
-                printHeap();
-                int* myPtr = malloc(0x80000);
-                printHeap();
-                free(myPtr);
-                printHeap();
+                volatile char c = getChar();
+                if (c == 'm') {
+                        newProcess(&mallocDemo, NULL, 0);
+                }
+        }
+}
+
+void mallocDemo() {
+        uint32_t *ptrs = malloc(0x20);
+        /* Iteriere endlos über ptrs Array */
+        while(1){
+                for(int i = 0; i < 64; i++){
+                        free(ptrs[i]);
+                        /* ptrs[i] auf 4 Bit reduzieren */
+                        uint8_t X = (ptrs[i] & 0xF) ^ ((ptrs[i] & (0xF << 4)) >> 4);
+                        for(int j = 8; j <= 28; j += 4){
+                                X ^= (ptrs[i] & (0xF << j)) >> j;
+                        }
+                        if(!X){
+                                X = 1;
+                        } else if(X == 0xF){
+                                free(ptrs[i]);
+                        }
+                        ptrs[i] = malloc(X ∗ 256 + X ∗ 16 + X);
+                }
         }
 }
 

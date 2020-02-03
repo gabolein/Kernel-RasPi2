@@ -8,6 +8,6 @@ void printer(void*);
 void demonstration5(void*);
 void demonstration6(void*);
 void demonstration6Thread();
-
+void mallocDemo();
 
 #endif  /* USER_THREAD_H */
