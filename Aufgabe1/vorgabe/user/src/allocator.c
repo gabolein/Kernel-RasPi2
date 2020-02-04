@@ -82,17 +82,24 @@ void insertBlock(struct block* currentBlock, struct block* previousBlock, uint32
 
 
 void free(void* ptr) {
+        if((*(uint32_t*)HEAP_START) == 0) {
+                /* Heap not initialized yet */
+                return;
+        }
+        /* Check whether ptr is in bounds of heap region */
+        if(!((ptr > HEAP_START) && (ptr <= HEAP_START + HEAP_SIZE))){
+                return;
+        }
+
         struct block* block2Free  = (struct block*)((uint32_t*)ptr - USED_BLOCK_INFO_SIZE); /*get address of block info */
 
 		/* check if block2Free actually a block */
 		struct block* currentBlock = (struct block*) HEAP_START;
-        int counter = 0;
         while(currentBlock) {
-                
         		if(currentBlock == block2Free) {
         			break;
         		}
-                currentBlock = (struct block*)((uint32_t)currentBlock + USED_BLOCK_INFO_SIZE * 4 + size);
+                currentBlock = (struct block*)((uint32_t)currentBlock + USED_BLOCK_INFO_SIZE * 4 + currentBlock->size);
                 if((void*)currentBlock >= HEAP_START + HEAP_SIZE){
                 		printf("Given pointer not start of block\n");
                         return;
@@ -130,7 +137,7 @@ void free(void* ptr) {
                 printf("f\n");
         }
         printf("ananas\n");
-        if(((uint32_t)block2Free + (block2Free->size & ~STATUS_BITS) + USED_BLOCK_INFO_SIZE * WORD_SIZE) < HEAP_SIZE + HEAP_START) {
+        if(((uint32_t)block2Free + (block2Free->size & ~STATUS_BITS) + USED_BLOCK_INFO_SIZE * WORD_SIZE) < (uint32_t)(HEAP_SIZE + HEAP_START)) {
                 struct block* newSucc = (struct block*)((uint32_t)block2Free + (block2Free->size & ~STATUS_BITS) + USED_BLOCK_INFO_SIZE * 4);
                 newSucc->prevSize = block2Free->size & ~STATUS_BITS;
         }

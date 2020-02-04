@@ -60,9 +60,9 @@ void mallocDemo() {
 
 
                         /* ptrs[i] auf 4 Bit reduzieren */
-                        uint8_t X = (ptrs[i] & 0xF) ^ ((ptrs[i] & (0xF << 4)) >> 4);
+                        uint8_t X = (((uint32_t)ptrs[i]) & ((uint32_t)0xF)) ^ (((uint32_t)ptrs[i]) & ((uint32_t)((0xF << 4) >> 4)));
                         for(int j = 8; j <= 28; j += 4){
-                                X ^= (ptrs[i] & (0xF << j)) >> j;
+                                X ^= (uint8_t)(((uint32_t)ptrs[i]) & (((uint32_t)(0xF << j)) >> j));
                         }
 
 
@@ -72,7 +72,7 @@ void mallocDemo() {
                                 free(ptrs[i]);
                         }
 
-                        ptrs[i] = malloc(X ∗ 256 + X ∗ 16 + X);
+                        ptrs[i] = malloc(X * 256 + X * 16 + X);
                 }
         }
 }

@@ -6,7 +6,7 @@
 struct block {
 	uint32_t size;
 	uint32_t prevSize;
-	struct block* next;
+	struct block* next;         /* next free block */
 };
 
 
