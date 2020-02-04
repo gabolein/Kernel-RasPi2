@@ -19,6 +19,8 @@
 #define NULL (void*)0
 #define COUNTER_LIMIT 10
 
+#define PTRS_ARRAY_LENGTH 64
+
 #define UART_BASE_ADDR (0x7E201000 - 0x3F000000)
 #define UART_DR        ((uint32_t *) UART_BASE_ADDR)
 
@@ -47,21 +49,29 @@ void spawner() {
 }
 
 void mallocDemo() {
-        uint32_t *ptrs = malloc(0x20);
+        uint32_t *ptrs[PTRS_ARRAY_LENGTH];
+        for(int i = 0; i < PTRS_ARRAY_LENGTH; i++){
+                ptrs[i] = malloc(0x20);
+        }
         /* Iteriere endlos über ptrs Array */
         while(1){
-                for(int i = 0; i < 64; i++){
+                for(int i = 0; i < PTRS_ARRAY_LENGTH; i++){
                         free(ptrs[i]);
+
+
                         /* ptrs[i] auf 4 Bit reduzieren */
                         uint8_t X = (ptrs[i] & 0xF) ^ ((ptrs[i] & (0xF << 4)) >> 4);
                         for(int j = 8; j <= 28; j += 4){
                                 X ^= (ptrs[i] & (0xF << j)) >> j;
                         }
+
+
                         if(!X){
                                 X = 1;
                         } else if(X == 0xF){
                                 free(ptrs[i]);
                         }
+
                         ptrs[i] = malloc(X ∗ 256 + X ∗ 16 + X);
                 }
         }
