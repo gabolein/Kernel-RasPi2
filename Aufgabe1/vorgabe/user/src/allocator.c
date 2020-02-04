@@ -83,6 +83,24 @@ void insertBlock(struct block* currentBlock, struct block* previousBlock, uint32
 
 void free(void* ptr) {
         struct block* block2Free  = (struct block*)((uint32_t*)ptr - USED_BLOCK_INFO_SIZE); /*get address of block info */
+
+		/* check if block2Free actually a block */
+		struct block* currentBlock = (struct block*) HEAP_START;
+        int counter = 0;
+        while(currentBlock) {
+                
+        		if(currentBlock == block2Free) {
+        			break;
+        		}
+                currentBlock = (struct block*)((uint32_t)currentBlock + USED_BLOCK_INFO_SIZE * 4 + size);
+                if((void*)currentBlock >= HEAP_START + HEAP_SIZE){
+                		printf("Given pointer not start of block\n");
+                        return;
+                }
+        }
+
+
+
         struct block* predecessor = (struct block*)((uint32_t*)block2Free - block2Free->prevSize / 4 - USED_BLOCK_INFO_SIZE); /*get predecessor*/
         struct block* successor   = (struct block*)((uint32_t*)block2Free + USED_BLOCK_INFO_SIZE + (block2Free->size & ~STATUS_BITS) / 4);/*get successor*/
         printf("Successor is %x, block2free soße is %u\n", successor, block2Free->size);
