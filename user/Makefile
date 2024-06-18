@@ -14,7 +14,6 @@
 #
 # make clean		-- Löscht alle erzeugten Dateien.
 
-# Hier eure Dateien hinzufügen
 OBJ = src/idleThread.o
 OBJ += src/swiInterface.o
 OBJ += src/testThread.o
@@ -22,8 +21,6 @@ OBJ += src/threadUtil.o
 OBJ += src/user_thread.o
 OBJ += src/io.o
 OBJ += src/allocator.o
-
-# --- Ab hier sollte nichts mehr angepasst werden müssen ;D ---
 
 # Quellen
 LSCRIPT = user.lds

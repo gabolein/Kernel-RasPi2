@@ -27,13 +27,6 @@
 #			   Arbeit zuhause einfach den Pfad eintragen
 
 
-# Binäre Lsg (falls verwendet)
-BIN_LSG =
-
-# Ab Aufgabe 4 auf true
-KERNEL_USER_SPLIT = true
-
-# Hier eure Dateien hinzufügen
 # System
 OBJ =  system/entry.o
 OBJ += system/ivt.o
@@ -63,14 +56,8 @@ OBJ += lib/regcheck_asm.o
 OBJ += lib/scheduler.o
 OBJ += lib/util.o
 
-# Falls die binäre Musterlösung benutzt wird bitte auskommentieren
-# und gegebenenfalls Ordner anpassen:
-# OBJ_LSG = obj/$(BIN_LSG).o
-
 # Wenn ihr zuhause arbeitet, hier das TFTP-Verzeichnis eintragen
 TFTP_PATH = /srv/tftp
-
-# --- Ab hier sollte nichts mehr angepasst werden müssen ;D ---
 
 # Quellen
 LSCRIPT = kernel.lds
@@ -90,24 +77,6 @@ endif
 
 # Seperates Target für Debugging
 OBJ_DEBUG = $(OBJ:.o=.o_d)
-
-# Abgabe Dateien
-SUBMISSION_FILES = $(shell find . -name '*' -not -name '*.tar.gz' -not -name '.*' -not -type d -not -name '*.pdf' -not -path './.*')
-
-# Abgabe check
-ifeq ($(shell test "$$(wc -l < matrikel_nr.txt)" -gt 2; echo $$?),0)
-$(error "matrikel_nr.txt ist fehlerhaft oder leer!")
-endif
-
-ifeq ($(shell egrep -vq '^[0-9]{6}$$' matrikel_nr.txt; echo $$?),0)
-$(error "matrikel_nr.txt ist fehlerhaft oder leer!")
-endif
-
-MATRIKEL_NR = $(shell awk '(NR > 1) && (NR < 3)  {ORS="+"; print prev} {prev=$$1} END { ORS=""; print $$1 }' matrikel_nr.txt )
-
-ifeq ($(MATRIKEL_NR), )
-$(error "matrikel_nr.txt ist fehlerhaft oder leer!")
-endif
 
 # Konfiguration
 CC = arm-none-eabi-gcc
@@ -188,11 +157,7 @@ clean:
 	rm -f $(OBJ)
 	rm -f $(OBJ_DEBUG)
 	rm -f $(DEP)
-	rm -f "$(MATRIKEL_NR).tar.gz"
 	$(MAKE) -C user clean
-
-submission:	clean 
-	tar -czf "$(MATRIKEL_NR).tar.gz" $(SUBMISSION_FILES)
 
 home: kernel.img
 	cp -v kernel.img $(TFTP_PATH)
